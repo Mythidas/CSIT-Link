@@ -3,8 +3,12 @@
 
   export let label: string;
   export let href: string = "";
+  export let icon: string = "";
 </script>
 
-<a href={href} class={`${$page.url.pathname === href && "bg-cscol-100"} text-center justify-center py-1 hover:bg-cscol-100`}>
-  {label}
+<a href={href} class={`${$page.url.pathname === href && "bg-cscol-100"} flex relative w-full h-fit py-1 hover:bg-cscol-100`}>
+  <div class="pl-1 w-7"><img src={icon} alt="" /></div>
+  <div class="pl-1">
+    {label}
+  </div>
 </a>

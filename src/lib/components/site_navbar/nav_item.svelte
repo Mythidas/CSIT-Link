@@ -11,9 +11,9 @@
 
 {#if parent}
 <li>
-  <button on:click={() => (opened = !opened)} class="flex relative w-full h-fit px-3 py-3 justify-center text-center font-bold text-xl shadow-sm shadow-cscol-500">
-    <div><img src={icon} alt="" /></div>
-    <div>
+  <button on:click={() => (opened = !opened)} class="flex relative w-full h-fit py-3 font-bold text-xl shadow-sm shadow-cscol-500">
+    <div class="pl-1 w-7"><img src={icon} alt="" /></div>
+    <div class="pl-1">
       {label}
     </div>
     <img class="absolute right-2 top-4" src={opened ? "/chevron-up.svg" : "/chevron-down.svg"} alt="" />
@@ -24,9 +24,9 @@
 </li>
 {:else}
 <li>
-  <a href={href} class={`${$page.url.pathname === href && "bg-cscol-100"} flex relative w-full h-fit px-3 py-3 justify-center text-center font-bold text-xl shadow-sm shadow-cscol-500 hover:bg-cscol-100`}>
-    <div><img src={icon} alt="" /></div>
-    <div>
+  <a href={href} class={`${$page.url.pathname === href && "bg-cscol-100"} flex relative w-full h-fit py-3 font-bold text-xl shadow-sm shadow-cscol-500 hover:bg-cscol-100`}>
+    <div class="pl-1 w-7"><img src={icon} alt="" /></div>
+    <div class="pl-1">
       {label}
     </div>
   </a>
