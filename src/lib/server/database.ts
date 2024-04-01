@@ -1,5 +1,5 @@
 import { PG_HOST, PG_USER, PG_DATABASE, PG_PASSWORD } from "$env/static/private";
-import pg from "pg";
+import pg, { type PoolClient } from "pg";
 
 const pool = new pg.Pool({
   user: PG_USER,
@@ -11,3 +11,7 @@ const pool = new pg.Pool({
 })
 
 export const connect = async () => await pool.connect();
+
+export async function get_sites(client: PoolClient) {
+  return (await client.query("SELECT * FROM Site")).rows;
+}
