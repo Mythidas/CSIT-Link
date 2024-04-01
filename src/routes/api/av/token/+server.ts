@@ -1,3 +1,5 @@
+import { AV_ID, AV_SC } from '$env/static/private';
+
 export async function GET({ cookies }) {
   try {
     const jwt = cookies.get("av_jwt_token");
@@ -8,8 +10,8 @@ export async function GET({ cookies }) {
 
     const params = new URLSearchParams({
       grant_type: 'client_credentials',
-      client_id: `${process.env.SOP_ID}`,
-      client_secret: `${process.env.SOP_SC}`,
+      client_id: AV_ID,
+      client_secret: AV_SC,
       scope: 'token'
     });
 
@@ -21,7 +23,7 @@ export async function GET({ cookies }) {
       body: params.toString()
     });
     const token_data = await token_api.json();
-
+    
     if (!token_api.ok) {
       return Response.json({
         error: {

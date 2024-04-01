@@ -1,7 +1,8 @@
 <script lang="ts">
   import Modal from "$lib/components/modal.svelte";
+    import type _ExtSite from "$lib/interfaces/ext_site";
 
-  export let data: { sites: any[], psa_sites: any[], rmm_sites: any[], av_sites: any[] };
+  export let data: { sites: any[], psa_sites: _ExtSite[], rmm_sites: _ExtSite[], av_sites: _ExtSite[] };
 
   let show_modal = false;
 
