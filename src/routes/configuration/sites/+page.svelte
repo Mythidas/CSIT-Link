@@ -1,5 +1,6 @@
 <script lang="ts">
-  import Modal from "$lib/components/modal.svelte";
+  import DropdownSearch from "$lib/components/dropdown_search.svelte";
+import Modal from "$lib/components/modal.svelte";
     import type _ExtSite from "$lib/interfaces/ext_site";
 
   export let data: { sites: any[], psa_sites: _ExtSite[], rmm_sites: _ExtSite[], av_sites: _ExtSite[] };
@@ -26,7 +27,7 @@
 
 <div class="flex flex-col p-3 mb-3 w-full h-fit bg-cscol-400 rounded-sm">
   <div class="flex">
-    <button on:click={() => {show_modal = true}} class="bg-cscol-100 py-2 px-3 rounded-sm">
+    <button on:click={() => {show_modal = true}} class="bg-cscol-000 py-2 px-3 rounded-sm hover:bg-cscol-100">
       New Site
     </button>
   </div>
@@ -73,11 +74,26 @@
 
 <Modal bind:show_modal>
   <div class="flex flex-col w-full h-full justify-between">
-    <div>
-      
+    <div class="mx-auto w-2/4">
+      <div class="w-full mb-3">
+        <h3 class="text-xl mb-1">Name*</h3>
+        <input class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder="Site Name..." />
+      </div>
+      <div class="w-full mb-3">
+        <h3 class="text-xl mb-1">PSA Site*</h3>
+        <DropdownSearch options={[{ key: "TestKey", value: "Test" }]} default_label="Choose Site..."/>
+      </div>
+      <div class="w-full mb-3">
+        <h3 class="text-xl mb-1">RMM Site*</h3>
+        <DropdownSearch options={[{ key: "TestKey", value: "Test" }]} default_label="Choose Site..."/>
+      </div>
+      <div class="w-full mb-3">
+        <h3 class="text-xl mb-1">AV Site*</h3>
+        <DropdownSearch options={[{ key: "TestKey", value: "Test" }]} default_label="Choose Site..."/>
+      </div>
     </div>
     <div class="flex w-full justify-center">
-      <button class="bg-cscol-100 py-2 px-3 rounded-sm" on:click={create_new_site}>Save</button>
+      <button class="bg-cscol-000 py-2 px-3 rounded-sm hover:bg-cscol-100" on:click={create_new_site}>Save</button>
       <button class="bg-errcol-100 mx-2 py-2 px-3 rounded-sm" on:click={() => {show_modal = false}}>Cancel</button>
     </div>
   </div>
