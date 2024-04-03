@@ -7,6 +7,7 @@
   export let data: { sites: Site[], companies: Company[], psa_sites: _ExtSite[], rmm_sites: _ExtSite[], av_sites: _ExtSite[] };
 
   let show_modal = false;
+  let selected_company: any = { label: "(None)", key: "-1" };
   let selected_rmm: any = null;
   let selected_av: any = null;
 
@@ -30,13 +31,18 @@
   }
 
   function map_companies_to_options() {
-    return data.companies.map((company) => {
+    let companies = [{ label: "(None)", key: "-1" }];
+    companies.push(...data.companies.map((company) => {
       return { label: company.title, key: company.company_id.toString() };
-    })
+    }));
+
+    return companies;
   }
 
   async function create_new_site() {
-
+    console.log(selected_company);
+    console.log(selected_rmm);
+    console.log(selected_av);
   }
 </script>
 
@@ -96,7 +102,7 @@
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">Company</h3>
-        <DropdownSearch options={map_companies_to_options()} default_label="Select Company..."/>
+        <DropdownSearch bind:selected={selected_company} options={map_companies_to_options()} default_label="Select Company..."/>
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">PSA Site (Not Available)</h3>

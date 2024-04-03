@@ -40,10 +40,12 @@
   </button>
   {#if opened}
   <div class="flex flex-col absolute w-full h-52 z-10 shadow-lg shadow-cscol-600 bg-cscol-400">
+    <!-- svelte-ignore a11y-autofocus -->
     <input 
       on:input={(e) => filter = e.currentTarget.value} 
       on:click|stopPropagation={() => {}}
-      class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder={default_label} 
+      class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder={default_label}
+      autofocus
     />
     <div class="flex flex-col overflow-y-auto">
       {#each filter_options as option}
