@@ -6,6 +6,8 @@
   export let data: { sites: any[], psa_sites: _ExtSite[], rmm_sites: _ExtSite[], av_sites: _ExtSite[] };
 
   let show_modal = false;
+  let selected_rmm: any = null;
+  let selected_av: any = null;
 
   $: selected = { 
     site_id: -1,
@@ -91,11 +93,11 @@
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">RMM Site*</h3>
-        <DropdownSearch options={map_ext_site_to_options(data.rmm_sites)} default_label="Choose Site..."/>
+        <DropdownSearch bind:selected={selected_rmm} options={map_ext_site_to_options(data.rmm_sites)} default_label="Choose Site..."/>
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">AV Site*</h3>
-        <DropdownSearch options={map_ext_site_to_options(data.av_sites)} default_label="Choose Site..."/>
+        <DropdownSearch bind:selected={selected_av} options={map_ext_site_to_options(data.av_sites)} default_label="Choose Site..."/>
       </div>
     </div>
     <div class="flex w-full justify-center">

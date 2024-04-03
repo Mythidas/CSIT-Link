@@ -6,17 +6,20 @@
 
   export let options: _Option[];
   export let default_label = "Choose Option...";
+  export let selected: any = null;
 
   let filter = "";
   let opened = false;
-  let select_value: _Option | null = null;
 
   $: filter_options = options;
-  
   $: {
     filter_options = options.filter(value => {
       return value.label.toLowerCase().includes(filter.toLowerCase());
     });
+  }
+
+  function on_select(option: _Option) {
+    selected = option;
   }
 
 </script>
@@ -32,7 +35,7 @@
 {:else}
 <div class="relative w-full">
   <button on:click|stopPropagation={() => opened = !opened} class={`${opened ? "bg-cscol-100" : "bg-cscol-000"} flex p-1 w-full h-fit justify-between hover:bg-cscol-100`}>
-    <p>{select_value ? select_value.label : default_label}</p>
+    <p>{selected ? selected.label : default_label}</p>
     <img src={opened ? "/chevron-up.svg" : "/chevron-down.svg"} alt="" />
   </button>
   {#if opened}
@@ -45,8 +48,8 @@
     <div class="flex flex-col overflow-y-auto">
       {#each filter_options as option}
         <button 
-          on:click={() => select_value = option} 
-          class={`flex w-full p-1 hover:bg-cscol-100 ${select_value?.label === option.label && "bg-cscol-100 shadow-md text-left"}`}
+          on:click={() => on_select(option)} 
+          class={`flex w-full p-1 hover:bg-cscol-100 ${selected?.label === option.label && "bg-cscol-100 shadow-md text-left"}`}
         >
           {option.label}
         </button>
