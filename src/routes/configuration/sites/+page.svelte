@@ -1,7 +1,7 @@
 <script lang="ts">
   import DropdownSearch from "$lib/components/dropdown_search.svelte";
-import Modal from "$lib/components/modal.svelte";
-    import type _ExtSite from "$lib/interfaces/ext_site";
+  import Modal from "$lib/components/modal.svelte";
+  import type _ExtSite from "$lib/interfaces/ext_site";
 
   export let data: { sites: any[], psa_sites: _ExtSite[], rmm_sites: _ExtSite[], av_sites: _ExtSite[] };
 
@@ -18,6 +18,12 @@ import Modal from "$lib/components/modal.svelte";
 
   function set_selected(id: number) {
     selected = data.sites.filter(site => site.site_id === id)[0];
+  }
+
+  function map_ext_site_to_options(sites: _ExtSite[]) {
+    return sites.map((site) => {
+      return { label: site.name, key: site.id };
+    });
   }
 
   async function create_new_site() {
@@ -80,16 +86,16 @@ import Modal from "$lib/components/modal.svelte";
         <input class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder="Site Name..." />
       </div>
       <div class="w-full mb-3">
-        <h3 class="text-xl mb-1">PSA Site*</h3>
-        <DropdownSearch options={[{ key: "TestKey", value: "Test" }]} default_label="Choose Site..."/>
+        <h3 class="text-xl mb-1">PSA Site (Not Available)</h3>
+        <DropdownSearch options={map_ext_site_to_options(data.psa_sites)} default_label="Choose Site..."/>
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">RMM Site*</h3>
-        <DropdownSearch options={[{ key: "TestKey", value: "Test" }]} default_label="Choose Site..."/>
+        <DropdownSearch options={map_ext_site_to_options(data.rmm_sites)} default_label="Choose Site..."/>
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">AV Site*</h3>
-        <DropdownSearch options={[{ key: "TestKey", value: "Test" }]} default_label="Choose Site..."/>
+        <DropdownSearch options={map_ext_site_to_options(data.av_sites)} default_label="Choose Site..."/>
       </div>
     </div>
     <div class="flex w-full justify-center">
