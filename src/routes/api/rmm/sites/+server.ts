@@ -1,5 +1,5 @@
 import { RMM_ID, RMM_SC } from "$env/static/private";
-import type _ExtSite from "$lib/interfaces/ext_site";
+import type _ExtSite from "$lib/interfaces/i_ext_site";
 
 const vsa_url = "https://centriserve-it.vsax.net";
 const vsa_auth = btoa(`${RMM_ID}:${RMM_SC}`);

@@ -1,10 +1,11 @@
 import * as db from "$lib/server/database";
-import type APIResponse from "$lib/interfaces/api_response.js";
-import { api_response_log } from "$lib/interfaces/api_response.js";
+import type APIResponse from "$lib/interfaces/i_api_response.js";
+import { api_response_log } from "$lib/interfaces/i_api_response.js";
 
 export async function load({ fetch, locals }) {
   try {
     const db_sites = await db.get_sites(locals.db_conn);
+    const db_companies = await db.get_companies(locals.db_conn);
 
     const psa_sites_api = await fetch("/api/psa/sites");
     const psa_sites_data = await psa_sites_api.json() as APIResponse;
@@ -20,6 +21,7 @@ export async function load({ fetch, locals }) {
 
     return {
       sites: db_sites,
+      companies: db_companies,
       rmm_sites: rmm_sites_data.data,
       av_sites: av_sites_data.data,
       psa_sites: psa_sites_data.data

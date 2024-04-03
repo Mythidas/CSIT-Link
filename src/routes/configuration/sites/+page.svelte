@@ -1,9 +1,10 @@
 <script lang="ts">
   import DropdownSearch from "$lib/components/dropdown_search.svelte";
   import Modal from "$lib/components/modal.svelte";
-  import type _ExtSite from "$lib/interfaces/ext_site";
+  import type { Company, Site } from "$lib/interfaces/i_db";
+  import type _ExtSite from "$lib/interfaces/i_ext_site";
 
-  export let data: { sites: any[], psa_sites: _ExtSite[], rmm_sites: _ExtSite[], av_sites: _ExtSite[] };
+  export let data: { sites: Site[], companies: Company[], psa_sites: _ExtSite[], rmm_sites: _ExtSite[], av_sites: _ExtSite[] };
 
   let show_modal = false;
   let selected_rmm: any = null;
@@ -26,6 +27,12 @@
     return sites.map((site) => {
       return { label: site.name, key: site.id };
     });
+  }
+
+  function map_companies_to_options() {
+    return data.companies.map((company) => {
+      return { label: company.title, key: company.company_id.toString() };
+    })
   }
 
   async function create_new_site() {
@@ -88,16 +95,20 @@
         <input class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder="Site Name..." />
       </div>
       <div class="w-full mb-3">
+        <h3 class="text-xl mb-1">Company</h3>
+        <DropdownSearch options={map_companies_to_options()} default_label="Select Company..."/>
+      </div>
+      <div class="w-full mb-3">
         <h3 class="text-xl mb-1">PSA Site (Not Available)</h3>
-        <DropdownSearch options={map_ext_site_to_options(data.psa_sites)} default_label="Choose Site..."/>
+        <DropdownSearch options={map_ext_site_to_options(data.psa_sites)} default_label="Select Site..."/>
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">RMM Site*</h3>
-        <DropdownSearch bind:selected={selected_rmm} options={map_ext_site_to_options(data.rmm_sites)} default_label="Choose Site..."/>
+        <DropdownSearch bind:selected={selected_rmm} options={map_ext_site_to_options(data.rmm_sites)} default_label="Select Site..."/>
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">AV Site*</h3>
-        <DropdownSearch bind:selected={selected_av} options={map_ext_site_to_options(data.av_sites)} default_label="Choose Site..."/>
+        <DropdownSearch bind:selected={selected_av} options={map_ext_site_to_options(data.av_sites)} default_label="Select Site..."/>
       </div>
     </div>
     <div class="flex w-full justify-center">
