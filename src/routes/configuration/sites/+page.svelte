@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { enhance } from "$app/forms";
   import DropdownSearch from "$lib/components/dropdown_search.svelte";
   import Modal from "$lib/components/modal.svelte";
   import type { Company, Site } from "$lib/interfaces/i_db";
@@ -38,21 +39,6 @@
     }));
 
     return companies;
-  }
-
-  async function create_new_site() {
-    const res = await fetch("/api/v1/sites", {
-      method: "PUT",
-      headers: {
-        "content-type": "application/json"
-      },
-      body: JSON.stringify({
-        title: selected_name,
-        company_id: selected_company.key,
-        rmm_id: selected_rmm.key,
-        av_id: selected_av.key
-      })
-    })
   }
 </script>
 
@@ -104,15 +90,15 @@
 </div>
 
 <Modal bind:show_modal>
-  <div class="flex flex-col w-full h-full justify-between">
+  <form class="flex flex-col w-full h-full justify-between" method="post" use:enhance>
     <div class="mx-auto w-2/4">
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">Name*</h3>
-        <input bind:value={selected_name} class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder="Site Name..." />
+        <input bind:value={selected_name} name="site" type="text" class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder="Site Name..." />
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">Company</h3>
-        <DropdownSearch bind:selected={selected_company} options={map_companies_to_options()} default_label="Select Company..."/>
+        <DropdownSearch bind:selected={selected_company} name="company" options={map_companies_to_options()} default_label="Select Company..."/>
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">PSA Site (Not Available)</h3>
@@ -120,16 +106,16 @@
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">RMM Site*</h3>
-        <DropdownSearch bind:selected={selected_rmm} options={map_ext_site_to_options(data.rmm_sites)} default_label="Select Site..."/>
+        <DropdownSearch bind:selected={selected_rmm} name="rmm" options={map_ext_site_to_options(data.rmm_sites)} default_label="Select Site..."/>
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">AV Site*</h3>
-        <DropdownSearch bind:selected={selected_av} options={map_ext_site_to_options(data.av_sites)} default_label="Select Site..."/>
+        <DropdownSearch bind:selected={selected_av} name="av" options={map_ext_site_to_options(data.av_sites)} default_label="Select Site..."/>
       </div>
     </div>
     <div class="flex w-full justify-center">
-      <button class="bg-cscol-000 py-2 px-3 rounded-sm hover:bg-cscol-100" on:click={create_new_site}>Save</button>
-      <button class="bg-errcol-100 mx-2 py-2 px-3 rounded-sm" on:click={() => {show_modal = false}}>Cancel</button>
+      <button type="submit" class="bg-cscol-000 py-2 px-3 rounded-sm hover:bg-cscol-100">Save</button>
+      <button type="button" class="bg-errcol-100 mx-2 py-2 px-3 rounded-sm" on:click={() => {show_modal = false}}>Cancel</button>
     </div>
-  </div>
+  </form>
 </Modal>

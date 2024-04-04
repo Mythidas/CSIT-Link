@@ -7,9 +7,11 @@
   export let options: _Option[];
   export let default_label = "Choose Option...";
   export let selected: any = null;
+  export let name: string = "__DROPDOWN__";
 
   let filter = "";
   let opened = false;
+  let selected_ptr = "";
 
   $: filter_options = options;
   $: {
@@ -20,6 +22,7 @@
 
   function on_select(option: _Option) {
     selected = option;
+    selected_ptr = option.key;
   }
 
 </script>
@@ -34,7 +37,7 @@
 </div>
 {:else}
 <div class="relative w-full">
-  <button on:click|stopPropagation={() => opened = !opened} class={`${opened ? "bg-cscol-100" : "bg-cscol-000"} flex p-1 w-full h-fit justify-between hover:bg-cscol-100`}>
+  <button type="button" on:click|stopPropagation={() => opened = !opened} class={`${opened ? "bg-cscol-100" : "bg-cscol-000"} flex p-1 w-full h-fit justify-between hover:bg-cscol-100`}>
     <p>{selected ? selected.label : default_label}</p>
     <img src={opened ? "/chevron-up.svg" : "/chevron-down.svg"} alt="" />
   </button>
@@ -48,16 +51,18 @@
       autofocus
     />
     <div class="flex flex-col overflow-y-auto">
-      {#each filter_options as option}
-        <button 
-          on:click={() => on_select(option)} 
-          class={`flex w-full p-1 hover:bg-cscol-100 ${selected?.label === option.label && "bg-cscol-100 shadow-md text-left"}`}
+      {#each filter_options as _option}
+        <button
+          type="button"
+          on:click={() => on_select(_option)} 
+          class={`flex w-full p-1 hover:bg-cscol-100 ${selected?.label === _option.label && "bg-cscol-100 shadow-md text-left"}`}
         >
-          {option.label}
+          {_option.label}
         </button>
       {/each}
     </div>
   </div>
   {/if}
 </div>
+<input type="hidden" name={name} bind:value={selected_ptr}/>
 {/if}

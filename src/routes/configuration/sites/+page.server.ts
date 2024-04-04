@@ -1,6 +1,7 @@
 import * as db from "$lib/server/database";
 import type APIResponse from "$lib/interfaces/i_api_response.js";
 import { api_response_log } from "$lib/interfaces/i_api_response.js";
+import type { Actions } from "./$types.js";
 
 export async function load({ fetch, locals }) {
   try {
@@ -30,3 +31,9 @@ export async function load({ fetch, locals }) {
     console.log(err);
   }
 }
+
+export const actions = {
+  default: async (event) => {
+    console.log(await event.request.formData());
+  }
+} satisfies Actions;
