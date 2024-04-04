@@ -7,6 +7,7 @@
   export let data: { sites: Site[], companies: Company[], psa_sites: _ExtSite[], rmm_sites: _ExtSite[], av_sites: _ExtSite[] };
 
   let show_modal = false;
+  let selected_name: string = "";
   let selected_company: any = { label: "(None)", key: "-1" };
   let selected_rmm: any = null;
   let selected_av: any = null;
@@ -40,9 +41,18 @@
   }
 
   async function create_new_site() {
-    console.log(selected_company);
-    console.log(selected_rmm);
-    console.log(selected_av);
+    const res = await fetch("/api/v1/sites", {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        title: selected_name,
+        company_id: selected_company.key,
+        rmm_id: selected_rmm.key,
+        av_id: selected_av.key
+      })
+    })
   }
 </script>
 
@@ -98,7 +108,7 @@
     <div class="mx-auto w-2/4">
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">Name*</h3>
-        <input class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder="Site Name..." />
+        <input bind:value={selected_name} class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder="Site Name..." />
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">Company</h3>

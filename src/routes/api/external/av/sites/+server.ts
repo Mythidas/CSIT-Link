@@ -2,7 +2,7 @@ import type _ExtSite from '$lib/interfaces/i_ext_site.js';
 
 export async function GET({ cookies, fetch }) {
   try {
-    const token_validate = await fetch("/api/av/token");
+    const token_validate = await fetch("/api/external/av/token");
     if (token_validate.ok) {
       const jwt = cookies.get("av_jwt_token");
       const pt = cookies.get("av_pt_token");

@@ -7,15 +7,15 @@ export async function load({ fetch, locals }) {
     const db_sites = await db.get_sites(locals.db_conn);
     const db_companies = await db.get_companies(locals.db_conn);
 
-    const psa_sites_api = await fetch("/api/psa/sites");
+    const psa_sites_api = await fetch("/api/external/psa/sites");
     const psa_sites_data = await psa_sites_api.json() as APIResponse;
     if (!psa_sites_api.ok) api_response_log(psa_sites_data);
 
-    const rmm_sites_api = await fetch("/api/rmm/sites");
+    const rmm_sites_api = await fetch("/api/external/rmm/sites");
     const rmm_sites_data = await rmm_sites_api.json() as APIResponse;
     if (!rmm_sites_api.ok) api_response_log(rmm_sites_data);
 
-    const av_sites_api = await fetch("/api/av/sites");
+    const av_sites_api = await fetch("/api/external/av/sites");
     const av_sites_data = await av_sites_api.json() as APIResponse;
     if (!av_sites_api.ok) api_response_log(av_sites_data);
 
