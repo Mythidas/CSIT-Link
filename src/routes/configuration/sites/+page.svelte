@@ -94,7 +94,7 @@
     <div class="mx-auto w-2/4">
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">Name*</h3>
-        <input bind:value={selected_name} name="site" type="text" class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder="Site Name..." />
+        <input required bind:value={selected_name} name="site" type="text" class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder="Site Name..." />
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">Company</h3>
@@ -106,16 +106,16 @@
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">RMM Site*</h3>
-        <DropdownSearch bind:selected={selected_rmm} name="rmm" options={map_ext_site_to_options(data.rmm_sites)} default_label="Select Site..."/>
+        <DropdownSearch required bind:selected={selected_rmm} name="rmm" options={map_ext_site_to_options(data.rmm_sites)} default_label="Select Site..."/>
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">AV Site*</h3>
-        <DropdownSearch bind:selected={selected_av} name="av" options={map_ext_site_to_options(data.av_sites)} default_label="Select Site..."/>
+        <DropdownSearch required bind:selected={selected_av} name="av" options={map_ext_site_to_options(data.av_sites)} default_label="Select Site..."/>
       </div>
     </div>
     <div class="flex w-full justify-center">
       <button type="submit" class="bg-cscol-000 py-2 px-3 rounded-sm hover:bg-cscol-100">Save</button>
-      <button type="button" class="bg-errcol-100 mx-2 py-2 px-3 rounded-sm" on:click={() => {show_modal = false}}>Cancel</button>
+      <button type="button" class="bg-errcol-100 mx-2 py-2 px-3 rounded-sm" on:click={() => {show_modal = false}}>Close</button>
     </div>
   </form>
 </Modal>

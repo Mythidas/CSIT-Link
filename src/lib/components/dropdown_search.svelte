@@ -8,11 +8,12 @@
   export let default_label = "Choose Option...";
   export let selected: any = null;
   export let name: string = "__DROPDOWN__";
-
+  export let required: boolean = false;
+  
   let filter = "";
   let opened = false;
   let selected_ptr = "";
-
+  
   $: filter_options = options;
   $: {
     filter_options = options.filter(value => {
@@ -25,9 +26,15 @@
     selected_ptr = option.key;
   }
 
+  function on_submit() {
+    if (selected) {
+      selected = null;
+      selected_ptr = "";
+    }
+  }
 </script>
 
-<svelte:window on:click={() => opened = false} />
+<svelte:window on:click={() => opened = false} on:submit={on_submit}/>
 
 {#if options.length === 0}
 <div class="relative w-full">
@@ -36,6 +43,7 @@
   </div>
 </div>
 {:else}
+<div class="relative w-full">
 <div class="relative w-full">
   <button type="button" on:click|stopPropagation={() => opened = !opened} class={`${opened ? "bg-cscol-100" : "bg-cscol-000"} flex p-1 w-full h-fit justify-between hover:bg-cscol-100`}>
     <p>{selected ? selected.label : default_label}</p>
@@ -64,5 +72,6 @@
   </div>
   {/if}
 </div>
-<input type="hidden" name={name} bind:value={selected_ptr}/>
+<input required={required} class="absolute w-full top-0 outline-none bg-opacity-0 -z-10" name={name} bind:value={selected_ptr}/>
+</div>
 {/if}
