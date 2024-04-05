@@ -58,7 +58,7 @@ export const actions = {
     if ((await db.add_site(event.locals.db_conn, site_data)).length > 0) {
       return "Site Added";
     } else {
-      return "Site added error";
+      return "Error adding site";
     }
   }
 } satisfies Actions;

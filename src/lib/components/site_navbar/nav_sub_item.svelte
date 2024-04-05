@@ -6,7 +6,7 @@
   export let icon: string = "";
 </script>
 
-<a href={href} class={`${$page.url.pathname === href && "bg-cscol-100"} flex relative w-full h-fit py-1 hover:bg-cscol-100`}>
+<a href={href} class={`${$page.url.pathname === href && "bg-cscol-000"} flex relative w-full h-fit py-1 hover:bg-cscol-100`}>
   <div class="pl-1 w-7"><img src={icon} alt="" /></div>
   <div class="pl-1">
     {label}

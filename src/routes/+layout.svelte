@@ -1,8 +1,9 @@
 <script lang="ts">
   import "../app.css";
-  import { page } from "$app/stores";
+  import { navigating } from "$app/stores";
   import NavItem from "$lib/components/site_navbar/nav_item.svelte";
   import NavSubItem from "$lib/components/site_navbar/nav_sub_item.svelte";
+    import LoadingSpinner from "$lib/components/loading_spinner.svelte";
 </script>
 
 <main class="flex flex-col w-screen h-screen bg-cscol-600 text-cscol-font">
@@ -23,12 +24,17 @@
         <NavSubItem label="Overview" href="/sites/overview"/>
       </NavItem>
       <NavItem label="Configuration" href="/configuration" parent>
+        <NavSubItem label="Companies" href="/configuration/companies"/>
         <NavSubItem label="Sites" href="/configuration/sites"/>
       </NavItem>
     </ul>
     <!-- Contents -->
     <div class="flex flex-col relative p-3 w-full h-full">
-      <slot />
+      {#if $navigating}
+        <LoadingSpinner />
+      {:else}
+        <slot />
+      {/if}
     </div>
   </div>
 </main>

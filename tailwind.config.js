@@ -2,7 +2,11 @@
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        "spin-slow": "spin 2s linear infinite"
+      }
+    },
     colors: {
       "cscol-000": "#3C8C88",
       "cscol-100": "#45A29E",
