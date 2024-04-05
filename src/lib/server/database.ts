@@ -24,7 +24,7 @@ export async function get_sites(client: PoolClient): Promise<Site[]> {
   }
 }
 
-export async function add_site(client: PoolClient, site: Site) {
+export async function add_site(client: PoolClient, site: Site): Promise<Site[]> {
   const values = [
     site.title,
     site.company_id.toString(),
@@ -48,6 +48,20 @@ export async function add_site(client: PoolClient, site: Site) {
 export async function get_companies(client: PoolClient): Promise<Company[]> {
   try {
     return (await client.query("SELECT * FROM Company")).rows;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+}
+
+export async function add_company(client: PoolClient, company: Company): Promise<Company[]> {
+  const values = [
+    company.title
+  ];
+
+  try {
+    const res = await client.query("INSERT INTO Company (title) VALUES ($1)", values);
+    return res.rows as Company[];
   } catch (err) {
     console.log(err);
     return [];

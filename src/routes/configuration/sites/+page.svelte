@@ -41,6 +41,14 @@
 
     return companies;
   }
+
+  function close_modal() {
+    show_modal = false;
+    selected_name = "";
+    selected_company = { label: "(None)", key: "-1" };
+    selected_rmm = null;
+    selected_av = null;
+  }
 </script>
 
 <div class="flex flex-col p-3 mb-3 w-full h-fit bg-cscol-400 rounded-sm">
@@ -76,7 +84,7 @@
       {#if selected.site_id !== -1}
       <div class="flex flex-col">
         <p>Site: {selected.title}</p>
-        <p>Company: {selected.company_id}</p>
+        <p>Company: {data.companies.filter(comp => { return comp.company_id === selected.company_id; })[0]}</p>
         <p>PSA ID: {selected.psa_id}</p>
         <p>RMM ID: {selected.rmm_id}</p>
         <p>AV ID: {selected.av_id}</p>
@@ -117,7 +125,7 @@
     </div>
     <div class="flex w-full justify-center">
       <button type="submit" class="bg-cscol-000 py-2 px-3 rounded-sm hover:bg-cscol-100">Save</button>
-      <button type="button" class="bg-errcol-100 mx-2 py-2 px-3 rounded-sm" on:click={() => {show_modal = false}}>Close</button>
+      <button type="button" class="bg-errcol-100 mx-2 py-2 px-3 rounded-sm" on:click={close_modal}>Close</button>
     </div>
   </form>
 </Modal>
