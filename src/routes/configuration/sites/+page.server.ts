@@ -51,6 +51,14 @@ export const actions = {
       av_url: av[1] || ""
     }
 
-    db.add_site(event.locals.db_conn, site_data);
+    if (site_data.title === "" || site_data.psa_id === "" || site_data.rmm_id === "" || site_data.av_id === "" || site_data.av_url === "") {
+      return "Invalid Data";
+    }
+
+    if ((await db.add_site(event.locals.db_conn, site_data)).length > 0) {
+      return "Site Added";
+    } else {
+      return "Site added error";
+    }
   }
 } satisfies Actions;
