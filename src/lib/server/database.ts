@@ -16,12 +16,18 @@ export const connect = async () => await pool.connect();
 // SITES
 
 export async function get_sites(client: PoolClient): Promise<Site[]> {
-  return (await client.query("SELECT * FROM Site")).rows as Site[];
+  try {
+    return (await client.query("SELECT * FROM Site")).rows as Site[];
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
 }
 
 export async function add_site(client: PoolClient, site: Site) {
   const values = [
     site.title,
+    site.company_id.toString(),
     site.psa_id,
     site.rmm_id,
     site.av_id,
@@ -29,7 +35,7 @@ export async function add_site(client: PoolClient, site: Site) {
   ];
 
   try {
-    const res = await client.query("INSERT INTO Site (title, psa_id, rmm_id, av_id, av_url) VALUES ($1, $2, $3, $4, $5)", values);
+    const res = await client.query("INSERT INTO Site (title, company_id, psa_id, rmm_id, av_id, av_url) VALUES ($1, $2, $3, $4, $5, $6)", values);
     return res.rows as Site[];
   } catch (err) {
     console.log(err);
@@ -40,5 +46,10 @@ export async function add_site(client: PoolClient, site: Site) {
 // COMPANIES
 
 export async function get_companies(client: PoolClient): Promise<Company[]> {
-  return (await client.query("SELECT * FROM Company")).rows;
+  try {
+    return (await client.query("SELECT * FROM Company")).rows;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
 }

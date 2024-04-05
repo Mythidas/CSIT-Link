@@ -19,7 +19,8 @@
     psa_id: "",
     rmm_id: "", 
     av_id: "",
-    av_url: ""
+    av_url: "",
+    company_id: -1
   };
 
   function set_selected(id: number) {
@@ -55,7 +56,7 @@
     <table class="table-auto w-2/3 h-fit text-left overflow-y-scroll">
       <thead class="border-b-2 border-cscol-200 text-lg">
         <tr>
-          <th>ID</th>
+          <th class="pl-1">ID</th>
           <th>Name</th>
         </tr>
       </thead>
@@ -65,7 +66,7 @@
             on:click={() => set_selected(site.site_id)}
             class={`${selected.site_id === site.site_id ? "bg-cscol-000" : "even:bg-cscol-400 odd:bg-cscol-500"} hover:bg-cscol-100 hover:cursor-pointer`}
           >
-            <td>{site.site_id}</td>
+            <td class="pl-1">{site.site_id}</td>
             <td>{site.title}</td>
           </tr>
         {/each}
@@ -75,6 +76,7 @@
       {#if selected.site_id !== -1}
       <div class="flex flex-col">
         <p>Site: {selected.title}</p>
+        <p>Company: {selected.company_id}</p>
         <p>PSA ID: {selected.psa_id}</p>
         <p>RMM ID: {selected.rmm_id}</p>
         <p>AV ID: {selected.av_id}</p>
