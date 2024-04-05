@@ -2,6 +2,7 @@ import * as db from "$lib/server/database";
 import type APIResponse from "$lib/interfaces/i_api_response.js";
 import { api_response_log } from "$lib/interfaces/i_api_response.js";
 import type { Actions } from "./$types.js";
+import type { Site } from "$lib/interfaces/i_db.js";
 
 export async function load({ fetch, locals }) {
   try {
@@ -34,6 +35,22 @@ export async function load({ fetch, locals }) {
 
 export const actions = {
   default: async (event) => {
-    console.log(await event.request.formData());
+    const form_data = await event.request.formData();
+
+    const psa = form_data.get("psa")?.toString().split("|") || [];
+    const rmm = form_data.get("rmm")?.toString().split("|") || [];
+    const av = form_data.get("av")?.toString().split("|") || [];
+
+    const site_data: Site = {
+      site_id: 0,
+      title: form_data.get("title")?.toString() || "",
+      company_id: Number(form_data.get("company_id")?.toString()) || -1,
+      psa_id: psa[0] || "",
+      rmm_id: rmm[0] || "",
+      av_id: av[0] || "",
+      av_url: av[1] || ""
+    }
+
+    db.add_site(event.locals.db_conn, site_data);
   }
 } satisfies Actions;

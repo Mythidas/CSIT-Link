@@ -28,7 +28,7 @@
 
   function map_ext_site_to_options(sites: _ExtSite[]) {
     return sites.map((site) => {
-      return { label: site.name, key: site.id };
+      return { label: site.name, key: site.id + "|" + site.api_url };
     });
   }
 
@@ -94,11 +94,11 @@
     <div class="mx-auto w-2/4">
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">Name*</h3>
-        <input required bind:value={selected_name} name="site" type="text" class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder="Site Name..." />
+        <input required bind:value={selected_name} name="title" type="text" class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder="Site Name..." />
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">Company</h3>
-        <DropdownSearch bind:selected={selected_company} name="company" options={map_companies_to_options()} default_label="Select Company..."/>
+        <DropdownSearch bind:selected={selected_company} name="company_id" options={map_companies_to_options()} default_label="Select Company..."/>
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">PSA Site (Not Available)</h3>
