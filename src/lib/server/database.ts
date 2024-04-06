@@ -25,17 +25,25 @@ export async function get_sites(client: PoolClient): Promise<Site[]> {
 }
 
 export async function add_site(client: PoolClient, site: Site): Promise<Site[]> {
-  const values = [
+  let values = [
     site.title,
-    site.company_id.toString(),
     site.psa_id,
     site.rmm_id,
     site.av_id,
     site.av_url
   ];
 
+  let col_state = "title,psa_id,rmm_id,av_id,av_url";
+  let col_values = "$1,$2,$3,$4,$5";
+
+  if (site.company_id >= 0) {
+    col_state += ",company_id";
+    col_values += ",$6";
+    values.push(site.company_id.toString());
+  }
+
   try {
-    const res = await client.query("INSERT INTO Site (title, company_id, psa_id, rmm_id, av_id, av_url) VALUES ($1, $2, $3, $4, $5, $6)", values);
+    const res = await client.query(`INSERT INTO Site (${col_state}) VALUES (${col_values})`, values);
     return res.rows as Site[];
   } catch (err) {
     console.log(err);

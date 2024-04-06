@@ -24,7 +24,7 @@ export async function GET() {
             message: "Failed to get sites (RMM/Sites)",
             object: site_data
           }
-        })
+        }, { status: 500 });
       }
 
       for (let i = 0; i < site_data.Data.length; i++) {

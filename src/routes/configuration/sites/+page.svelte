@@ -10,6 +10,7 @@
   let show_modal = false;
   let selected_name: string = "";
   let selected_company: any = { label: "(None)", key: "-1" };
+  let selected_psa: any = null;
   let selected_rmm: any = null;
   let selected_av: any = null;
 
@@ -46,6 +47,7 @@
     show_modal = false;
     selected_name = "";
     selected_company = { label: "(None)", key: "-1" };
+    selected_psa = null;
     selected_rmm = null;
     selected_av = null;
   }
@@ -111,8 +113,8 @@
         <DropdownSearch bind:selected={selected_company} name="company_id" options={map_companies_to_options()} default_label="Select Company..."/>
       </div>
       <div class="w-full mb-3">
-        <h3 class="text-xl mb-1">PSA Site (Not Available)</h3>
-        <DropdownSearch options={map_ext_site_to_options(data.psa_sites)} default_label="Select Site..."/>
+        <h3 class="text-xl mb-1">PSA Site*</h3>
+        <DropdownSearch required bind:selected={selected_psa} name="psa" options={map_ext_site_to_options(data.psa_sites)} default_label="Select Site..."/>
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">RMM Site*</h3>
