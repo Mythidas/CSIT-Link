@@ -7,6 +7,11 @@
 
   let show_modal = false;
   let selected_name: string = "";
+
+  function close_modal() {
+    show_modal = false;
+    selected_name = "";
+  }
 </script>
 
 <div class="flex flex-col p-3 mb-3 w-full h-fit bg-cscol-400 rounded-sm">
@@ -50,7 +55,7 @@
     </div>
     <div class="flex w-full justify-center">
       <button type="submit" class="bg-cscol-000 py-2 px-3 rounded-sm hover:bg-cscol-100">Save</button>
-      <button type="button" class="bg-errcol-100 mx-2 py-2 px-3 rounded-sm" on:click={() => {show_modal = false}}>Close</button>
+      <button type="button" class="bg-errcol-100 mx-2 py-2 px-3 rounded-sm" on:click={close_modal}>Close</button>
     </div>
   </form>
 </Modal>
