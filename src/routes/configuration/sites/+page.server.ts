@@ -30,6 +30,7 @@ export async function load({ fetch, locals }) {
     }
   } catch (err) {
     console.log(err);
+    return {};
   }
 }
 
