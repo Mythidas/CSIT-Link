@@ -4,9 +4,9 @@
 
   export let entries: string[];
   export let custom: boolean = false;
+  export let on_select: (entry: string) => void = () => {};
 
   let filters = getContext<Writable<any[]>>("table_filters");
-
   let is_hidden = false;
   $: {
     let _temp = false;
@@ -19,6 +19,10 @@
 
     is_hidden = _temp;
   }
+
+  function on_selected(entry: string) {
+    on_select(entry);
+  }
 </script>
 
 {#if !is_hidden}
@@ -26,7 +30,7 @@
   {#if !custom}
     {#each entries as entry}
       <td class="pl-2">
-        <button>{entry}</button>
+        <button on:click={() => on_selected(entry)}>{entry}</button>
       </td>
     {/each}
   {:else}
