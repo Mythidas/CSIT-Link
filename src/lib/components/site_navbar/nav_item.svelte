@@ -11,7 +11,7 @@
 
 {#if parent}
 <li>
-  <button on:click={() => (opened = !opened)} class="flex relative w-full h-fit py-3 text-xl shadow-sm shadow-cscol-500">
+  <button on:click={() => (opened = !opened)} class="flex relative w-full h-fit py-3 text-xl shadow-md z-10 shadow-cscol-500">
     <div class="pl-1 w-7"><img src={icon} alt="" /></div>
     <div class="pl-1">
       {label}
@@ -24,7 +24,7 @@
 </li>
 {:else}
 <li>
-  <a href={href} class={`${$page.url.pathname === href && "bg-cscol-100"} flex relative w-full h-fit py-3 text-xl shadow-sm shadow-cscol-500 hover:bg-cscol-100`}>
+  <a href={href} class={`${$page.url.pathname === href && "bg-cscol-100"} flex relative w-full h-fit py-3 text-xl shadow-md shadow-cscol-500 hover:bg-cscol-100`}>
     <div class="pl-1 w-7"><img src={icon} alt="" /></div>
     <div class="pl-1">
       {label}

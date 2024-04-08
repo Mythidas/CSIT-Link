@@ -3,8 +3,9 @@
   import type { Writable } from "svelte/store";
 
   export let entries: string[];
+  export let index: number;
   export let custom: boolean = false;
-  export let on_select: (entry: string) => void = () => {};
+  export let on_select: (index: number) => void = () => {};
 
   let filters = getContext<Writable<any[]>>("table_filters");
   let is_hidden = false;
@@ -20,17 +21,17 @@
     is_hidden = _temp;
   }
 
-  function on_selected(entry: string) {
-    on_select(entry);
+  function on_selected() {
+    on_select(index);
   }
 </script>
 
 {#if !is_hidden}
-<tr class={`even:bg-cscol-400 odd:bg-cscol-500 hover:bg-cscol-100 hover:cursor-pointer`}>
+<tr on:click={on_selected} class={`even:bg-cscol-400 odd:bg-cscol-500 hover:bg-cscol-100 hover:cursor-pointer`}>
   {#if !custom}
     {#each entries as entry}
       <td class="pl-2">
-        <button on:click={() => on_selected(entry)}>{entry}</button>
+        {entry}
       </td>
     {/each}
   {:else}

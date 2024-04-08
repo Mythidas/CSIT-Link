@@ -24,6 +24,15 @@ export async function get_sites(client: PoolClient): Promise<Site[]> {
   }
 }
 
+export async function get_site(client: PoolClient, id: number): Promise<Site | null> {
+  try {
+    return (await client.query("SELECT * FROM Site WHERE site_id = $1", [id])).rows[0];
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
+
 export async function add_site(client: PoolClient, site: Site): Promise<Site[]> {
   let values = [
     site.title,

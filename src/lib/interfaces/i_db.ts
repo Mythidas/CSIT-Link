@@ -10,5 +10,6 @@ export interface Site {
   rmm_id: string,
   av_id: string,
   av_url: string,
-  company_id: number
+  company_id: number,
+  last_update: string
 }
