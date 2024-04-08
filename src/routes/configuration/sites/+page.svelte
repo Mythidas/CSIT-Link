@@ -86,7 +86,7 @@
       {#if selected.site_id !== -1}
       <div class="flex flex-col">
         <p>Site: {selected.title}</p>
-        <p>Company: {data.companies.filter(comp => { return comp.company_id === selected.company_id; })[0]}</p>
+        <p>Company: {data.companies.filter(comp => { return comp.company_id === selected.company_id; })[0]?.title || "None"}</p>
         <p>PSA ID: {selected.psa_id}</p>
         <p>RMM ID: {selected.rmm_id}</p>
         <p>AV ID: {selected.av_id}</p>

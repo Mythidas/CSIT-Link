@@ -49,7 +49,8 @@ export const actions = {
       psa_id: psa[0] || "",
       rmm_id: rmm[0] || "",
       av_id: av[0] || "",
-      av_url: av[1] || ""
+      av_url: av[1] || "",
+      last_update: ""
     }
 
     if (site_data.title === "" || site_data.psa_id === "" || site_data.rmm_id === "" || site_data.av_id === "" || site_data.av_url === "") {

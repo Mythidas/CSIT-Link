@@ -29,10 +29,6 @@ export async function GET() {
 
       for (let i = 0; i < site_data.Data.length; i++) {
         let site_name = site_data.Data[i].Name;
-        if (site_name.toLowerCase().localeCompare(site_data.Data[i].ParentName.toLowerCase())) {
-          site_name = site_data.Data[i].ParentName + " - " + site_name;
-        }
-
         site_list.push({ name: site_name, id: site_data.Data[i].Id });
       }
 

@@ -23,7 +23,7 @@
           entries={[
             site.site_id.toString(),
             site.title,
-            data.companies.filter((comp) => site.company_id === comp.company_id)[0]?.title || ""
+            data.companies.filter((comp) => site.company_id === comp.company_id)[0]?.title || "None"
           ]}
           on_select={select_site}
         />
