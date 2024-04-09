@@ -3,7 +3,7 @@ import type { _ExtDevice } from '$lib/interfaces/i_ext_info.js';
 import { type APIResponse, api_response_log } from "$lib/interfaces/i_api_response";
 import type { Device } from "$lib/interfaces/i_db";
 
-export async function GET({ request, locals, fetch }) {
+export async function GET({ request, url, locals, fetch }) {
   try {
     const site_id = request.headers.get("site-id");
     if (!site_id) return Response.json({ data: false, error: { message: "Invalid headers (Devices/Validate)"}}, { status: 400 }); 
@@ -11,11 +11,13 @@ export async function GET({ request, locals, fetch }) {
     const site_data = await db.get_site(locals.db_conn, Number(site_id));
     if (!site_data) return Response.json({ data: false, error: { message: "Invalid Site (Devices/Validate)"}}, { status: 400 });
 
+    const force = Boolean(url.searchParams.get("force")) || false;
+
     const last_update = new Date(site_data.last_update);
     const elapsed = (Date.now() - last_update.getTime()) / 1000;
 
     // Update every hour
-    if (elapsed > 3600 || isNaN(elapsed)) {
+    if (elapsed > 3600 || isNaN(elapsed) || force) {
       if (!await db.delete_devices_by_site_id(locals.db_conn, Number(site_id))) {
         return Response.json({ data: false, error: { message: "Failed to get update devices (Devices/Validate)"}}, { status: 500 });
       }

@@ -1,6 +1,4 @@
 import { PG_HOST, PG_USER, PG_DATABASE, PG_PASSWORD } from "$env/static/private";
-import { type APIResponse } from "$lib/interfaces/i_api_response";
-import { api_response_log } from "$lib/interfaces/i_api_response";
 import type { Company, Device, Site } from "$lib/interfaces/i_db";
 import type { _ExtDevice } from "$lib/interfaces/i_ext_info";
 import pg, { type PoolClient } from "pg";
@@ -29,6 +27,10 @@ export async function get_sites(client: PoolClient): Promise<Site[]> {
 
 export async function get_site(client: PoolClient, id: number): Promise<Site | null> {
   try {
+    if (isNaN(id)) {
+      return null;
+    }
+
     return (await client.query("SELECT * FROM Site WHERE site_id = $1", [id])).rows[0];
   } catch (err) {
     console.log(err);
@@ -111,7 +113,8 @@ export async function get_devices_by_site_id(client: PoolClient, site: number): 
       return [];
     }
 
-    return (await client.query("SELECT * FROM Device WHERE site_id = $1", [site]))?.rows || [];
+    const devices = (await client.query("SELECT * FROM Device WHERE site_id = $1", [site]))?.rows as Device[] || [] as Device[];
+    return devices.sort((a, b) => a.os.toLowerCase().localeCompare(b.os.toLowerCase()));
   } catch (err) {
     console.log(err);
     return [];
