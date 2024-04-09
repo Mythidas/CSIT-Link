@@ -3,7 +3,7 @@
   import DropdownSearch from "$lib/components/dropdown_search.svelte";
   import Modal from "$lib/components/modal.svelte";
   import type { Company, Site } from "$lib/interfaces/i_db";
-  import type _ExtSite from "$lib/interfaces/i_ext_site";
+  import type { _ExtSite } from "$lib/interfaces/i_ext_info";
 
   export let data: { sites: Site[], companies: Company[], psa_sites: _ExtSite[], rmm_sites: _ExtSite[], av_sites: _ExtSite[] };
 
