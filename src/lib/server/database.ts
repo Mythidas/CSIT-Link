@@ -1,5 +1,6 @@
 import { PG_HOST, PG_USER, PG_DATABASE, PG_PASSWORD } from "$env/static/private";
-import type APIResponse from "$lib/interfaces/i_api_response";
+import { type APIResponse } from "$lib/interfaces/i_api_response";
+import { api_response_log } from "$lib/interfaces/i_api_response";
 import type { Company, Device, Site } from "$lib/interfaces/i_db";
 import type { _ExtDevice } from "$lib/interfaces/i_ext_info";
 import pg, { type PoolClient } from "pg";
@@ -7,7 +8,7 @@ import pg, { type PoolClient } from "pg";
 const pool = new pg.Pool({
   user: PG_USER,
   host: PG_HOST,
-  database: "dev-data",
+  database: PG_DATABASE,
   password: PG_PASSWORD,
   ssl: true,
   port: 5432,
@@ -104,74 +105,65 @@ export async function add_company(client: PoolClient, company: Company): Promise
 
 // DEVICES
 
-// Get Site, Check last update, return devices if in range, else get new devices through fetch, save new devices, return new devices
-export async function get_devices_by_site(client: PoolClient, site: number): Promise<Device[]> {
+export async function get_devices_by_site_id(client: PoolClient, site: number): Promise<Device[]> {
   try {
-    const site_data = (await client.query("SELECT * FROM Site WHERE site_id = $1", [site]))?.rows[0] as Site || null;
-    if (!site_data) return [];
-
-    const last_update = new Date(site_data.last_update);
-    const elapsed = (Date.now() - last_update.getMilliseconds()) / 1000;
-
-    // Update every hour
-    if (elapsed > 3600) {
-      const rmm_res = await fetch("/api/external/rmm/devices", {
-        headers: {
-          "site-id": site_data.rmm_id
-        }
-      });
-      if (!rmm_res.ok) return [];
-      const rmm_data = await rmm_res.json() as APIResponse;
-      const rmm_devices = rmm_data.data as _ExtDevice[];
-
-      const av_res = await fetch("/api/external/av/devices", {
-        headers: {
-          "site-id": site_data.av_id,
-          "site-url": site_data.av_url
-        }
-      });
-      if (!av_res.ok) return [];
-      const av_data = await av_res.json() as APIResponse;
-      const av_devices = av_data.data as _ExtDevice[];
-
-      let devices: Device[] = [];
-
-      for (let i = 0; i < rmm_devices.length; i++) {
-        devices.push({ 
-          id: -1, 
-          title: rmm_devices[i].name, 
-          site_id: site, 
-          os: rmm_devices[i].os, 
-          psa_id: "", 
-          rmm_id: rmm_devices[i].id,
-          av_id: ""
-        })
-      }
-
-      for (let i = 0; i < av_devices.length; i++) {
-        const device = devices.find(dev => dev.title.toLowerCase() === av_devices[i].name.toLowerCase());
-        if (device) {
-          device.av_id = av_devices[i].id;
-        } else {
-          devices.push({
-            id: -1, 
-            title: av_devices[i].name, 
-            site_id: site, 
-            os: av_devices[i].os, 
-            psa_id: "", 
-            rmm_id: av_devices[i].id,
-            av_id: ""
-          })
-        }
-      }
-
-      // Save the new list to DB and return values
-      
-      return devices;
-    } else {
-      return (await client.query("SELECT * FROM Device WHERE site_id = $1", [site]))?.rows || [];
+    if (isNaN(site)) {
+      return [];
     }
 
+    return (await client.query("SELECT * FROM Device WHERE site_id = $1", [site]))?.rows || [];
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+}
+
+export async function delete_devices_by_site_id(client: PoolClient, site: number): Promise<boolean> {
+  try {
+    if (isNaN(site)) {
+      return false;
+    }
+
+    await client.query("DELETE FROM Device WHERE site_id = $1", [site]);
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+}
+
+export async function add_devices_by_site(client: PoolClient, site: number, devices: Device[]): Promise<Device[]> {
+  try {
+    if (isNaN(site) || devices.length === 0) {
+      return [];
+    }
+
+    let args = "";
+    let values: any[] = [];
+
+    let arg_count = 1;
+    for (let i = 0; i < devices.length; i++) {
+      values.push(devices[i].title);
+      values.push(devices[i].site_id);
+      values.push(devices[i].os);
+      values.push(devices[i].psa_id);
+      values.push(devices[i].rmm_id);
+      values.push(devices[i].av_id);
+      
+      args += `($${arg_count++}, $${arg_count++}, $${arg_count++}, $${arg_count++}, $${arg_count++}, $${arg_count++})`;
+      if (i + 1 === devices.length) {
+        args += " RETURNING *;";
+      } else {
+        args += ", "
+      }
+    }
+
+    const db_devices = (await client.query(`INSERT INTO Device (title, site_id, os, psa_id, rmm_id, av_id) VALUES ${args}`, values))?.rows || [];
+    if (db_devices.length === devices.length) {
+      await client.query("UPDATE Site SET last_update = $1 WHERE site_id = $2", [new Date().toISOString(), site.toString()]);
+    }
+
+    return db_devices;
   } catch (err) {
     console.log(err);
     return [];

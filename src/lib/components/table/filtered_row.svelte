@@ -4,6 +4,7 @@
 
   export let entries: string[];
   export let index: number;
+  export let error: boolean = false;
   export let custom: boolean = false;
   export let on_select: (index: number) => void = () => {};
 
@@ -27,7 +28,7 @@
 </script>
 
 {#if !is_hidden}
-<tr on:click={on_selected} class={`even:bg-cscol-400 odd:bg-cscol-500 hover:bg-cscol-100 hover:cursor-pointer`}>
+<tr on:click={on_selected} class={`${!error ? "even:bg-cscol-400 odd:bg-cscol-500 hover:bg-cscol-100" : "bg-errcol-100"} hover:cursor-pointer`}>
   {#if !custom}
     {#each entries as entry}
       <td class="pl-2">

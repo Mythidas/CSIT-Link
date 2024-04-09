@@ -1,4 +1,4 @@
-export default interface APIResponse {
+export interface APIResponse {
   data: any,
   error?: {
     message: string,
