@@ -1,4 +1,4 @@
-import type _ExtSite from '$lib/interfaces/i_ext_site.js';
+import type { _ExtSite } from '$lib/interfaces/i_ext_info.js';
 
 export async function GET({ cookies, fetch }) {
   try {

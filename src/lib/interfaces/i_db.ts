@@ -13,3 +13,13 @@ export interface Site {
   company_id: number,
   last_update: string
 }
+
+export interface Device {
+  id: number,
+  title: string,
+  site_id: number,
+  os: string,
+  psa_id: string,
+  rmm_id: string,
+  av_id: string
+}

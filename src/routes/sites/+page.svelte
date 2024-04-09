@@ -3,10 +3,12 @@
   import FilteredRow from "$lib/components/table/filtered_row.svelte";
   import FilteredTable from "$lib/components/table/filtered_table.svelte";
   import type { Company, Site } from "$lib/interfaces/i_db";
+  import { current_site } from "$lib/stores";
 
   export let data: { sites: Site[], companies: Company[] };
 
   function select_site(index: number) {
+    $current_site = data.sites[index];
     goto(`/sites/overview/${data.sites[index].site_id}`);
   }
 </script>

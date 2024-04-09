@@ -1,5 +1,5 @@
 import { PSA_ID, PSA_SC, PSA_TR } from "$env/static/private";
-import type _ExtSite from "$lib/interfaces/i_ext_site";
+import type { _ExtSite } from '$lib/interfaces/i_ext_info.js';
 
 const psa_url = "https://webservices15.autotask.net/atservicesrest/v1.0";
 

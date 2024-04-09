@@ -5,18 +5,12 @@
   import NavItem from "$lib/components/site_navbar/nav_item.svelte";
   import NavSubItem from "$lib/components/site_navbar/nav_sub_item.svelte";
   import LoadingSpinner from "$lib/components/loading_spinner.svelte";
-  import type { Site } from "$lib/interfaces/i_db";
-
-  export let data: { site: Site | null };
+  import { current_site } from "$lib/stores";
 
   function sites_custom_href(label: string) {
     if (label === "Overview") {
       let split_path = $page.url.pathname.split("/");
-      if (split_path[1] === "sites" && split_path.length > 2) {
-        goto(`/sites/overview/${split_path[split_path.length - 1]}`);
-      } else {
-        goto(`/sites`);
-      }
+      goto(`/sites/overview/${$current_site?.site_id || split_path[split_path.length - 1] || "-1"}`);
     } 
   }
 </script>
@@ -27,7 +21,9 @@
     <div class="flex w-56 h-full font-bold text-3xl text-cscol-200">
       <p class="ml-5 my-auto">CSIT Link</p>
     </div>
-    <div>TopNav</div>
+    <div>
+      
+    </div>
   </nav>
   <!-- Body -->
   <div class="flex w-full h-full">
@@ -36,7 +32,7 @@
       <NavItem label="Home" href="/"/>
       <NavItem label={"Sites"} href="/sites" parent>
         <NavSubItem label="Select Site" href="/sites" />
-        <NavSubItem label={data.site?.title || "No Site Selected"} href="" parent>
+        <NavSubItem label={$current_site?.title || "No Site Selected"} href="" parent>
           <NavSubItem label="Overview" href="/sites/overview/[slug]" custom_href={sites_custom_href} />
         </NavSubItem>
       </NavItem>
