@@ -1,6 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import DropdownSearch from "$lib/components/dropdown_search.svelte";
+  import DropdownSelect from "$lib/components/dropdown_select.svelte";
   import Modal from "$lib/components/modal.svelte";
   import type { Company, Site } from "$lib/interfaces/i_db";
   import type { _ExtSite } from "$lib/interfaces/i_ext_info";
@@ -110,19 +110,19 @@
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">Company</h3>
-        <DropdownSearch bind:selected={selected_company} name="company_id" options={map_companies_to_options()} default_label="Select Company..."/>
+        <DropdownSelect bind:selected={selected_company} name="company_id" options={map_companies_to_options()} default_label="Select Company..."/>
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">PSA Site*</h3>
-        <DropdownSearch required bind:selected={selected_psa} name="psa" options={map_ext_site_to_options(data.psa_sites)} default_label="Select Site..."/>
+        <DropdownSelect required bind:selected={selected_psa} name="psa" options={map_ext_site_to_options(data.psa_sites)} default_label="Select Site..."/>
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">RMM Site*</h3>
-        <DropdownSearch required bind:selected={selected_rmm} name="rmm" options={map_ext_site_to_options(data.rmm_sites)} default_label="Select Site..."/>
+        <DropdownSelect required bind:selected={selected_rmm} name="rmm" options={map_ext_site_to_options(data.rmm_sites)} default_label="Select Site..."/>
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">AV Site*</h3>
-        <DropdownSearch required bind:selected={selected_av} name="av" options={map_ext_site_to_options(data.av_sites)} default_label="Select Site..."/>
+        <DropdownSelect required bind:selected={selected_av} name="av" options={map_ext_site_to_options(data.av_sites)} default_label="Select Site..."/>
       </div>
     </div>
     <div class="flex w-full justify-center">

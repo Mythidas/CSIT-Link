@@ -7,12 +7,10 @@
   export let options: _Option[];
   export let default_label = "Choose Option...";
   export let selected: any = null;
-  export let name: string = "__DROPDOWN__";
-  export let required: boolean = false;
+  export let on_select: (option: _Option) => void = () => {};
   
   let filter = "";
   let opened = false;
-  let selected_ptr = "";
   
   $: filter_options = options;
   $: {
@@ -21,20 +19,13 @@
     });
   }
 
-  function on_select(option: _Option) {
+  function on_select_option(option: _Option) {
     selected = option;
-    selected_ptr = option.key;
-  }
-
-  function on_submit() {
-    if (selected) {
-      selected = null;
-      selected_ptr = "";
-    }
+    on_select(option);
   }
 </script>
 
-<svelte:window on:click={() => opened = false} on:submit={on_submit}/>
+<svelte:window on:click={() => opened = false}/>
 
 {#if options.length === 0}
 <div class="relative w-full">
@@ -43,35 +34,22 @@
   </div>
 </div>
 {:else}
-<div class="relative w-full">
-<div class="relative w-full">
-  <button type="button" on:click|stopPropagation={() => opened = !opened} class={`${opened ? "bg-cscol-100" : "bg-cscol-000"} flex p-1 w-full h-fit justify-between hover:bg-cscol-100`}>
-    <p>{selected ? selected.label : default_label}</p>
-    <img src={opened ? "/chevron-up.svg" : "/chevron-down.svg"} alt="" />
-  </button>
-  {#if opened}
-  <div class="flex flex-col absolute w-full h-52 z-10 shadow-lg shadow-cscol-600 bg-cscol-400">
-    <!-- svelte-ignore a11y-autofocus -->
-    <input 
-      on:input={(e) => filter = e.currentTarget.value} 
-      on:click|stopPropagation={() => {}}
-      class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder={default_label}
-      autofocus
-    />
-    <div class="flex flex-col overflow-y-auto">
-      {#each filter_options as _option}
-        <button
-          type="button"
-          on:click={() => on_select(_option)} 
-          class={`flex w-full p-1 hover:bg-cscol-100 ${selected?.label === _option.label && "bg-cscol-100 shadow-md text-left"}`}
-        >
-          {_option.label}
-        </button>
-      {/each}
-    </div>
+<div class="relative w-full overflow-visible">
+  <input 
+    class="w-full text-2xl p-1 outline-none border-2 focus:border-cscol-100 text-cscol-600" 
+    bind:value={filter} 
+    on:focus={() => opened = true}
+    on:click|stopPropagation={() => {}}
+    placeholder={default_label}
+  />
+  <div class={`${opened ? "h-52" : "h-0"} text-left absolute overflow-y-auto w-full z-50 bg-cscol-400`}>
+    {#if opened}
+    {#each filter_options as option}
+      <button class="w-full text-left p-1 hover:bg-cscol-100" on:click={() => on_select_option(option)}>
+        {option.label}
+      </button>
+    {/each}
+    {/if}
   </div>
-  {/if}
-</div>
-<input required={required} class="absolute w-full top-0 outline-none bg-opacity-0 -z-10" name={name} bind:value={selected_ptr}/>
 </div>
 {/if}
