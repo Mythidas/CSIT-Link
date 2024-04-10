@@ -42,7 +42,7 @@
     on:click|stopPropagation={() => {}}
     placeholder={default_label}
   />
-  <div class={`${opened ? "h-52" : "h-0"} text-left absolute overflow-y-auto w-full z-50 bg-cscol-400`}>
+  <div class={`${opened ? "h-52" : "h-0"} text-left absolute overflow-y-auto w-full z-50 shadow-lg bg-cscol-400`}>
     {#if opened}
     {#each filter_options as option}
       <button class="w-full text-left p-1 hover:bg-cscol-100" on:click={() => on_select_option(option)}>
