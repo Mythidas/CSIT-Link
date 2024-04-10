@@ -23,3 +23,10 @@ export interface Device {
   rmm_id: string,
   av_id: string
 }
+
+export interface Patch {
+  id: number,
+  title: string,
+  description: string,
+  app_ver: string
+}

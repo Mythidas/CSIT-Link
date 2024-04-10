@@ -1,5 +1,5 @@
 import { PG_HOST, PG_USER, PG_DATABASE, PG_PASSWORD } from "$env/static/private";
-import type { Company, Device, Site } from "$lib/interfaces/i_db";
+import type { Company, Device, Patch, Site } from "$lib/interfaces/i_db";
 import type { _ExtDevice } from "$lib/interfaces/i_ext_info";
 import pg, { type PoolClient } from "pg";
 
@@ -170,5 +170,26 @@ export async function add_devices_by_site(client: PoolClient, site: number, devi
   } catch (err) {
     console.log(err);
     return [];
+  }
+}
+
+// PATCHES
+
+export async function get_patches(client: PoolClient): Promise<Patch[]> {
+  try {
+    return (await client.query("SELECT * FROM Patch"))?.rows || [];
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+}
+
+export async function add_patch(client: PoolClient, patch: Patch): Promise<Patch | null> {
+  try {
+    const query = await client.query("INSERT INTO Patch (title, description, app_ver) VALUES ($1,$2,$3)", [patch.title, patch.description, patch.app_ver]);
+    return query.rows[0] || null;
+  } catch (err) {
+    console.log(err);
+    return null;
   }
 }
