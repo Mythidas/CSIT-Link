@@ -40,7 +40,7 @@
     <tr>
       {#each columns as col, index}
         <th class={`pl-2`}>
-          <div class="relative">
+          <div class={`${filter_open[index] && "relative"}`}>
             <div class="flex justify-between">
               <p>{col.label}</p>
               <button on:click|stopPropagation={() => open_filter(index)}>
