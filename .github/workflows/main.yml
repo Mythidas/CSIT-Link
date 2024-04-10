@@ -17,9 +17,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build Svelte App
-        run: npm run build
-
       - name: SSH Deploy
         uses: appleboy/ssh-action@master
         with:
