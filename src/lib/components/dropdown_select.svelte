@@ -6,6 +6,7 @@
 
   export let options: _Option[];
   export let default_label = "Choose Option...";
+  export let default_value: _Option | null = null;
   export let selected: any = null;
   export let name: string = "__DROPDOWN__";
   export let required: boolean = false;
@@ -31,7 +32,7 @@
 
   function on_submit() {
     if (selected) {
-      selected = null;
+      selected = default_value || null;
       selected_ptr = "";
       filter = "";
     }

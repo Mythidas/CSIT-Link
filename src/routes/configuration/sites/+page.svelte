@@ -64,7 +64,7 @@
 <div class="flex flex-col p-3 w-full h-5/6 bg-cscol-400 rounded-sm">
   <div class="flex w-full h-full">
     <div class="flex w-2/3 h-full overflow-y-auto">
-      <table class="table-auto w-full text-left">
+      <table class="table-auto w-full h-fit text-left">
         <thead class="border-b-2 border-cscol-200 text-lg">
           <tr>
             <th class="pl-1">ID</th>
@@ -112,7 +112,7 @@
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">Company</h3>
-        <DropdownSelect bind:selected={selected_company} name="company_id" options={map_companies_to_options()} default_label="Select Company..."/>
+        <DropdownSelect bind:selected={selected_company} name="company_id" options={map_companies_to_options()} default_value={{ label: "(None)", key: "-1" }} />
       </div>
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">PSA Site*</h3>
