@@ -33,6 +33,7 @@
     if (selected) {
       selected = null;
       selected_ptr = "";
+      filter = "";
     }
   }
 
