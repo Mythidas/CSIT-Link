@@ -29,4 +29,4 @@ jobs:
             git pull
             npm install
             npm run build
-            pm2 restart csti-link
+            pm2 restart csit-link
