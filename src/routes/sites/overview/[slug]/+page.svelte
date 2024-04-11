@@ -53,8 +53,7 @@
       <p class={`p-2 text-xl ${mismatches ? "bg-errcol-100" : "bg-cscol-000"}`}>Matching Devices: {(data.devices?.length || 0) - mismatches}</p>
     </div>
   </div>
-  <!-- columns={["Name", "Healthy", "VSAX", "Sophos", "OS"] -->
-  <div class="flex flex-col w-full h-full p-3 rounded-sm bg-cscol-400">
+  <div class="flex flex-col w-full h-5/6 p-3 rounded-sm bg-cscol-400">
     <FilteredTable columns={[
       {label: "Name", filter: "Text"},
       {label: "Healthy", filter: "Select"},
