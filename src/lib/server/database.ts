@@ -8,7 +8,8 @@ const pool = new pg.Pool({
   host: PG_HOST,
   database: PG_DATABASE,
   password: PG_PASSWORD,
-  port: Number(PG_PORT),
+  ssl: true,
+  port: Number(PG_PORT)
 })
 
 export const connect = async () => await pool.connect();
