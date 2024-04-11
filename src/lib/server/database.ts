@@ -1,3 +1,4 @@
+import { dev } from "$app/environment";
 import { PG_HOST, PG_USER, PG_DATABASE, PG_PASSWORD, PG_PORT } from "$env/static/private";
 import type { Company, Device, Patch, Site } from "$lib/interfaces/i_db";
 import type { _ExtDevice } from "$lib/interfaces/i_ext_info";
@@ -8,7 +9,7 @@ const pool = new pg.Pool({
   host: PG_HOST,
   database: PG_DATABASE,
   password: PG_PASSWORD,
-  ssl: true,
+  ssl: dev,
   port: Number(PG_PORT)
 })
 
