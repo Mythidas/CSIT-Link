@@ -17,7 +17,7 @@ export const connect = async () => await pool.connect();
 
 export async function get_sites(client: PoolClient): Promise<Site[]> {
   try {
-    return (await client.query("SELECT * FROM Site")).rows as Site[];
+    return (await client.query("SELECT * FROM Site")).rows.sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase())) as Site[];
   } catch (err) {
     console.log(err);
     return [];

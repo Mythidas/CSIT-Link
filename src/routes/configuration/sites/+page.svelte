@@ -61,27 +61,29 @@
   </div>
 </div>
 
-<div class="flex flex-col p-3 w-full h-full bg-cscol-400 rounded-sm">
+<div class="flex flex-col p-3 w-full h-5/6 bg-cscol-400 rounded-sm">
   <div class="flex w-full h-full">
-    <table class="table-auto w-2/3 h-fit text-left overflow-y-scroll">
-      <thead class="border-b-2 border-cscol-200 text-lg">
-        <tr>
-          <th class="pl-1">ID</th>
-          <th>Name</th>
-        </tr>
-      </thead>
-      <tbody class="text-base">
-        {#each data.sites as site}
-          <tr
-            on:click={() => set_selected(site.site_id)}
-            class={`${selected.site_id === site.site_id ? "bg-cscol-000" : "even:bg-cscol-400 odd:bg-cscol-500"} hover:bg-cscol-100 hover:cursor-pointer`}
-          >
-            <td class="pl-1">{site.site_id}</td>
-            <td>{site.title}</td>
+    <div class="flex w-2/3 h-full overflow-y-auto">
+      <table class="table-auto w-full text-left">
+        <thead class="border-b-2 border-cscol-200 text-lg">
+          <tr>
+            <th class="pl-1">ID</th>
+            <th>Name</th>
           </tr>
-        {/each}
-      </tbody>
-    </table>
+        </thead>
+        <tbody class="text-base">
+          {#each data.sites as site}
+            <tr
+              on:click={() => set_selected(site.site_id)}
+              class={`${selected.site_id === site.site_id ? "bg-cscol-000" : "even:bg-cscol-400 odd:bg-cscol-500"} hover:bg-cscol-100 hover:cursor-pointer`}
+            >
+              <td class="pl-1">{site.site_id}</td>
+              <td>{site.title}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
     <div class="flex m-0.5 p-3 w-1/3 h-full border-l-2 border-cscol-200">
       {#if selected.site_id !== -1}
       <div class="flex flex-col">
