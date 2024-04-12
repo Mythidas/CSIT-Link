@@ -48,7 +48,7 @@
 <tr on:click={on_selected} class={`${!error ? "even:bg-cscol-400 odd:bg-cscol-500 hover:bg-cscol-100" : "bg-errcol-100"} hover:cursor-pointer`}>
   {#if !custom}
     {#each entries as entry}
-      <td class="pl-2">
+      <td class="pl-2 text-base font-normal">
         {entry}
       </td>
     {/each}
