@@ -26,7 +26,8 @@ export interface Device {
 
 export interface Patch {
   id: number,
-  title: string,
-  description: string,
-  app_ver: string
+  major: number,
+  minor: number,
+  build: number,
+  description: string
 }

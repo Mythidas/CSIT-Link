@@ -1,13 +1,15 @@
-<script lang="ts">
-  import { writable } from "svelte/store";
-  import { setContext } from "svelte";
-  import Tooltip from "$lib/components/tooltip.svelte";
-
-  interface ColumnInfo {
+<script lang="ts" context="module">
+  export interface ColumnInfo {
     label: string,
     filter: "Text" | "Select",
     tooltip?: string
   }
+</script>
+
+<script lang="ts">
+  import { writable } from "svelte/store";
+  import { setContext } from "svelte";
+  import Tooltip from "$lib/components/tooltip.svelte";
 
   export let columns: ColumnInfo[];
 

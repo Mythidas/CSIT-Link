@@ -177,20 +177,22 @@ export async function add_devices_by_site(client: PoolClient, site: number, devi
 // PATCHES
 
 export async function get_patches(client: PoolClient): Promise<Patch[]> {
+  const sortVersionDesc = (a: Patch, b: Patch) => {
+    if (a.major !== b.major) {
+      return b.major - a.major;
+    }
+
+    if (a.minor !== b.minor) {
+      return b.minor - a.minor;
+    }
+
+    return b.build - a.build;
+  }
+
   try {
-    return (await client.query("SELECT * FROM Patch"))?.rows || [];
+    return (await client.query("SELECT * FROM Patch"))?.rows.sort(sortVersionDesc) || [];
   } catch (err) {
     console.log(err);
     return [];
-  }
-}
-
-export async function add_patch(client: PoolClient, patch: Patch): Promise<Patch | null> {
-  try {
-    const query = await client.query("INSERT INTO Patch (title, description, app_ver) VALUES ($1,$2,$3)", [patch.title, patch.description, patch.app_ver]);
-    return query.rows[0] || null;
-  } catch (err) {
-    console.log(err);
-    return null;
   }
 }
