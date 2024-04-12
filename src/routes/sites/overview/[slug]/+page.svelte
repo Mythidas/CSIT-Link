@@ -55,10 +55,10 @@
   </div>
   <div class="flex flex-col w-full h-5/6 p-3 rounded-sm bg-cscol-400">
     <FilteredTable columns={[
-      {label: "Name", filter: "Text"},
-      {label: "Healthy", filter: "Select"},
-      {label: "VSAX", filter: "Select"},
-      {label: "Sophos", filter: "Select"},
+      {label: "Name", filter: "Text" },
+      {label: "Healthy", filter: "Select", tooltip: "Agent in both VSAX and Sophos" },
+      {label: "VSAX", filter: "Select", tooltip: "Agent in VSAX site" },
+      {label: "Sophos", filter: "Select", tooltip: "Agent in Sophos site" },
       {label: "OS", filter: "Select"}
     ]}>
       {#each data.devices as device, index}

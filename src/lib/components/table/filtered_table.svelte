@@ -1,10 +1,18 @@
 <script lang="ts">
   import { writable } from "svelte/store";
   import { setContext } from "svelte";
+  import Tooltip from "$lib/components/tooltip.svelte";
 
-  export let columns: { label: string, filter: "Text" | "Select" }[];
+  interface ColumnInfo {
+    label: string,
+    filter: "Text" | "Select",
+    tooltip?: string
+  }
+
+  export let columns: ColumnInfo[];
 
   let filter_open = new Array(columns.length).fill(false);
+  let tooltip_open = new Array(columns.length).fill(false);
   let filters = writable(new Array(columns.length).fill(""));
   let value_set = writable(Array.from({ length: columns.length }, () => []));
   setContext("table_filters", filters);
@@ -43,7 +51,14 @@
           <th class={`pl-2`}>
             <div class={`${filter_open[index] && "relative"}`}>
               <div class="flex justify-between">
-                <p>{col.label}</p>
+                <div class="flex space-x-2">
+                  <p>{col.label}</p>
+                  {#if col.tooltip}
+                    <Tooltip title={col.tooltip}>
+                      <img class="w-5 mt-1" src="/info.svg" alt="" />
+                    </Tooltip>
+                  {/if}
+                </div>
                 <button on:click|stopPropagation={() => open_filter(index)}>
                   <svg class={`w-4 ${$filters[index] && "fill-cscol-200 stroke-cscol-000 w-4"}`} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
