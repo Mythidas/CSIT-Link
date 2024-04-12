@@ -29,5 +29,5 @@
 </div>
 
 {#if isHovered}
-	<div style="top: {y}px; left: {x}px;" class={`absolute bg-cscol-400 shadow-md p-2 font-normal text-base text-cscol-font`}>{title}</div>
+	<div style="top: {y}px; left: {x}px;" class={`absolute bg-cscol-000 shadow-md p-2 font-normal text-base text-cscol-font`}>{title}</div>
 {/if}
