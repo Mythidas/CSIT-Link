@@ -28,6 +28,7 @@
   function on_select(option: _Option) {
     selected = option;
     selected_ptr = option.key;
+    filter = "";
   }
 
   function on_submit() {
