@@ -18,10 +18,15 @@ export interface Device {
   id: number,
   title: string,
   site_id: number,
-  os: string,
-  psa_id: string,
   rmm_id: string,
-  av_id: string
+  av_id: string,
+  rmm_last_hearbeat: string,
+  av_last_hearbeat: string,
+  os_type: "Workstation" | "Server",
+  os: string,
+  ip_lan: string,
+  firewall_enabled: boolean,
+  tamp_prot_enabled: boolean
 }
 
 export interface Patch {

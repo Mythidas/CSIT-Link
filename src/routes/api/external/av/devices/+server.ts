@@ -34,8 +34,17 @@ export async function GET({ request, cookies, fetch }) {
       let device_list: _ExtDevice[] = [];
       if (device_data.items) {
         for (let i = 0; i < device_data.items.length; i++) {
-          const device_type = device_data.items[i].type === "server" ? "Server" : "Workstation"; 
-          device_list.push({ name: device_data.items[i].hostname, os: device_type, id: device_data.items[i].id });
+          const device_type = device_data.items[i].type === "server" ? "Server" : "Workstation";
+          const os = device_data.items[i].os.name;
+          device_list.push({ 
+            id: device_data.items[i].id,
+            name: device_data.items[i].hostname, 
+            os: os, 
+            os_type: device_type,
+            ip_lan: device_data.items[i].ipv4Addresses[0],
+            last_heartbeat: device_data.items[i].lastSeenAt,
+            firewall_enabled: device_data.items[i].tamperProtectionEnabled 
+          });
         }
       }
       

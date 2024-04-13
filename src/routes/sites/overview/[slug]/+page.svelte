@@ -10,6 +10,8 @@
   let loading = false;
   
   $: mismatches = data.devices?.filter(dev => dev.av_id === "" || dev.rmm_id === "").length || 0;
+  $: rmm_device_count = data.devices?.filter(dev => dev.rmm_id !== "").length || 0;
+  $: av_device_count = data.devices?.filter(dev => dev.av_id !== "").length || 0;
   $: {
     $current_site = data.site || null;
   }
@@ -51,6 +53,10 @@
     <div class="flex space-x-1 mt-2">
       <p class="p-2 text-xl bg-cscol-000">Unique Devices: {data.devices?.length}</p>
       <p class={`p-2 text-xl ${mismatches ? "bg-errcol-100" : "bg-cscol-000"}`}>Matching Devices: {(data.devices?.length || 0) - mismatches}</p>
+      <p></p>
+      <p></p>
+      <p class="p-2 text-xl bg-cscol-000">VSAX Count: {rmm_device_count}</p>
+      <p class="p-2 text-xl bg-cscol-000">Sophos Count: {av_device_count}</p>
     </div>
   </div>
   <div class="flex flex-col w-full h-5/6 p-3 rounded-sm bg-cscol-400">
@@ -69,7 +75,7 @@
             device.rmm_id === "" || device.av_id === "" ? "NO" : "YES", 
             device.rmm_id !== "" ? "YES" : "NO",
             device.av_id !== "" ? "YES" : "NO",
-            device.os
+            device.os_type
           ]}
           error={device.rmm_id === "" || device.av_id === ""}
         />

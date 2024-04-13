@@ -12,7 +12,7 @@ export async function GET({ request }) {
       return Response.json({ data: [], error: { message: "Invalid headers (RMM/Devices)"}}, { status: 400 }); 
     }
 
-    const asset_api = await fetch(`${rmm_url}/assets?&$filter=SiteId eq ${site_id}`, {
+    const asset_api = await fetch(`${rmm_url}/assets?$filter=SiteId eq ${site_id}`, {
       method: "GET",
       headers: {
         "authorization": `Basic ${rmm_auth}`,
@@ -28,9 +28,13 @@ export async function GET({ request }) {
     const device_data = asset_data.Data;
     for (let i = 0; i < device_data.length; i++) {
       device_list.push({ 
-        name: device_data[i].Name, 
         id: device_data[i].Identifier,
-        os: device_data[i].GroupName.toLowerCase().includes("server") ? "Server" : "Workstation"
+        name: device_data[i].Name, 
+        os: device_data[i].Description,
+        os_type: device_data[i].GroupName.toLowerCase().includes("server") ? "Server" : "Workstation",
+        ip_lan: device_data[i].IpAddresses[0] || "",
+        last_heartbeat: device_data[i].LastSeenOnline,
+        firewall_enabled: device_data[i].FirewallEnabled
       });
     }
 

@@ -7,5 +7,9 @@ export interface _ExtSite {
 export interface _ExtDevice {
   name: string,
   id: string,
-  os: "Server" | "Workstation"
+  os: string,
+  os_type: "Server" | "Workstation",
+  ip_lan: string,
+  last_heartbeat: string,
+  firewall_enabled: boolean
 }

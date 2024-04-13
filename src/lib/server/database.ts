@@ -114,8 +114,15 @@ export async function get_devices_by_site_id(client: PoolClient, site: number): 
       return [];
     }
 
+    const sort_devices = (a: Device, b: Device) => {
+      if (a.os_type < b.os_type) return -1;
+      if (a.os_type > b.os_type) return 1;
+
+      return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
+    }
+
     const devices = (await client.query("SELECT * FROM Device WHERE site_id = $1", [site]))?.rows as Device[] || [] as Device[];
-    return devices.sort((a, b) => a.os.toLowerCase().localeCompare(b.os.toLowerCase()));
+    return devices.sort(sort_devices);
   } catch (err) {
     console.log(err);
     return [];
@@ -150,11 +157,16 @@ export async function add_devices_by_site(client: PoolClient, site: number, devi
       values.push(devices[i].title);
       values.push(devices[i].site_id);
       values.push(devices[i].os);
-      values.push(devices[i].psa_id);
       values.push(devices[i].rmm_id);
       values.push(devices[i].av_id);
+      values.push(devices[i].rmm_last_hearbeat);
+      values.push(devices[i].av_last_hearbeat);
+      values.push(devices[i].os_type);
+      values.push(devices[i].ip_lan);
+      values.push(devices[i].firewall_enabled);
+      values.push(devices[i].tamp_prot_enabled);
       
-      args += `($${arg_count++}, $${arg_count++}, $${arg_count++}, $${arg_count++}, $${arg_count++}, $${arg_count++})`;
+      args += `($${arg_count++}, $${arg_count++}, $${arg_count++}, $${arg_count++}, $${arg_count++}, $${arg_count++}, $${arg_count++}, $${arg_count++}, $${arg_count++}, $${arg_count++}, $${arg_count++})`;
       if (i + 1 === devices.length) {
         args += " RETURNING *;";
       } else {
@@ -162,7 +174,7 @@ export async function add_devices_by_site(client: PoolClient, site: number, devi
       }
     }
 
-    const db_devices = (await client.query(`INSERT INTO Device (title, site_id, os, psa_id, rmm_id, av_id) VALUES ${args}`, values))?.rows || [];
+    const db_devices = (await client.query(`INSERT INTO Device (title, site_id, os, rmm_id, av_id, rmm_last_heartbeat, av_last_heartbeat, os_type, ip_lan, firewall_enabled, tamp_prot_enabled) VALUES ${args}`, values))?.rows || [];
     if (db_devices.length === devices.length) {
       await client.query("UPDATE Site SET last_update = $1 WHERE site_id = $2", [new Date().toISOString(), site.toString()]);
     }
