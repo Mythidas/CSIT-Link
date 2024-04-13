@@ -5,8 +5,8 @@ export interface _ExtSite {
 }
 
 export interface _ExtDevice {
-  name: string,
   id: string,
+  name: string,
   os: string,
   os_type: "Server" | "Workstation",
   ip_lan: string,

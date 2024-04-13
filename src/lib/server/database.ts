@@ -159,8 +159,8 @@ export async function add_devices_by_site(client: PoolClient, site: number, devi
       values.push(devices[i].os);
       values.push(devices[i].rmm_id);
       values.push(devices[i].av_id);
-      values.push(devices[i].rmm_last_hearbeat);
-      values.push(devices[i].av_last_hearbeat);
+      values.push(devices[i].rmm_last_heartbeat);
+      values.push(devices[i].av_last_heartbeat);
       values.push(devices[i].os_type);
       values.push(devices[i].ip_lan);
       values.push(devices[i].firewall_enabled);

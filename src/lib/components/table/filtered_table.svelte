@@ -54,7 +54,7 @@
             <div class={`${filter_open[index] && "relative"}`}>
               <div class="flex justify-between">
                 <div class="flex space-x-2">
-                  <p>{col.label}</p>
+                  <p class="whitespace-nowrap">{col.label}</p>
                   {#if col.tooltip}
                     <Tooltip title={col.tooltip}>
                       <img class="w-5 mt-1" src="/info.svg" alt="" />

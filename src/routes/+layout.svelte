@@ -10,7 +10,11 @@
   import DropdownSearch from "$lib/components/dropdown_search.svelte";
   import DropdownSelect from "$lib/components/dropdown_select.svelte";
 
-  export let data: { sites: Site[] };
+  export let data: { sites: Site[], current_site: Site };
+
+  $: {
+    $current_site = data.current_site || null;
+  }
 
   let drop_select_site: any;
 
@@ -18,7 +22,11 @@
     if (label === "Overview") {
       let split_path = $page.url.pathname.split("/");
       goto(`/sites/overview/${$current_site?.site_id || split_path[split_path.length - 1] || "-1"}`);
-    } 
+    }
+    if (label === "Devices") {
+      let split_path = $page.url.pathname.split("/");
+      goto(`/sites/devices/${$current_site?.site_id || split_path[split_path.length - 1] || "-1"}`);
+    }
   }
 
   function get_site_options() {
@@ -56,6 +64,7 @@
         <NavSubItem label="Select Site" href="/sites" />
         <NavSubItem label={$current_site?.title || "No Site Selected"} href="" parent>
           <NavSubItem label="Overview" href="/sites/overview/[slug]" custom_href={sites_custom_href} />
+          <NavSubItem label="Devices" href="/sites/devices/[slug]" custom_href={sites_custom_href} />
         </NavSubItem>
       </NavItem>
       <NavItem label="Configuration" href="/configuration" parent>

@@ -57,8 +57,8 @@ export async function GET({ request, url, locals, fetch }) {
           os: rmm_devices[i].os, 
           rmm_id: rmm_devices[i].id,
           av_id: "",
-          rmm_last_hearbeat: rmm_devices[i].last_heartbeat,
-          av_last_hearbeat: "",
+          rmm_last_heartbeat: rmm_devices[i].last_heartbeat,
+          av_last_heartbeat: "",
           os_type: rmm_devices[i].os_type,
           ip_lan: rmm_devices[i].ip_lan,
           firewall_enabled: rmm_devices[i].firewall_enabled,
@@ -71,7 +71,7 @@ export async function GET({ request, url, locals, fetch }) {
         if (device) {
           device.av_id = av_devices[i].id;
           device.tamp_prot_enabled = av_devices[i].firewall_enabled;
-          device.av_last_hearbeat = av_devices[i].last_heartbeat;
+          device.av_last_heartbeat = av_devices[i].last_heartbeat;
         } else {
           devices.push({
             id: -1, 
@@ -80,8 +80,8 @@ export async function GET({ request, url, locals, fetch }) {
             os: av_devices[i].os, 
             rmm_id: "",
             av_id: av_devices[i].id,
-            rmm_last_hearbeat: "",
-            av_last_hearbeat: av_devices[i].last_heartbeat,
+            rmm_last_heartbeat: "",
+            av_last_heartbeat: av_devices[i].last_heartbeat,
             os_type: av_devices[i].os_type,
             ip_lan: av_devices[i].ip_lan,
             firewall_enabled: false,

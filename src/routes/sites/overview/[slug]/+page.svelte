@@ -5,17 +5,14 @@
   import type { Device, Site } from '$lib/interfaces/i_db';
   import { current_site } from '$lib/stores.js';
 
-  export let data: { site: Site, devices: Device[] };
+  export let data: { devices: Device[] };
 
   let loading = false;
   
   $: mismatches = data.devices?.filter(dev => dev.av_id === "" || dev.rmm_id === "").length || 0;
   $: rmm_device_count = data.devices?.filter(dev => dev.rmm_id !== "").length || 0;
   $: av_device_count = data.devices?.filter(dev => dev.av_id !== "").length || 0;
-  $: {
-    $current_site = data.site || null;
-  }
-
+  
   async function realtime_reload() {
     loading = true;
     const temp_data = data.devices;
@@ -23,7 +20,7 @@
     try {
       const res = await fetch("/api/v1/devices", {
         headers: {
-          "site-id": data.site.site_id.toString()
+          "site-id": $current_site?.site_id.toString() || ""
         }
       });
       const res_data = await res.json() as APIResponse;
