@@ -1,6 +1,5 @@
 <script lang="ts">
-  import FilteredRow from '$lib/components/table/filtered_row.svelte';
-  import FilteredTable from '$lib/components/table/filtered_table.svelte';
+  import FilteredTable, { boolean_sort_with_invalid } from '$lib/components/table/filtered_table.svelte';
   import type { APIResponse } from '$lib/interfaces/i_api_response';
   import type { Device, Site } from '$lib/interfaces/i_db';
   import { current_site } from '$lib/stores.js';
@@ -34,6 +33,20 @@
     }
     loading = false;
   }
+
+  function get_row_data() {
+    return data.devices.map((device) => {
+      return {
+        cells: [
+          { value: device.title }, 
+          { value: device.rmm_id === "" || device.av_id === "" ? "NO" : "YES", error_value: "NO" },
+          { value: device.rmm_id !== "" ? "YES" : "NO", error_value: "NO" },
+          { value: device.av_id !== "" ? "YES" : "NO", error_value: "NO" },
+          { value: device.os_type }
+        ]
+      };
+    });
+  }
 </script>
 
 <div class="flex flex-col w-full h-full space-y-3">
@@ -57,26 +70,16 @@
     </div>
   </div>
   <div class="flex flex-col w-full h-5/6 p-3 rounded-sm bg-cscol-400">
-    <FilteredTable columns={[
-      {label: "Name", filter: "Text" },
-      {label: "Healthy", filter: "Select", tooltip: "Agent in both VSAX and Sophos" },
-      {label: "VSAX", filter: "Select", tooltip: "Agent in VSAX site" },
-      {label: "Sophos", filter: "Select", tooltip: "Agent in Sophos site" },
-      {label: "OS", filter: "Select"}
-    ]}>
-      {#each data.devices as device, index}
-        <FilteredRow
-          index={index}
-          entries={[
-            device.title, 
-            device.rmm_id === "" || device.av_id === "" ? "NO" : "YES", 
-            device.rmm_id !== "" ? "YES" : "NO",
-            device.av_id !== "" ? "YES" : "NO",
-            device.os_type
-          ]}
-          error={device.rmm_id === "" || device.av_id === ""}
-        />
-      {/each}
+    <FilteredTable 
+      columns={[
+        {label: "Name", filter: "Text" },
+        {label: "Healthy", filter: "Select", tooltip: "Agent in both VSAX and Sophos", custom_sort: boolean_sort_with_invalid },
+        {label: "VSAX", filter: "Select", tooltip: "Agent in VSAX site", custom_sort: boolean_sort_with_invalid },
+        {label: "Sophos", filter: "Select", tooltip: "Agent in Sophos site", custom_sort: boolean_sort_with_invalid },
+        {label: "OS", filter: "Select"}
+      ]}
+      data={get_row_data()}
+    >
     </FilteredTable>
   </div>
 </div>

@@ -1,15 +1,27 @@
 <script lang="ts">
-  import FilteredRow from "$lib/components/table/filtered_row.svelte";
-  import FilteredTable from "$lib/components/table/filtered_table.svelte";
-  import type { Device, Site } from "$lib/interfaces/i_db";
+  import FilteredTable, { boolean_sort_with_invalid, type CellData, type SortState } from "$lib/components/table/filtered_table.svelte";
+  import type { Device } from "$lib/interfaces/i_db";
 
   export let data: { devices: Device[] }
-  console.log(data.devices)
+
+  function get_row_data() {
+    return data.devices.map((device) => {
+      return {
+        cells: [
+          { value: device.title },
+          { value: device.os },
+          { value: get_time_since(device.rmm_last_heartbeat) },
+          { value: get_time_since(device.av_last_heartbeat) },
+          { value: get_firewall_entry(device), error_value: "" },
+          { value: get_tamper_prot_entry(device) }
+        ]
+      };
+    });
+  }
 
   function get_time_since(date_string: string): string {
     const date = new Date(date_string);
     const now = new Date();
-    console.log(`${date.toUTCString()} | ${now.toUTCString()}`)
     const diff_in_seconds = (now.getTime() - date.getTime()) / 1000;
 
     if (diff_in_seconds >= 86400) { // Check if at least a day has passed
@@ -40,29 +52,42 @@
       return device.tamp_prot_enabled ? "YES" : "NO";
     }
   }
+
+  function time_since_sort(a: CellData, b: CellData, state: SortState): number {
+    const prio = (date: string) => {
+      if (date === "Now") {
+        return 1;
+      } else if (date.includes("hours")) {
+        return 2;
+      } else if (date.includes("days")) {
+        return 3;
+      } else {
+        return 4;
+      }
+    }
+
+    if (prio(a.value) < prio(b.value)) return state.dir === "asc" ? -1 : 1;
+    if (prio(a.value) > prio(b.value)) return state.dir === "desc" ? -1 : 1;
+    
+    if (a.value !== "Now" && a.value !== "Never") {
+      return parseInt(a.value) - parseInt(b.value);
+    }
+
+    return 0;
+  }
 </script>
 
 <div class="w-full h-full p-3 bg-cscol-400">
-  <FilteredTable columns={[
-    { label: "Name", filter: "Text" },
-    { label: "OS", filter: "Text" },
-    { label: "VSA Last Seen", filter: "Text", tooltip: "Time since VSA Agent responded" },
-    { label: "Sophos Last Seen", filter: "Text", tooltip: "Time since Sophos Agent responded" },
-    { label: "Windows Firewall", filter: "Select", tooltip: "Is Windows Firewall Enabled. Source: VSA" },
-    { label: "Tamper Protection", filter: "Select", tooltip: "Is Tamper Protection Enabled. Source: Sophos" },
-  ]}>
-    {#each data.devices as device, index}
-      <FilteredRow
-        entries={[
-          device.title,
-          device.os,
-          get_time_since(device.rmm_last_heartbeat),
-          get_time_since(device.av_last_heartbeat),
-          get_firewall_entry(device),
-          get_tamper_prot_entry(device)
-        ]}
-        index={index}
-      />
-    {/each}
+  <FilteredTable 
+    columns={[
+      { label: "Name", filter: "Text" },
+      { label: "OS", filter: "Text" },
+      { label: "VSA Last Seen", filter: "Text", tooltip: "Time since VSA Agent responded", custom_sort: time_since_sort },
+      { label: "Sophos Last Seen", filter: "Text", tooltip: "Time since Sophos Agent responded", custom_sort: time_since_sort },
+      { label: "Windows Firewall", filter: "Select", tooltip: "Is Windows Firewall Enabled. Source: VSA", custom_sort: boolean_sort_with_invalid },
+      { label: "Tamper Protection", filter: "Select", tooltip: "Is Tamper Protection Enabled. Source: Sophos", custom_sort: boolean_sort_with_invalid },
+    ]}
+    data={get_row_data()}
+  >
   </FilteredTable>
 </div>
