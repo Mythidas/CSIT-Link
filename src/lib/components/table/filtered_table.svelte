@@ -1,7 +1,8 @@
 <script lang="ts" context="module">
   export interface ColumnInfo {
     label: string,
-    filter: "Text" | "Select",
+    filter: "Text" | "Select" | "None",
+    sortable?: boolean | undefined,
     tooltip?: string,
     custom_sort?: (a: CellData, b: CellData, state: SortState) => number;
   }
@@ -126,6 +127,8 @@
   }
 
   function set_sort_state(column: number) {
+    if (columns[column].sortable === false) return;
+
     if (sort_state.column === column) {
       if (sort_state.dir === "asc") {
         sort_state.dir = "desc";
@@ -159,6 +162,7 @@
             <div class={`${filter_open[index] && "relative"}`}>
               <div class="flex justify-between">
                 <div class="flex space-x-1">
+                  {#if col.sortable !== false}
                   <button on:click={() => set_sort_state(index)} class="flex space-x-1">
                     <p class="whitespace-nowrap">{col.label}</p>
                     <div class="flex flex-col -space-y-1">
@@ -170,6 +174,9 @@
                       </svg>
                     </div>
                   </button>
+                  {:else}
+                  <p class="whitespace-nowrap">{col.label}</p>
+                  {/if}
                   {#if col.tooltip}
                     <Tooltip title={col.tooltip}>
                       <img class="w-5 mt-1" src="/info.svg" alt="" />

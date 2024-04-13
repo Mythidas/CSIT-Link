@@ -30,7 +30,7 @@
       { label: "Major", filter: "Select" },
       { label: "Minor", filter: "Select" },
       { label: "Build", filter: "Select" },
-      { label: "Description", filter: "Text" }
+      { label: "Description", filter: "Text", sortable: false }
     ]}
     data={get_row_data()}
   >
