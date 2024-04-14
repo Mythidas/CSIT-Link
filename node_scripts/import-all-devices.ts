@@ -44,7 +44,7 @@ async function log(message: string) {
   try {
     const timestamp = new Date().toISOString();
     await fs.appendFile("import-devices.log", `${timestamp} - ${message}\n`);
-    console.log(`${timestamp} - ${message}\n`);
+    console.log(`${timestamp} - ${message}`);
   } catch (err) {
     console.log(err);
   }
@@ -102,6 +102,10 @@ export async function add_devices_by_site(client: pg.PoolClient, site: number, d
   }
 }
 
+function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const rmm_url = "https://centriserve-it.vsax.net/api/v3";
 const rmm_auth = btoa(`${process.env.RMM_ID}:${process.env.RMM_SC}`);
 
@@ -110,11 +114,7 @@ async function main() {
     const start_time = Date.now();
 
     const pool_client  = await pool.connect();
-    await pool_client.query("TRUNCATE TABLE Device RESTART IDENTITY");
-    
     const sites = await get_sites(pool_client);
-
-    
     const all_rmm_devices: _ExtDevice[] = [];
     
     // Get rmm devices
@@ -158,9 +158,14 @@ async function main() {
         break;
       }
     }
+
+    await log("Clearing device table...");
+    await pool_client.query("TRUNCATE TABLE Device RESTART IDENTITY");
     
-    log(`Obtaining devices for ${sites.length} sites...`);
+    await log(`Obtaining devices for ${sites.length} sites...`);
     for await (const site of sites) {
+      await delay(1000);
+
       const rmm_devices = all_rmm_devices.filter(device => {
         return device.site_id === site.rmm_id;
       });
@@ -173,8 +178,9 @@ async function main() {
       });
       const av_data = await av_res.json();
       if (!av_res.ok) {
-        log(JSON.stringify(av_data));
-        return;
+        await log("Failed to get sophos devices...");
+        await log(JSON.stringify(av_data));
+        process.exit();
       }
       const av_devices = av_data.data;
 

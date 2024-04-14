@@ -18,10 +18,6 @@ export async function GET({ request, url, locals, fetch }) {
 
     // Update every hour
     if (elapsed > 3600 || isNaN(elapsed) || force) {
-      if (!await db.delete_devices_by_site_id(locals.db_conn, Number(site_id))) {
-        return Response.json({ data: false, error: { message: "Failed to get update devices (Devices/Validate)"}}, { status: 500 });
-      }
-
       const rmm_res = await fetch("/api/external/rmm/devices", {
         headers: {
           "site-id": site_data.rmm_id
@@ -88,6 +84,10 @@ export async function GET({ request, url, locals, fetch }) {
             tamp_prot_enabled: av_devices[i].firewall_enabled
           })
         }
+      }
+
+      if (!await db.delete_devices_by_site_id(locals.db_conn, Number(site_id))) {
+        return Response.json({ data: false, error: { message: "Failed to clean devices (Devices/Validate)"}}, { status: 500 });
       }
 
       const db_devices = await db.add_devices_by_site(locals.db_conn, Number(site_id), devices);
