@@ -17,6 +17,7 @@ async function log(message: string) {
   try {
     const timestamp = new Date().toISOString();
     await fs.appendFile("import-devices.log", `${timestamp} - ${message}\n`);
+    console.log(`${timestamp} - ${message}\n`);
   } catch (err) {
     console.log(err);
   }
