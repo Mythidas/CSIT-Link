@@ -9,7 +9,7 @@ const pool = new pg.Pool({
   host: process.env.PG_HOST,
   database: process.env.PG_DATABASE,
   password: process.env.PG_PASSWORD,
-  ssl: process.env.NODE_ENV !== "production",
+  ssl: !process.env.PG_HOST?.includes("localhost"),
   port: Number(process.env.PG_PORT)
 })
 

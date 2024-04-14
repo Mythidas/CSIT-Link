@@ -42,6 +42,7 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
     function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
     function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.add_devices_by_site = exports.get_sites = void 0;
 var dotenv = require("dotenv");
@@ -53,7 +54,7 @@ var pool = new pg.Pool({
     host: process.env.PG_HOST,
     database: process.env.PG_DATABASE,
     password: process.env.PG_PASSWORD,
-    ssl: process.env.NODE_ENV !== "production",
+    ssl: !((_a = process.env.PG_HOST) === null || _a === void 0 ? void 0 : _a.includes("localhost")),
     port: Number(process.env.PG_PORT)
 });
 function log(message) {
@@ -257,7 +258,9 @@ function main() {
                                     return [4 /*yield*/, add_devices_by_site(pool_client, Number(site.site_id), devices)];
                                 case 5:
                                     db_devices = _f.sent();
-                                    log("Site ".concat(site.title, " with ID ").concat(site.site_id, ": Collected ").concat(db_devices.length, " devices"));
+                                    return [4 /*yield*/, log("Site ".concat(site.title, " with ID ").concat(site.site_id, ": Collected ").concat(db_devices.length, " devices"))];
+                                case 6:
+                                    _f.sent();
                                     return [2 /*return*/];
                             }
                         });

@@ -37,3 +37,14 @@
 2024-04-14T03:28:19.829Z - Site Barstow Children's Dentistry with ID 12: Collected 11 devices
 2024-04-14T03:28:21.329Z - Finished in 0.22216666666666668 minutes!
 2024-04-14T03:28:21.329Z - Site Best Care Dental with ID 13: Collected 9 devices
+2024-04-14T06:21:44.169Z - Obtaining devices for 7 sites...
+2024-04-14T06:21:44.195Z - {"cause":{"errno":-4078,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":2301}}
+2024-04-14T06:22:17.216Z - Obtaining devices for 7 sites...
+2024-04-14T06:22:21.739Z - Site 1385 Dental Studio with ID 7: Collected 13 devices
+2024-04-14T06:22:23.191Z - Site Aaxia Chemical Insurance Services with ID 8: Collected 2 devices
+2024-04-14T06:22:26.244Z - Site Akron Smiles with ID 9: Collected 25 devices
+2024-04-14T06:22:28.984Z - Site Atlas Dental - Matt Herring with ID 10: Collected 19 devices
+2024-04-14T06:22:31.235Z - Site Barber Welding with ID 11: Collected 8 devices
+2024-04-14T06:22:33.477Z - Site Barstow Children's Dentistry with ID 12: Collected 11 devices
+2024-04-14T06:22:35.511Z - Site Best Care Dental with ID 13: Collected 9 devices
+2024-04-14T06:22:35.512Z - Finished in 0.3166333333333334 minutes!
