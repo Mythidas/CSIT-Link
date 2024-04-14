@@ -26,6 +26,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /apps/CSIT-Link
+            git reset --hard HEAD~1
             git pull
             npm install
             npm run build
