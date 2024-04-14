@@ -3,6 +3,33 @@ import * as fs from "node:fs/promises";
 import * as pg from "pg";
 
 dotenv.config({ path: "../.env.local" });
+process.env.NODE_TLS_REJECT_UNAUTHORIZED='0';
+
+interface _ExtDevice {
+  id: string,
+  site_id: string,
+  name: string,
+  os: string,
+  os_type: "Server" | "Workstation",
+  ip_lan: string,
+  last_heartbeat: string,
+  firewall_enabled: boolean
+}
+
+interface Device {
+  id: number,
+  title: string,
+  site_id: number,
+  rmm_id: string,
+  av_id: string,
+  rmm_last_heartbeat: string,
+  av_last_heartbeat: string,
+  os_type: "Workstation" | "Server",
+  os: string,
+  ip_lan: string,
+  firewall_enabled: boolean,
+  tamp_prot_enabled: boolean
+}
 
 const pool = new pg.Pool({
   user: process.env.PG_USER,
@@ -75,6 +102,9 @@ export async function add_devices_by_site(client: pg.PoolClient, site: number, d
   }
 }
 
+const rmm_url = "https://centriserve-it.vsax.net/api/v3";
+const rmm_auth = btoa(`${process.env.RMM_ID}:${process.env.RMM_SC}`);
+
 async function main() {
   try {
     const start_time = Date.now();
@@ -84,21 +114,57 @@ async function main() {
     
     const sites = await get_sites(pool_client);
 
-    log(`Obtaining devices for ${sites.length} sites...`);
+    
+    const all_rmm_devices: _ExtDevice[] = [];
+    
+    // Get rmm devices
+    log("Obtaining RMM devices...");
 
-    for await (const site of sites) {
-      const rmm_res = await fetch(`${process.env.LOCAL_URI}/api/external/rmm/devices`, {
+    let skip_to = 0;
+    while (all_rmm_devices.length < 3500) {
+      const asset_api = await fetch(`${rmm_url}/assets?$skip=${skip_to}`, {
+        method: "GET",
         headers: {
-          "site-id": site.rmm_id
+          "authorization": `Basic ${rmm_auth}`,
+          "content-type": "application/json"
         }
       });
-      const rmm_data = await rmm_res.json();
-      if (!rmm_res.ok) {
-        log(JSON.stringify(rmm_data));
-        return;
+      const asset_data = await asset_api.json();
+      
+      if (!asset_api.ok) {
+        await log("Failed to get rmm devices...");
+        await log (JSON.stringify(asset_data));
+        process.exit();
       }
-      const rmm_devices = rmm_data.data;
-
+      
+      const device_data = asset_data.Data;
+      for (let i = 0; i < device_data.length; i++) {
+        all_rmm_devices.push({ 
+          id: device_data[i].Identifier,
+          site_id: device_data[i].SiteId,
+          name: device_data[i].Name, 
+          os: device_data[i].Description,
+          os_type: device_data[i].GroupName.toLowerCase().includes("server") ? "Server" : "Workstation",
+          ip_lan: device_data[i].IpAddresses[0] || "",
+          last_heartbeat: device_data[i].LastSeenOnline,
+          firewall_enabled: device_data[i].FirewallEnabled
+        });
+      }
+      
+      skip_to += device_data.length;
+      
+      log(`Obtained ${all_rmm_devices.length} of ${asset_data.Meta.TotalCount} devices...`);
+      if (all_rmm_devices.length === asset_data.Meta.TotalCount) {
+        break;
+      }
+    }
+    
+    log(`Obtaining devices for ${sites.length} sites...`);
+    for await (const site of sites) {
+      const rmm_devices = all_rmm_devices.filter(device => {
+        return device.site_id === site.rmm_id;
+      });
+      
       const av_res = await fetch(`${process.env.LOCAL_URI}/api/external/av/devices`, {
         headers: {
           "site-id": site.av_id,
