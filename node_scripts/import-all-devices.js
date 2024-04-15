@@ -240,7 +240,7 @@ function main() {
                                     _d = sites_1_1.value;
                                     _a = false;
                                     site = _d;
-                                    return [4 /*yield*/, delay(1000)];
+                                    return [4 /*yield*/, delay(3000)];
                                 case 1:
                                     _f.sent();
                                     rmm_devices = all_rmm_devices.filter(function (device) {

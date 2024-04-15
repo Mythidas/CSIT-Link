@@ -164,7 +164,7 @@ async function main() {
     
     await log(`Obtaining devices for ${sites.length} sites...`);
     for await (const site of sites) {
-      await delay(1000);
+      await delay(3000);
 
       const rmm_devices = all_rmm_devices.filter(device => {
         return device.site_id === site.rmm_id;
