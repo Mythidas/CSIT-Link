@@ -16,6 +16,17 @@ interface _ExtDevice {
   firewall_enabled: boolean
 }
 
+export interface Site {
+  site_id: number,
+  title: string,
+  psa_id: string,
+  rmm_id: string,
+  av_id: string,
+  av_url: string,
+  company_id: number,
+  last_update: string
+}
+
 interface Device {
   id: number,
   title: string,
@@ -43,14 +54,24 @@ const pool = new pg.Pool({
 async function log(message: string) {
   try {
     const timestamp = new Date().toISOString();
-    await fs.appendFile("import-devices.log", `${timestamp} - ${message}\n`);
+    await fs.appendFile("import_devices.log", `${timestamp} - ${message}\n`);
     console.log(`${timestamp} - ${message}`);
   } catch (err) {
     console.log(err);
   }
 }
 
-export async function get_sites(client: pg.PoolClient) {
+async function log_dump(message: string) {
+  try {
+    const timestamp = new Date().toISOString();
+    await fs.appendFile("import_devices_dump.log", `${timestamp} - ${message}\n`);
+    console.log(`${timestamp} - ${message}`);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function get_sites(client: pg.PoolClient): Promise<Site[]> {
   try {
     return (await client.query("SELECT * FROM Site")).rows.sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
   } catch (err) {
@@ -121,7 +142,7 @@ async function main() {
     log("Obtaining RMM devices...");
 
     let skip_to = 0;
-    while (all_rmm_devices.length < 3500) {
+    while (all_rmm_devices.length < 200) {
       const asset_api = await fetch(`${rmm_url}/assets?$skip=${skip_to}`, {
         method: "GET",
         headers: {
@@ -159,19 +180,23 @@ async function main() {
       }
     }
 
+    await log_dump(JSON.stringify(all_rmm_devices));
+
     await log("Clearing device table...");
     await pool_client.query("TRUNCATE TABLE Device RESTART IDENTITY");
     
     await log(`Obtaining devices for ${sites.length} sites...`);
     for await (const site of sites) {
       await delay(3000);
+      await log(`Starting site ${site.title} with ID ${site.site_id}`);
+
+      // Why are filters failing in production?
 
       const rmm_devices = all_rmm_devices.filter(device => {
         return device.site_id === site.rmm_id;
       });
 
-      await log(`Starting site ${site.title} with ID ${site.site_id}`);
-      await log(`Found ${rmm_devices.length} RMM devices...`);
+      await log(`ID: ${site.rmm_id} found ${rmm_devices.length} RMM devices`);
       
       const av_res = await fetch(`${process.env.LOCAL_URI}/api/external/av/devices`, {
         headers: {
@@ -186,9 +211,9 @@ async function main() {
         continue;
       }
       const av_devices = av_data.data;
-      await log(`Found ${av_devices.length} AV devices...`);
+      await log(`ID: ${site.av_id} found ${av_devices.length} RMM devices`);
 
-      let devices: any[] = [];
+      let devices: Device[] = [];
 
       for (let i = 0; i < rmm_devices.length; i++) {
         devices.push({ 
