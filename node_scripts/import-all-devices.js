@@ -178,7 +178,7 @@ function main() {
                     skip_to = 0;
                     _e.label = 3;
                 case 3:
-                    if (!(all_rmm_devices.length < 200)) return [3 /*break*/, 10];
+                    if (!(all_rmm_devices.length < 3500)) return [3 /*break*/, 10];
                     return [4 /*yield*/, fetch("".concat(rmm_url, "/assets?$skip=").concat(skip_to), {
                             method: "GET",
                             headers: {
