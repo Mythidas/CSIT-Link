@@ -73,11 +73,19 @@
         return /^\d+(\.\d+)?$/.test(str);
       }
 
+      const _custom_sort = (a: CellData, b: CellData, state: SortState) => {
+        return columns[sort_state.column].custom_sort?.(a, b, state);
+      }
+      
       sorted_data = sorted_data.sort((a, b) => {
-        return columns[sort_state.column].custom_sort?.(a.cells[sort_state.column], b.cells[sort_state.column], sort_state) || 
-          (is_number(a.cells[sort_state.column].value) && is_number(a.cells[sort_state.column].value)) 
+        const sort = _custom_sort(a.cells[sort_state.column], b.cells[sort_state.column], sort_state);
+        if (sort !== undefined) {
+          return sort;
+        } else {
+          return (is_number(a.cells[sort_state.column].value) && is_number(a.cells[sort_state.column].value)) 
           ? default_sort_numbers(a.cells[sort_state.column], b.cells[sort_state.column])
           : default_sort(a.cells[sort_state.column], b.cells[sort_state.column]);
+        }
       })
     }
   }
