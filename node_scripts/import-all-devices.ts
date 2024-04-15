@@ -148,7 +148,7 @@ async function main() {
     log("Obtaining RMM devices...");
 
     let skip_to = 0;
-    while (all_rmm_devices.length < 200) {
+    while (all_rmm_devices.length < 3500) {
       const asset_api = await fetch(`${rmm_url}/assets?$skip=${skip_to}`, {
         method: "GET",
         headers: {
