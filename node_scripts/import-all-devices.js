@@ -225,7 +225,7 @@ function main() {
         return __generator(this, function (_e) {
             switch (_e.label) {
                 case 0:
-                    _e.trys.push([0, 32, , 34]);
+                    _e.trys.push([0, 31, , 33]);
                     start_time = Date.now();
                     return [4 /*yield*/, pool.connect()];
                 case 1:
@@ -292,21 +292,20 @@ function main() {
                 case 12: return [4 /*yield*/, log("Obtained ".concat(all_rmm_devices.length, " RMM devices..."))];
                 case 13:
                     _e.sent();
-                    return [4 /*yield*/, log_dump(JSON.stringify(all_rmm_devices))];
-                case 14:
-                    _e.sent();
+                    //await log_dump(JSON.stringify(all_rmm_devices));
                     return [4 /*yield*/, log("Clearing device table...")];
-                case 15:
+                case 14:
+                    //await log_dump(JSON.stringify(all_rmm_devices));
                     _e.sent();
                     return [4 /*yield*/, pool_client.query("TRUNCATE TABLE Device RESTART IDENTITY")];
-                case 16:
+                case 15:
                     _e.sent();
                     return [4 /*yield*/, log("Obtaining devices for ".concat(sites.length, " sites..."))];
-                case 17:
+                case 16:
                     _e.sent();
-                    _e.label = 18;
-                case 18:
-                    _e.trys.push([18, 24, 25, 30]);
+                    _e.label = 17;
+                case 17:
+                    _e.trys.push([17, 23, 24, 29]);
                     _loop_1 = function () {
                         var site, rmm_devices, av_res, av_data, av_devices, devices, i, _loop_2, i, db_devices;
                         return __generator(this, function (_f) {
@@ -322,7 +321,10 @@ function main() {
                                 case 2:
                                     _f.sent();
                                     rmm_devices = all_rmm_devices.filter(function (device) {
-                                        return device.site_id === site.rmm_id;
+                                        if (site.rmm_id === "110") {
+                                            console.log(Number(device.site_id) === Number(site.rmm_id));
+                                        }
+                                        return Number(device.site_id) === Number(site.rmm_id);
                                     });
                                     return [4 /*yield*/, log("SiteID: ".concat(site.rmm_id, " found ").concat(rmm_devices.length, " RMM devices"))];
                                 case 3:
@@ -406,47 +408,47 @@ function main() {
                         });
                     };
                     _a = true, sites_1 = __asyncValues(sites);
-                    _e.label = 19;
-                case 19: return [4 /*yield*/, sites_1.next()];
-                case 20:
-                    if (!(sites_1_1 = _e.sent(), _b = sites_1_1.done, !_b)) return [3 /*break*/, 23];
+                    _e.label = 18;
+                case 18: return [4 /*yield*/, sites_1.next()];
+                case 19:
+                    if (!(sites_1_1 = _e.sent(), _b = sites_1_1.done, !_b)) return [3 /*break*/, 22];
                     return [5 /*yield**/, _loop_1()];
-                case 21:
+                case 20:
                     _e.sent();
-                    _e.label = 22;
-                case 22:
+                    _e.label = 21;
+                case 21:
                     _a = true;
-                    return [3 /*break*/, 19];
-                case 23: return [3 /*break*/, 30];
-                case 24:
+                    return [3 /*break*/, 18];
+                case 22: return [3 /*break*/, 29];
+                case 23:
                     e_1_1 = _e.sent();
                     e_1 = { error: e_1_1 };
-                    return [3 /*break*/, 30];
-                case 25:
-                    _e.trys.push([25, , 28, 29]);
-                    if (!(!_a && !_b && (_c = sites_1.return))) return [3 /*break*/, 27];
+                    return [3 /*break*/, 29];
+                case 24:
+                    _e.trys.push([24, , 27, 28]);
+                    if (!(!_a && !_b && (_c = sites_1.return))) return [3 /*break*/, 26];
                     return [4 /*yield*/, _c.call(sites_1)];
-                case 26:
+                case 25:
                     _e.sent();
-                    _e.label = 27;
-                case 27: return [3 /*break*/, 29];
-                case 28:
+                    _e.label = 26;
+                case 26: return [3 /*break*/, 28];
+                case 27:
                     if (e_1) throw e_1.error;
                     return [7 /*endfinally*/];
-                case 29: return [7 /*endfinally*/];
-                case 30: return [4 /*yield*/, log("Finished in ".concat((Date.now() - start_time) / 1000 / 60, " minutes!"))];
-                case 31:
+                case 28: return [7 /*endfinally*/];
+                case 29: return [4 /*yield*/, log("Finished in ".concat((Date.now() - start_time) / 1000 / 60, " minutes!"))];
+                case 30:
                     _e.sent();
                     process.exit();
-                    return [3 /*break*/, 34];
-                case 32:
+                    return [3 /*break*/, 33];
+                case 31:
                     err_7 = _e.sent();
                     return [4 /*yield*/, log(JSON.stringify(err_7))];
-                case 33:
+                case 32:
                     _e.sent();
                     process.exit();
-                    return [3 /*break*/, 34];
-                case 34: return [2 /*return*/];
+                    return [3 /*break*/, 33];
+                case 33: return [2 /*return*/];
             }
         });
     });

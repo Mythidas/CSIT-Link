@@ -80,7 +80,6 @@ async function clear_dump_logs() {
 async function load_dump_logs() {
   try {
     const file = await fs.readFile("import_devices_dump.log", 'utf-8');
-    console.log(file);
     return JSON.parse(file) as _ExtDevice[];
   } catch (err) {
     log(err);
@@ -213,6 +212,9 @@ async function main() {
       // Why are filters failing in production?
 
       const rmm_devices = all_rmm_devices.filter(device => {
+        if (site.rmm_id === "110") {
+          console.log(Number(device.site_id) === Number(site.rmm_id));
+        }
         return Number(device.site_id) === Number(site.rmm_id);
       });
 
