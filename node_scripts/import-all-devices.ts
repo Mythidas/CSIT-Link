@@ -63,11 +63,17 @@ async function log(message: string) {
 
 async function log_dump(message: string) {
   try {
-    const timestamp = new Date().toISOString();
-    await fs.appendFile("import_devices_dump.log", `${timestamp} - ${message}\n`);
-    console.log(`${timestamp} - ${message}`);
+    await fs.appendFile("import_devices_dump.log", `${message}\n`);
   } catch (err) {
     console.log(err);
+  }
+}
+
+async function clear_dump_logs() {
+  try {
+    await fs.rm("import_devices_dump.log");
+  } catch (err) {
+    log(err);
   }
 }
 
@@ -196,7 +202,7 @@ async function main() {
         return device.site_id === site.rmm_id;
       });
 
-      await log(`ID: ${site.rmm_id} found ${rmm_devices.length} RMM devices`);
+      await log(`SiteID: ${site.rmm_id} found ${rmm_devices.length} RMM devices`);
       
       const av_res = await fetch(`${process.env.LOCAL_URI}/api/external/av/devices`, {
         headers: {
@@ -211,7 +217,7 @@ async function main() {
         continue;
       }
       const av_devices = av_data.data;
-      await log(`ID: ${site.av_id} found ${av_devices.length} RMM devices`);
+      await log(`SiteID: ${site.av_id} found ${av_devices.length} AV devices`);
 
       let devices: Device[] = [];
 
@@ -268,4 +274,5 @@ async function main() {
   }
 }
 
+clear_dump_logs();
 main();

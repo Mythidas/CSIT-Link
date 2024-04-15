@@ -82,16 +82,14 @@ function log(message) {
 }
 function log_dump(message) {
     return __awaiter(this, void 0, void 0, function () {
-        var timestamp, err_2;
+        var err_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    timestamp = new Date().toISOString();
-                    return [4 /*yield*/, fs.appendFile("import_devices_dump.log", "".concat(timestamp, " - ").concat(message, "\n"))];
+                    return [4 /*yield*/, fs.appendFile("import_devices_dump.log", "".concat(message, "\n"))];
                 case 1:
                     _a.sent();
-                    console.log("".concat(timestamp, " - ").concat(message));
                     return [3 /*break*/, 3];
                 case 2:
                     err_2 = _a.sent();
@@ -102,9 +100,29 @@ function log_dump(message) {
         });
     });
 }
-function get_sites(client) {
+function clear_dump_logs() {
     return __awaiter(this, void 0, void 0, function () {
         var err_3;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, fs.rm("import_devices_dump.log")];
+                case 1:
+                    _a.sent();
+                    return [3 /*break*/, 3];
+                case 2:
+                    err_3 = _a.sent();
+                    log(err_3);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+}
+function get_sites(client) {
+    return __awaiter(this, void 0, void 0, function () {
+        var err_4;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -112,8 +130,8 @@ function get_sites(client) {
                     return [4 /*yield*/, client.query("SELECT * FROM Site")];
                 case 1: return [2 /*return*/, (_a.sent()).rows.sort(function (a, b) { return a.title.toLowerCase().localeCompare(b.title.toLowerCase()); })];
                 case 2:
-                    err_3 = _a.sent();
-                    console.log(err_3);
+                    err_4 = _a.sent();
+                    console.log(err_4);
                     return [2 /*return*/, []];
                 case 3: return [2 /*return*/];
             }
@@ -123,7 +141,7 @@ function get_sites(client) {
 exports.get_sites = get_sites;
 function add_devices_by_site(client, site, devices) {
     return __awaiter(this, void 0, void 0, function () {
-        var args, values, arg_count, i, db_devices, err_4;
+        var args, values, arg_count, i, db_devices, err_5;
         var _a;
         return __generator(this, function (_b) {
             switch (_b.label) {
@@ -165,8 +183,8 @@ function add_devices_by_site(client, site, devices) {
                     _b.label = 3;
                 case 3: return [2 /*return*/, db_devices];
                 case 4:
-                    err_4 = _b.sent();
-                    console.log(err_4);
+                    err_5 = _b.sent();
+                    console.log(err_5);
                     return [2 /*return*/, []];
                 case 5: return [2 /*return*/];
             }
@@ -181,7 +199,7 @@ var rmm_url = "https://centriserve-it.vsax.net/api/v3";
 var rmm_auth = btoa("".concat(process.env.RMM_ID, ":").concat(process.env.RMM_SC));
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var start_time, pool_client, sites, all_rmm_devices, skip_to, asset_api, asset_data, device_data, i, _loop_1, _a, sites_1, sites_1_1, e_1_1, err_5;
+        var start_time, pool_client, sites, all_rmm_devices, skip_to, asset_api, asset_data, device_data, i, _loop_1, _a, sites_1, sites_1_1, e_1_1, err_6;
         var _b, e_1, _c, _d;
         return __generator(this, function (_e) {
             switch (_e.label) {
@@ -276,7 +294,7 @@ function main() {
                                     rmm_devices = all_rmm_devices.filter(function (device) {
                                         return device.site_id === site.rmm_id;
                                     });
-                                    return [4 /*yield*/, log("ID: ".concat(site.rmm_id, " found ").concat(rmm_devices.length, " RMM devices"))];
+                                    return [4 /*yield*/, log("SiteID: ".concat(site.rmm_id, " found ").concat(rmm_devices.length, " RMM devices"))];
                                 case 3:
                                     _f.sent();
                                     return [4 /*yield*/, fetch("".concat(process.env.LOCAL_URI, "/api/external/av/devices"), {
@@ -300,7 +318,7 @@ function main() {
                                     return [2 /*return*/, "continue"];
                                 case 8:
                                     av_devices = av_data.data;
-                                    return [4 /*yield*/, log("ID: ".concat(site.av_id, " found ").concat(av_devices.length, " RMM devices"))];
+                                    return [4 /*yield*/, log("SiteID: ".concat(site.av_id, " found ").concat(av_devices.length, " AV devices"))];
                                 case 9:
                                     _f.sent();
                                     devices = [];
@@ -392,8 +410,8 @@ function main() {
                     process.exit();
                     return [3 /*break*/, 31];
                 case 29:
-                    err_5 = _e.sent();
-                    return [4 /*yield*/, log(JSON.stringify(err_5))];
+                    err_6 = _e.sent();
+                    return [4 /*yield*/, log(JSON.stringify(err_6))];
                 case 30:
                     _e.sent();
                     process.exit();
@@ -403,4 +421,5 @@ function main() {
         });
     });
 }
+clear_dump_logs();
 main();
