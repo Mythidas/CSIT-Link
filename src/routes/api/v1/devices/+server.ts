@@ -15,7 +15,7 @@ export async function GET({ request, locals, fetch }) {
     });
     const validate_data = await validate_res.json();
 
-    if (!validate_res.ok) {
+    if (!validate_res.ok && validate_data.data !== true) {
       return Response.json({ data: [], error: { message: "Failed to validate site", object: validate_data }}, { status: 500 });
     }
 
