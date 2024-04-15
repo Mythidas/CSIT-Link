@@ -152,7 +152,7 @@ async function main() {
 
     const pool_client  = await pool.connect();
     const sites = await get_sites(pool_client);
-    const all_rmm_devices: _ExtDevice[] = await load_dump_logs();
+    const all_rmm_devices: _ExtDevice[] = [];
     
     // Get rmm devices
     await log("Obtaining RMM devices...");
@@ -209,12 +209,7 @@ async function main() {
       await delay(3000);
       await log(`Starting site ${site.title} with ID ${site.site_id}`);
 
-      // Why are filters failing in production?
-
       const rmm_devices = all_rmm_devices.filter(device => {
-        if (site.rmm_id === "110") {
-          console.log(Number(device.site_id) === Number(site.rmm_id));
-        }
         return Number(device.site_id) === Number(site.rmm_id);
       });
 
@@ -290,5 +285,5 @@ async function main() {
   }
 }
 
-//clear_dump_logs();
+clear_dump_logs();
 main();
