@@ -80,11 +80,11 @@
   <div class="flex flex-col w-full h-5/6 p-3 rounded-sm bg-cscol-400">
     <FilteredTable 
       columns={[
-        {label: "Name", filter: "Text" },
-        {label: "Healthy", filter: "Select", tooltip: "Agent in both VSAX and Sophos", custom_sort: boolean_sort_with_invalid },
-        {label: "VSAX", filter: "Select", tooltip: "Agent in VSAX site", custom_sort: boolean_sort_with_invalid },
-        {label: "Sophos", filter: "Select", tooltip: "Agent in Sophos site", custom_sort: boolean_sort_with_invalid },
-        {label: "OS", filter: "Select"}
+        { label: "Name", filter: "Text" },
+        { label: "Healthy", filter: "Select", tooltip: "Agent in both VSAX and Sophos", custom_sort: boolean_sort_with_invalid },
+        { label: "VSAX", filter: "Select", tooltip: "Agent in VSAX site", custom_sort: boolean_sort_with_invalid },
+        { label: "Sophos", filter: "Select", tooltip: "Agent in Sophos site", custom_sort: boolean_sort_with_invalid },
+        { label: "OS", filter: "Select" }
       ]}
       data={row_data}
     >

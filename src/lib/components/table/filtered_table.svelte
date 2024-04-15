@@ -2,6 +2,7 @@
   export interface ColumnInfo {
     label: string,
     filter: "Text" | "Select" | "None",
+    error_display?: "Cell" | "Row",
     sortable?: boolean | undefined,
     tooltip?: string,
     custom_sort?: (a: CellData, b: CellData, state: SortState) => number;
@@ -151,11 +152,16 @@
   }
 
   function get_tr_class(row: RowData): string {
-    const is_error = row.cells.filter((data) => {
-      return data.error_value?.includes(data.value);
+    const is_error = row.cells.filter((data, index) => {
+      return data.error_value?.includes(data.value) && columns[index].error_display === "Row";
     }).length > 0;
 
     return `${is_error ? "bg-errcol-100" : "even:bg-cscol-400 odd:bg-cscol-500 hover:bg-cscol-100"} hover:cursor-pointer`;
+  }
+
+  function get_td_class(cell: CellData): string {
+    const is_error = cell.error_value?.includes(cell.value);
+    return `${is_error && "bg-errcol-100"} pl-2 text-base font-normal`
   }
 </script>
 
@@ -232,7 +238,7 @@
       {#each sorted_data as row}
       <tr on:click={() => on_select_row(row)} class={get_tr_class(row)}>
       {#each row.cells as entry}
-        <td class="pl-2 text-base font-normal">
+        <td class={get_td_class(entry)}>
           {entry.value}
         </td>
       {/each}
