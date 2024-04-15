@@ -13,7 +13,7 @@
   export let data: { sites: Site[], current_site: Site };
 
   $: {
-    $current_site = data.current_site || null;
+    $current_site = data.current_site || $current_site;
   }
 
   let drop_select_site: any;

@@ -1,13 +1,15 @@
 <script lang="ts">
   import FilteredTable, { boolean_sort_with_invalid } from '$lib/components/table/filtered_table.svelte';
+    import { get_time_since } from '$lib/helpers/hp_time';
   import type { APIResponse } from '$lib/interfaces/i_api_response';
-  import type { Device, Site } from '$lib/interfaces/i_db';
+  import type { Device } from '$lib/interfaces/i_db';
   import { current_site } from '$lib/stores.js';
 
   export let data: { devices: Device[] };
 
   let loading = false;
   
+  $: row_data = get_row_data(data.devices);
   $: mismatches = data.devices?.filter(dev => dev.av_id === "" || dev.rmm_id === "").length || 0;
   $: rmm_device_count = data.devices?.filter(dev => dev.rmm_id !== "").length || 0;
   $: av_device_count = data.devices?.filter(dev => dev.av_id !== "").length || 0;
@@ -26,6 +28,7 @@
 
       if (res.ok) {
         data.devices = res_data.data;
+        row_data = res_data.data;
       }
     } catch (err) {
       console.log(err);
@@ -34,8 +37,8 @@
     loading = false;
   }
 
-  function get_row_data() {
-    return data.devices.map((device) => {
+  function get_row_data(devices: Device[]) {
+    return devices.map((device) => {
       return {
         cells: [
           { value: device.title }, 
@@ -60,13 +63,18 @@
         </svg>
       </button>
     </div>
-    <div class="flex space-x-1 mt-2">
-      <p class="p-2 text-xl bg-cscol-000">Unique Devices: {data.devices?.length}</p>
-      <p class={`p-2 text-xl ${mismatches ? "bg-errcol-100" : "bg-cscol-000"}`}>Matching Devices: {(data.devices?.length || 0) - mismatches}</p>
-      <p></p>
-      <p></p>
-      <p class="p-2 text-xl bg-cscol-000">VSAX Count: {rmm_device_count}</p>
-      <p class="p-2 text-xl bg-cscol-000">Sophos Count: {av_device_count}</p>
+    <div class="flex space-x-2 mt-2">
+      <div class="flex space-x-1">
+        <p class="p-2 text-xl bg-cscol-000">Unique Devices: {data.devices?.length}</p>
+        <p class={`p-2 text-xl ${mismatches ? "bg-errcol-100" : "bg-cscol-000"}`}>Matching Devices: {(data.devices?.length || 0) - mismatches}</p>
+      </div>
+      <div class="flex space-x-1">
+        <p class="p-2 text-xl bg-cscol-000">VSAX Count: {rmm_device_count}</p>
+        <p class="p-2 text-xl bg-cscol-000">Sophos Count: {av_device_count}</p>
+      </div>
+      <div class="flex space-x-1">
+        <p class="p-2 text-xl bg-cscol-000">Last Sync: {get_time_since($current_site?.last_update || "")}</p>
+      </div>
     </div>
   </div>
   <div class="flex flex-col w-full h-5/6 p-3 rounded-sm bg-cscol-400">
@@ -78,7 +86,7 @@
         {label: "Sophos", filter: "Select", tooltip: "Agent in Sophos site", custom_sort: boolean_sort_with_invalid },
         {label: "OS", filter: "Select"}
       ]}
-      data={get_row_data()}
+      data={row_data}
     >
     </FilteredTable>
   </div>
