@@ -121,7 +121,7 @@ async function main() {
     log("Obtaining RMM devices...");
 
     let skip_to = 0;
-    while (all_rmm_devices.length < 3500) {
+    while (all_rmm_devices.length < 200) {
       const asset_api = await fetch(`${rmm_url}/assets?$skip=${skip_to}`, {
         method: "GET",
         headers: {
@@ -153,7 +153,7 @@ async function main() {
       
       skip_to += device_data.length;
       
-      log(`Obtained ${all_rmm_devices.length} of ${asset_data.Meta.TotalCount} devices...`);
+      await log(`Obtained ${all_rmm_devices.length} of ${asset_data.Meta.TotalCount} devices...`);
       if (all_rmm_devices.length === asset_data.Meta.TotalCount) {
         break;
       }
@@ -169,6 +169,9 @@ async function main() {
       const rmm_devices = all_rmm_devices.filter(device => {
         return device.site_id === site.rmm_id;
       });
+
+      await log(`Starting site ${site.title} with ID ${site.site_id}`);
+      await log(`Found ${rmm_devices.length} RMM devices...`);
       
       const av_res = await fetch(`${process.env.LOCAL_URI}/api/external/av/devices`, {
         headers: {
@@ -178,11 +181,12 @@ async function main() {
       });
       const av_data = await av_res.json();
       if (!av_res.ok) {
-        await log("Failed to get sophos devices...");
+        await log(`Failed to get sophos devices ${site.title}...`);
         await log(JSON.stringify(av_data));
-        process.exit();
+        continue;
       }
       const av_devices = av_data.data;
+      await log(`Found ${av_devices.length} AV devices...`);
 
       let devices: any[] = [];
 
@@ -228,7 +232,7 @@ async function main() {
       }
 
       const db_devices = await add_devices_by_site(pool_client, Number(site.site_id), devices);
-      await log(`Site ${site.title} with ID ${site.site_id}: Collected ${db_devices.length} devices`);
+      await log(`Completed site ${site.title}: Collected ${db_devices.length} unique devices`);
     }
 
     await log(`Finished in ${(Date.now() - start_time) / 1000 / 60} minutes!`);
