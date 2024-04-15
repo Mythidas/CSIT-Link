@@ -213,7 +213,7 @@ async function main() {
       // Why are filters failing in production?
 
       const rmm_devices = all_rmm_devices.filter(device => {
-        return device.site_id === site.rmm_id;
+        return Number(device.site_id) === Number(site.rmm_id);
       });
 
       await log(`SiteID: ${site.rmm_id} found ${rmm_devices.length} RMM devices`);
