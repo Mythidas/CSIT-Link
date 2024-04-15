@@ -130,7 +130,6 @@ function load_dump_logs() {
                     return [4 /*yield*/, fs.readFile("import_devices_dump.log", 'utf-8')];
                 case 1:
                     file = _a.sent();
-                    console.log(file);
                     return [2 /*return*/, JSON.parse(file)];
                 case 2:
                     err_4 = _a.sent();
