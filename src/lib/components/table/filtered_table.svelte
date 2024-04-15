@@ -15,7 +15,8 @@
 
   export interface CellData {
     value: string,
-    error_value?: string
+    error_value?: string,
+    warn_value?: string
   }
 
   export interface SortState {
@@ -152,16 +153,22 @@
   }
 
   function get_tr_class(row: RowData): string {
+    const is_warn = row.cells.filter((data, index) => {
+      return data.warn_value?.includes(data.value) && columns[index].error_display === "Row";
+    }).length > 0;
     const is_error = row.cells.filter((data, index) => {
       return data.error_value?.includes(data.value) && columns[index].error_display === "Row";
     }).length > 0;
 
-    return `${is_error ? "bg-errcol-100" : "even:bg-cscol-400 odd:bg-cscol-500 hover:bg-cscol-100"} hover:cursor-pointer`;
+    const bgcol = is_error ? "bg-errcol-100" : "bg-wrncol-100";
+    return `${(is_error || is_warn) ? bgcol : "even:bg-cscol-400 odd:bg-cscol-500 hover:bg-cscol-100"} hover:cursor-pointer`;
   }
 
   function get_td_class(cell: CellData): string {
+    const is_warn = cell.warn_value?.includes(cell.value);
     const is_error = cell.error_value?.includes(cell.value);
-    return `${is_error && "bg-errcol-100"} pl-2 text-base font-normal`
+    const bgcol = is_error ? "bg-errcol-100" : "bg-wrncol-100";
+    return `${(is_error || is_warn) && bgcol} pl-2 text-base font-normal`
   }
 </script>
 
