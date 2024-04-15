@@ -16,10 +16,10 @@
         cells: [
           { value: device.title },
           { value: device.os },
-          { value: get_time_since(device.rmm_last_heartbeat) },
-          { value: get_time_since(device.av_last_heartbeat) },
-          { value: get_firewall_entry(device), error_value: "" },
-          { value: get_tamper_prot_entry(device) }
+          { value: get_time_since(device.rmm_last_heartbeat), error_value: "Never" },
+          { value: get_time_since(device.av_last_heartbeat), error_value: "Never" },
+          { value: get_firewall_entry(device), error_value: "N/A" },
+          { value: get_tamper_prot_entry(device), error_value: "N/A" }
         ]
       };
     });

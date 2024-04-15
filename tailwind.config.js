@@ -17,6 +17,7 @@ export default {
       "cscol-600": "#0B0C10",
       "cscol-font": "#FFFFFF",
       "errcol-100": "#CC1B3E",
+      "wrncol-100": "#B88E1D"
     }
   },
   plugins: [],
