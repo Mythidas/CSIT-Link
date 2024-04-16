@@ -120,12 +120,12 @@
         <DropdownSelect required bind:selected={selected_psa} name="psa" options={map_ext_site_to_options(data.psa_sites)} default_label="Select Site..."/>
       </div>
       <div class="w-full mb-3">
-        <h3 class="text-xl mb-1">RMM Site*</h3>
-        <DropdownSelect required bind:selected={selected_rmm} name="rmm" options={map_ext_site_to_options(data.rmm_sites)} default_label="Select Site..."/>
+        <h3 class="text-xl mb-1">RMM Site</h3>
+        <DropdownSelect bind:selected={selected_rmm} name="rmm" options={map_ext_site_to_options(data.rmm_sites)} default_label="Select Site..."/>
       </div>
       <div class="w-full mb-3">
-        <h3 class="text-xl mb-1">AV Site*</h3>
-        <DropdownSelect required bind:selected={selected_av} name="av" options={map_ext_site_to_options(data.av_sites)} default_label="Select Site..."/>
+        <h3 class="text-xl mb-1">AV Site</h3>
+        <DropdownSelect bind:selected={selected_av} name="av" options={map_ext_site_to_options(data.av_sites)} default_label="Select Site..."/>
       </div>
     </div>
     <div class="flex w-full justify-center">

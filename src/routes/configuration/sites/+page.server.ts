@@ -51,7 +51,7 @@ export const actions = {
       last_update: ""
     }
 
-    if (site_data.title === "" || site_data.psa_id === "" || site_data.rmm_id === "" || site_data.av_id === "" || site_data.av_url === "") {
+    if (site_data.title === "" || site_data.psa_id === "") {
       return "Invalid Data";
     }
 

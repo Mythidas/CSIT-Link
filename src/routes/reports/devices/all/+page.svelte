@@ -2,7 +2,7 @@
   import FilteredTable from "$lib/components/table/filtered_table.svelte";
   import { boolean_sort_with_invalid, time_since_sort } from "$lib/helpers/hp_sorters";
   import { get_time_since } from "$lib/helpers/hp_time";
-  import type { Device } from "$lib/interfaces/i_db";
+  import type { Device, Site } from "$lib/interfaces/i_db";
   import { all_sites } from "$lib/stores";
 
   export let data: { devices: Device[] };
@@ -27,15 +27,24 @@
     return value.includes("days") && parseInt(value) >= 30;
   }
 
+  function has_rmm(site: Site | undefined) {
+    return site?.rmm_id !== "";
+  }
+
+  function has_av(site: Site | undefined) {
+    return site?.av_id !== "";
+  }
+
   function get_row_data() {
     return data.devices.map((device) => {
+      const site = $all_sites.find(site => site.site_id === device.site_id);
       return {
         cells: [
           { value: device.title },
-          { value: $all_sites.find(site => site.site_id === device.site_id)?.title || "" },
+          { value: site?.title || "" },
           { value: device.os },
-          { value: get_time_since(device.rmm_last_heartbeat) },
-          { value: get_time_since(device.av_last_heartbeat) },
+          { value: has_rmm(site) ? get_time_since(device.rmm_last_heartbeat) : "N/A" },
+          { value: has_av(site) ? get_time_since(device.av_last_heartbeat) : "N/A" },
           { value: get_firewall_entry(device) },
           { value: get_tamper_prot_entry(device) }
         ]

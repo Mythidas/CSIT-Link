@@ -21,30 +21,36 @@ export async function GET({ request, url, locals, fetch }) {
 
     // Update every hour
     if (elapsed > 3600 || isNaN(elapsed) || force) {
-      const rmm_res = await fetch("/api/external/rmm/devices", {
-        headers: {
-          "site-id": site_data.rmm_id
+      let rmm_devices: _ExtDevice[] = [];
+      if (site_data.rmm_id) {
+        const rmm_res = await fetch("/api/external/rmm/devices", {
+          headers: {
+            "site-id": site_data.rmm_id
+          }
+        });
+        const rmm_data = await rmm_res.json() as APIResponse;
+        if (!rmm_res.ok) {
+          api_response_log(rmm_data);
+          return Response.json({ data: cached, error: { message: "Failed to get RMM devices (Devices/Validate)"}}, { status: 500 });
         }
-      });
-      const rmm_data = await rmm_res.json() as APIResponse;
-      if (!rmm_res.ok) {
-        api_response_log(rmm_data);
-        return Response.json({ data: cached, error: { message: "Failed to get RMM devices (Devices/Validate)"}}, { status: 500 });
+        rmm_devices = rmm_data.data as _ExtDevice[];
       }
-      const rmm_devices = rmm_data.data as _ExtDevice[];
 
-      const av_res = await fetch("/api/external/av/devices", {
-        headers: {
-          "site-id": site_data.av_id,
-          "site-url": site_data.av_url
+      let av_devices: _ExtDevice[] = [];
+      if (site_data.av_id) {
+        const av_res = await fetch("/api/external/av/devices", {
+          headers: {
+            "site-id": site_data.av_id,
+            "site-url": site_data.av_url
+          }
+        });
+        const av_data = await av_res.json() as APIResponse;
+        if (!av_res.ok) {
+          api_response_log(av_data);
+          return Response.json({ data: cached, error: { message: "Failed to get AV devices (Devices/Validate)"}}, { status: 500 });
         }
-      });
-      const av_data = await av_res.json() as APIResponse;
-      if (!av_res.ok) {
-        api_response_log(av_data);
-        return Response.json({ data: cached, error: { message: "Failed to get AV devices (Devices/Validate)"}}, { status: 500 });
+        av_devices = av_data.data as _ExtDevice[];
       }
-      const av_devices = av_data.data as _ExtDevice[];
 
       let devices: Device[] = [];
 

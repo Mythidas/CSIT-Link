@@ -17,13 +17,21 @@
         cells: [
           { value: device.title },
           { value: device.os },
-          { value: get_time_since(device.rmm_last_heartbeat) },
-          { value: get_time_since(device.av_last_heartbeat) },
+          { value: has_rmm() ? get_time_since(device.rmm_last_heartbeat) : "N/A" },
+          { value: has_av() ? get_time_since(device.av_last_heartbeat) : "N/A" },
           { value: get_firewall_entry(device) },
           { value: get_tamper_prot_entry(device) }
         ]
       };
     });
+  }
+
+  function has_rmm() {
+    return $current_site?.rmm_id !== "";
+  }
+
+  function has_av() {
+    return $current_site?.av_id !== "";
   }
 
   function get_firewall_entry(device: Device) {
