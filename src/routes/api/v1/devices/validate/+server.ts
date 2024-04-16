@@ -11,6 +11,9 @@ export async function GET({ request, url, locals, fetch }) {
     const site_data = await db.get_site(locals.db_conn, Number(site_id));
     if (!site_data) return Response.json({ data: false, error: { message: "Invalid Site (Devices/Validate)"}}, { status: 400 });
 
+    const devices = await db.get_devices_by_site_id(locals.db_conn, Number(site_id));
+    
+    const cached = devices.length > 0;
     const force = Boolean(url.searchParams.get("force")) || false;
 
     const last_update = new Date(site_data.last_update);
@@ -26,7 +29,7 @@ export async function GET({ request, url, locals, fetch }) {
       const rmm_data = await rmm_res.json() as APIResponse;
       if (!rmm_res.ok) {
         api_response_log(rmm_data);
-        return Response.json({ data: false, error: { message: "Failed to get RMM devices (Devices/Validate)"}}, { status: 500 });
+        return Response.json({ data: cached, error: { message: "Failed to get RMM devices (Devices/Validate)"}}, { status: 500 });
       }
       const rmm_devices = rmm_data.data as _ExtDevice[];
 
@@ -39,7 +42,7 @@ export async function GET({ request, url, locals, fetch }) {
       const av_data = await av_res.json() as APIResponse;
       if (!av_res.ok) {
         api_response_log(av_data);
-        return Response.json({ data: false, error: { message: "Failed to get AV devices (Devices/Validate)"}}, { status: 500 });
+        return Response.json({ data: cached, error: { message: "Failed to get AV devices (Devices/Validate)"}}, { status: 500 });
       }
       const av_devices = av_data.data as _ExtDevice[];
 

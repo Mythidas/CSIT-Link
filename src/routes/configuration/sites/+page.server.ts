@@ -6,7 +6,6 @@ import type { Site } from "$lib/interfaces/i_db.js";
 
 export async function load({ fetch, locals }) {
   try {
-    const db_sites = await db.get_sites(locals.db_conn);
     const db_companies = await db.get_companies(locals.db_conn);
 
     const psa_sites_api = await fetch("/api/external/psa/sites");
@@ -22,7 +21,6 @@ export async function load({ fetch, locals }) {
     if (!av_sites_api.ok) api_response_log(av_sites_data);
 
     return {
-      sites: db_sites,
       companies: db_companies,
       rmm_sites: rmm_sites_data.data,
       av_sites: av_sites_data.data,

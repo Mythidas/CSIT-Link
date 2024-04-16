@@ -2,10 +2,10 @@ import * as db from "$lib/server/database";
 
 export async function load({ locals }) {
   try {
-    const db_companies = await db.get_companies(locals.db_conn);
+    const db_devices = await db.get_devices_all(locals.db_conn);
 
     return {
-      companies: db_companies
+      devices: db_devices
     }
   } catch (err) {
     console.log(err);

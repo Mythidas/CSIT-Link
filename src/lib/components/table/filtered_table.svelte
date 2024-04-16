@@ -2,9 +2,14 @@
   export interface ColumnInfo {
     label: string,
     filter: "Text" | "Select" | "None",
+    error_display?: "Cell" | "Row",
     sortable?: boolean | undefined,
     tooltip?: string,
-    custom_sort?: (a: CellData, b: CellData, state: SortState) => number;
+    custom_sort?: (a: CellData, b: CellData, state: SortState) => number,
+    error_value?: string,
+    warn_value?: string,
+    custom_error?: (value: string) => boolean,
+    custom_warn?: (value: string) => boolean
   }
 
   export interface RowData {
@@ -14,26 +19,13 @@
 
   export interface CellData {
     value: string,
-    error_value?: string
+    force_error?: boolean,
+    force_warn?: boolean
   }
 
   export interface SortState {
     column: number, 
     dir: "asc" | "desc"
-  }
-
-  export function boolean_sort_with_invalid(a: CellData, b: CellData, state: SortState): number {
-    const prio = (val: string) => {
-      switch (val) {
-        case "YES": return 1;
-        case "NO": return 2;
-        default: return 3;
-      }
-    }
-
-    if (prio(a.value) < prio(b.value)) return state.dir === "asc" ? -1 : 1;
-    if (prio(a.value) > prio(b.value)) return state.dir === "desc" ? -1 : 1;
-    return 0;
   }
 </script>
 
@@ -51,9 +43,19 @@
   let sort_state: SortState = { column: -1, dir: "asc" };
 
   $: {
-    if (sort_state.column < 0) {
-      sorted_data = structuredClone(data);
-    } else {
+    sorted_data = structuredClone(data).filter((row) => {
+      let valid = true;
+
+      row.cells.forEach((cell, index) => {
+        if (cell.value && filters[index] && !cell.value.toLowerCase().includes(filters[index].toLowerCase())) {
+          valid = false;
+        }
+      })
+
+      return valid;
+    });
+
+    if (sort_state.column >= 0) {
       const default_sort = (a: CellData, b: CellData): number => {
         if (a.value < b.value) return sort_state.dir === "asc" ? -1 : 1;
         if (a.value > b.value) return sort_state.dir === "asc" ? 1 : -1;
@@ -77,6 +79,7 @@
         return columns[sort_state.column].custom_sort?.(a, b, state);
       }
       
+      // Sort
       sorted_data = sorted_data.sort((a, b) => {
         const sort = _custom_sort(a.cells[sort_state.column], b.cells[sort_state.column], sort_state);
         if (sort !== undefined) {
@@ -151,11 +154,38 @@
   }
 
   function get_tr_class(row: RowData): string {
-    const is_error = row.cells.filter((data) => {
-      return data.error_value?.includes(data.value);
+    const is_warn = row.cells.filter((cell, index) => {
+      const _custom_warn = (value: string) => {
+        return columns[index].custom_warn?.(value);
+      }
+      const warn_check = cell.force_warn || _custom_warn(cell.value);
+      return (warn_check || columns[index].warn_value?.includes(cell.value)) && columns[index].error_display === "Row";
     }).length > 0;
 
-    return `${is_error ? "bg-errcol-100" : "even:bg-cscol-400 odd:bg-cscol-500 hover:bg-cscol-100"} hover:cursor-pointer`;
+    const is_error = row.cells.filter((cell, index) => {
+      const _custom_error = (value: string) => {
+        return columns[index].custom_error?.(value);
+      }
+      const error_check = cell.force_error || _custom_error(cell.value);
+      return (error_check || columns[index].error_value?.includes(cell.value)) && columns[index].error_display === "Row";
+    }).length > 0;
+
+    const bgcol = is_error ? "bg-errcol-100" : "bg-wrncol-100";
+    return `${(is_error || is_warn) ? bgcol : "even:bg-cscol-400 odd:bg-cscol-500 hover:bg-cscol-100"} hover:cursor-pointer`;
+  }
+
+  function get_td_class(cell: CellData, index: number): string {
+    const _custom_warn = (value: string) => {
+      return columns[index].custom_warn?.(value);
+    }
+    const _custom_error = (value: string) => {
+      return columns[index].custom_error?.(value);
+    }
+
+    const is_warn = cell.force_warn || _custom_warn(cell.value) || columns[index].warn_value?.includes(cell.value);
+    const is_error = cell.force_error || _custom_error(cell.value) || columns[index].error_value?.includes(cell.value);
+    const bgcol = is_error ? "bg-errcol-100" : "bg-wrncol-100";
+    return `${(is_error || is_warn) && bgcol} pl-2 text-base font-normal`
   }
 </script>
 
@@ -231,8 +261,8 @@
     <tbody class="text-base">
       {#each sorted_data as row}
       <tr on:click={() => on_select_row(row)} class={get_tr_class(row)}>
-      {#each row.cells as entry}
-        <td class="pl-2 text-base font-normal">
+      {#each row.cells as entry, index}
+        <td class={get_td_class(entry, index)}>
           {entry.value}
         </td>
       {/each}
