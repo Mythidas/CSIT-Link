@@ -1,10 +1,10 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import FilteredTable, { type RowData } from "$lib/components/table/filtered_table.svelte";
-  import type { Company, Site } from "$lib/interfaces/i_db";
-  import { current_site } from "$lib/stores";
+  import type { Company } from "$lib/interfaces/i_db";
+  import { all_sites, current_site } from "$lib/stores";
 
-  export let data: { sites: Site[], companies: Company[] };
+  export let data: { companies: Company[] };
 
   function select_site(row: RowData) {
     $current_site = row.storage;
@@ -13,7 +13,7 @@
   }
 
   function get_row_data() {
-    return data.sites.map((site) => {
+    return $all_sites.map((site) => {
       return {
         cells: [
           { value: site.site_id.toString() }, 
@@ -29,7 +29,7 @@
 <div class="flex w-full h-full">
   <div class="flex flex-col w-full h-full p-3 bg-cscol-400">
     <h3 class="flex text-2xl font-bold p-1 mb-3">
-      All Sites <p class="px-2 ml-3 bg-cscol-000 rounded-md">{data.sites.length}</p>
+      All Sites <p class="px-2 ml-3 bg-cscol-000 rounded-md">{$all_sites.length}</p>
     </h3>
     <FilteredTable 
       columns={[

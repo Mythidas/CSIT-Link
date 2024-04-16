@@ -1,8 +1,9 @@
 <script lang="ts">
-  import FilteredTable, { boolean_sort_with_invalid, type CellData, type SortState } from "$lib/components/table/filtered_table.svelte";
-    import { get_time_since, time_since_sort } from "$lib/helpers/hp_time";
+  import FilteredTable from "$lib/components/table/filtered_table.svelte";
+  import { boolean_sort_with_invalid, time_since_sort } from "$lib/helpers/hp_sorters";
+  import { get_time_since } from "$lib/helpers/hp_time";
   import type { Device } from "$lib/interfaces/i_db";
-    import { current_site } from "$lib/stores";
+  import { current_site } from "$lib/stores";
 
   export let data: { devices: Device[] }
 

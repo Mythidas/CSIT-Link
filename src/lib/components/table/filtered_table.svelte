@@ -23,20 +23,6 @@
     column: number, 
     dir: "asc" | "desc"
   }
-
-  export function boolean_sort_with_invalid(a: CellData, b: CellData, state: SortState): number {
-    const prio = (val: string) => {
-      switch (val) {
-        case "YES": return 1;
-        case "NO": return 2;
-        default: return 3;
-      }
-    }
-
-    if (prio(a.value) < prio(b.value)) return state.dir === "asc" ? -1 : 1;
-    if (prio(a.value) > prio(b.value)) return state.dir === "desc" ? -1 : 1;
-    return 0;
-  }
 </script>
 
 <script lang="ts">
@@ -53,9 +39,19 @@
   let sort_state: SortState = { column: -1, dir: "asc" };
 
   $: {
-    if (sort_state.column < 0) {
-      sorted_data = structuredClone(data);
-    } else {
+    sorted_data = structuredClone(data).filter((row) => {
+      let valid = true;
+
+      row.cells.forEach((cell, index) => {
+        if (!cell.value.toLowerCase().includes(filters[index].toLowerCase())) {
+          valid = false;
+        }
+      })
+
+      return valid;
+    });
+
+    if (sort_state.column >= 0) {
       const default_sort = (a: CellData, b: CellData): number => {
         if (a.value < b.value) return sort_state.dir === "asc" ? -1 : 1;
         if (a.value > b.value) return sort_state.dir === "asc" ? 1 : -1;
@@ -79,6 +75,7 @@
         return columns[sort_state.column].custom_sort?.(a, b, state);
       }
       
+      // Sort
       sorted_data = sorted_data.sort((a, b) => {
         const sort = _custom_sort(a.cells[sort_state.column], b.cells[sort_state.column], sort_state);
         if (sort !== undefined) {

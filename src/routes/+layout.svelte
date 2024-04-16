@@ -5,7 +5,7 @@
   import NavItem from "$lib/components/site_navbar/nav_item.svelte";
   import NavSubItem from "$lib/components/site_navbar/nav_sub_item.svelte";
   import LoadingSpinner from "$lib/components/loading_spinner.svelte";
-  import { current_site } from "$lib/stores";
+  import { all_sites, current_site } from "$lib/stores";
   import type { Site } from "$lib/interfaces/i_db";
   import DropdownSearch from "$lib/components/dropdown_search.svelte";
   import DropdownSelect from "$lib/components/dropdown_select.svelte";
@@ -14,9 +14,8 @@
 
   $: {
     $current_site = data.current_site || $current_site;
+    $all_sites = data.sites;
   }
-
-  let drop_select_site: any;
 
   function sites_custom_href(label: string) {
     if (label === "Overview") {
@@ -65,6 +64,11 @@
         <NavSubItem label={$current_site?.title || "No Site Selected"} href="" parent>
           <NavSubItem label="Overview" href="/sites/overview/[slug]" custom_href={sites_custom_href} />
           <NavSubItem label="Devices" href="/sites/devices/[slug]" custom_href={sites_custom_href} />
+        </NavSubItem>
+      </NavItem>
+      <NavItem label="Reports" href="/reports" parent>
+        <NavSubItem label="Devices" href="" parent>
+          <NavSubItem label="All" href="/reports/devices/all" />
         </NavSubItem>
       </NavItem>
       <NavItem label="Configuration" href="/configuration" parent>

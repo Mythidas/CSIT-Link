@@ -1,5 +1,6 @@
 <script lang="ts">
-  import FilteredTable, { boolean_sort_with_invalid } from '$lib/components/table/filtered_table.svelte';
+  import FilteredTable from '$lib/components/table/filtered_table.svelte';
+    import { boolean_sort_with_invalid } from '$lib/helpers/hp_sorters';
     import { get_time_since } from '$lib/helpers/hp_time';
   import type { APIResponse } from '$lib/interfaces/i_api_response';
   import type { Device } from '$lib/interfaces/i_db';

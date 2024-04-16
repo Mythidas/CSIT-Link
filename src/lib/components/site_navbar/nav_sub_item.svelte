@@ -43,14 +43,14 @@
   <slot />
 </ul>
 {:else if has_slug}
-<button on:click={() => custom_href(label)} class={`${is_local_url ? "bg-cscol-000" : "bg-cscol-400"} flex relative w-full h-fit py-1 hover:bg-cscol-100`}>
+<button on:click={() => custom_href(label)} class={`${is_local_url ? "bg-cscol-000" : "bg-cscol-500"} flex relative w-full h-fit py-1 hover:bg-cscol-100`}>
   <div class="pl-1 w-7"><img src={icon} alt="" /></div>
   <div class="pl-1">
     {label}
   </div>
 </button>
 {:else}
-<a href={href} class={`${is_local_url ? "bg-cscol-000" : "bg-cscol-400"} flex relative w-full h-fit py-1 hover:bg-cscol-100`}>
+<a href={href} class={`${is_local_url ? "bg-cscol-000" : "bg-cscol-500"} flex relative w-full h-fit py-1 hover:bg-cscol-100`}>
   <div class="pl-1 w-7"><img src={icon} alt="" /></div>
   <div class="pl-1">
     {label}

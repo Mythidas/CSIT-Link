@@ -1,5 +1,3 @@
-import type { CellData, SortState } from "$lib/components/table/filtered_table.svelte";
-
 export function get_time_since(date_string: string): string {
   const date = new Date(date_string);
   const now = new Date();
@@ -19,29 +17,4 @@ export function get_time_since(date_string: string): string {
     const minutes_ago = Math.floor(diff_in_seconds / 60);
     return `${minutes_ago} minutes ago`;
   }
-}
-
-export function time_since_sort(a: CellData, b: CellData, state: SortState): number {
-  const prio = (date: string) => {
-    if (date === "Now") {
-      return 1;
-    } else if (date.includes("minutes")) {
-      return 2;
-    } else if (date.includes("hours")) {
-      return 3;
-    } else if (date.includes("days")) {
-      return 4;
-    } else {
-      return 5;
-    }
-  }
-
-  if (prio(a.value) < prio(b.value)) return state.dir === "asc" ? -1 : 1;
-  if (prio(a.value) > prio(b.value)) return state.dir === "desc" ? -1 : 1;
-  
-  if (a.value !== "Now" && a.value !== "Never") {
-    return parseInt(a.value) - parseInt(b.value);
-  }
-
-  return 0;
 }

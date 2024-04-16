@@ -108,6 +108,23 @@ export async function add_company(client: PoolClient, company: Company): Promise
 
 // DEVICES
 
+export async function get_devices_all(client: PoolClient): Promise<Device[]> {
+  try {
+    const sort_devices = (a: Device, b: Device) => {
+      if (a.os_type < b.os_type) return -1;
+      if (a.os_type > b.os_type) return 1;
+
+      return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
+    }
+
+    const devices = (await client.query("SELECT * FROM Device"))?.rows as Device[] || [] as Device[];
+    return devices.sort(sort_devices);
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+}
+
 export async function get_devices_by_site_id(client: PoolClient, site: number): Promise<Device[]> {
   try {
     if (isNaN(site)) {
