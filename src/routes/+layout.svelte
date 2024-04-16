@@ -69,6 +69,7 @@
       <NavItem label="Reports" href="/reports" parent>
         <NavSubItem label="Devices" href="" parent>
           <NavSubItem label="All" href="/reports/devices/all" />
+          <NavSubItem label="Unhealthy" href="/reports/devices/unhealthy" />
         </NavSubItem>
       </NavItem>
       <NavItem label="Configuration" href="/configuration" parent>

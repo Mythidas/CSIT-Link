@@ -46,7 +46,7 @@
 
 <div class="flex w-full h-full p-3 bg-cscol-400">
   <FilteredTable
-    columns={[
+  columns={[
       { label: "Name", filter: "Text" },
       { label: "Site", filter: "Text" },
       { label: "OS", filter: "Text" },
@@ -54,7 +54,7 @@
       { label: "Sophos Last Seen", filter: "Text", tooltip: "Time since Sophos Agent responded", error_value: "Never", custom_warn: custom_date_warn, custom_sort: time_since_sort },
       { label: "Windows Firewall", filter: "Select", tooltip: "Is Windows Firewall Enabled. Source: VSA", custom_sort: boolean_sort_with_invalid },
       { label: "Tamper Protection", filter: "Select", tooltip: "Is Tamper Protection Enabled. Source: Sophos", custom_sort: boolean_sort_with_invalid },
-  ]}
+    ]}
     data={get_row_data()}
   />
 </div>

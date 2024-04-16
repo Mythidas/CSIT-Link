@@ -17,10 +17,10 @@
         cells: [
           { value: device.title },
           { value: device.os },
-          { value: get_time_since(device.rmm_last_heartbeat), error_value: "Never" },
-          { value: get_time_since(device.av_last_heartbeat), error_value: "Never" },
-          { value: get_firewall_entry(device), error_value: "N/A" },
-          { value: get_tamper_prot_entry(device), error_value: "N/A" }
+          { value: get_time_since(device.rmm_last_heartbeat) },
+          { value: get_time_since(device.av_last_heartbeat) },
+          { value: get_firewall_entry(device) },
+          { value: get_tamper_prot_entry(device) }
         ]
       };
     });
@@ -40,6 +40,10 @@
     } else {
       return device.tamp_prot_enabled ? "YES" : "NO";
     }
+  }
+
+  function custom_date_warn(value: string) {
+    return value.includes("days") && parseInt(value) >= 30;
   }
 
   async function realtime_reload() {
@@ -83,8 +87,8 @@
       columns={[
         { label: "Name", filter: "Text" },
         { label: "OS", filter: "Text" },
-        { label: "VSA Last Seen", filter: "Text", tooltip: "Time since VSA Agent responded", custom_sort: time_since_sort },
-        { label: "Sophos Last Seen", filter: "Text", tooltip: "Time since Sophos Agent responded", custom_sort: time_since_sort },
+        { label: "VSA Last Seen", filter: "Text", tooltip: "Time since VSA Agent responded", error_value: "Never", custom_warn: custom_date_warn, custom_sort: time_since_sort },
+        { label: "Sophos Last Seen", filter: "Text", tooltip: "Time since Sophos Agent responded", error_value: "Never", custom_warn: custom_date_warn, custom_sort: time_since_sort },
         { label: "Windows Firewall", filter: "Select", tooltip: "Is Windows Firewall Enabled. Source: VSA", custom_sort: boolean_sort_with_invalid },
         { label: "Tamper Protection", filter: "Select", tooltip: "Is Tamper Protection Enabled. Source: Sophos", custom_sort: boolean_sort_with_invalid },
       ]}

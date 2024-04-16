@@ -5,7 +5,11 @@
     error_display?: "Cell" | "Row",
     sortable?: boolean | undefined,
     tooltip?: string,
-    custom_sort?: (a: CellData, b: CellData, state: SortState) => number;
+    custom_sort?: (a: CellData, b: CellData, state: SortState) => number,
+    error_value?: string,
+    warn_value?: string,
+    custom_error?: (value: string) => boolean,
+    custom_warn?: (value: string) => boolean
   }
 
   export interface RowData {
@@ -15,8 +19,6 @@
 
   export interface CellData {
     value: string,
-    error_value?: string,
-    warn_value?: string
   }
 
   export interface SortState {
@@ -43,7 +45,7 @@
       let valid = true;
 
       row.cells.forEach((cell, index) => {
-        if (!cell.value.toLowerCase().includes(filters[index].toLowerCase())) {
+        if (cell.value && filters[index] && !cell.value.toLowerCase().includes(filters[index].toLowerCase())) {
           valid = false;
         }
       })
@@ -150,20 +152,36 @@
   }
 
   function get_tr_class(row: RowData): string {
-    const is_warn = row.cells.filter((data, index) => {
-      return data.warn_value?.includes(data.value) && columns[index].error_display === "Row";
+    const is_warn = row.cells.filter((cell, index) => {
+      const _custom_warn = (value: string) => {
+        return columns[index].custom_warn?.(value);
+      }
+      const warn_check = _custom_warn(cell.value);
+      return (warn_check || columns[index].warn_value?.includes(cell.value)) && columns[index].error_display === "Row";
     }).length > 0;
-    const is_error = row.cells.filter((data, index) => {
-      return data.error_value?.includes(data.value) && columns[index].error_display === "Row";
+
+    const is_error = row.cells.filter((cell, index) => {
+      const _custom_error = (value: string) => {
+        return columns[index].custom_error?.(value);
+      }
+      const error_check = _custom_error(cell.value);
+      return (error_check || columns[index].error_value?.includes(cell.value)) && columns[index].error_display === "Row";
     }).length > 0;
 
     const bgcol = is_error ? "bg-errcol-100" : "bg-wrncol-100";
     return `${(is_error || is_warn) ? bgcol : "even:bg-cscol-400 odd:bg-cscol-500 hover:bg-cscol-100"} hover:cursor-pointer`;
   }
 
-  function get_td_class(cell: CellData): string {
-    const is_warn = cell.warn_value?.includes(cell.value);
-    const is_error = cell.error_value?.includes(cell.value);
+  function get_td_class(cell: CellData, index: number): string {
+    const _custom_warn = (value: string) => {
+      return columns[index].custom_warn?.(value);
+    }
+    const _custom_error = (value: string) => {
+      return columns[index].custom_error?.(value);
+    }
+
+    const is_warn = _custom_warn(cell.value) || columns[index].warn_value?.includes(cell.value);
+    const is_error = _custom_error(cell.value) || columns[index].error_value?.includes(cell.value);
     const bgcol = is_error ? "bg-errcol-100" : "bg-wrncol-100";
     return `${(is_error || is_warn) && bgcol} pl-2 text-base font-normal`
   }
@@ -241,8 +259,8 @@
     <tbody class="text-base">
       {#each sorted_data as row}
       <tr on:click={() => on_select_row(row)} class={get_tr_class(row)}>
-      {#each row.cells as entry}
-        <td class={get_td_class(entry)}>
+      {#each row.cells as entry, index}
+        <td class={get_td_class(entry, index)}>
           {entry.value}
         </td>
       {/each}

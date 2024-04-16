@@ -1,7 +1,7 @@
 <script lang="ts">
   import FilteredTable from '$lib/components/table/filtered_table.svelte';
-    import { boolean_sort_with_invalid } from '$lib/helpers/hp_sorters';
-    import { get_time_since } from '$lib/helpers/hp_time';
+  import { boolean_sort_with_invalid } from '$lib/helpers/hp_sorters';
+  import { get_time_since } from '$lib/helpers/hp_time';
   import type { APIResponse } from '$lib/interfaces/i_api_response';
   import type { Device } from '$lib/interfaces/i_db';
   import { current_site } from '$lib/stores.js';
@@ -43,9 +43,9 @@
       return {
         cells: [
           { value: device.title }, 
-          { value: device.rmm_id === "" || device.av_id === "" ? "NO" : "YES", error_value: "NO" },
-          { value: device.rmm_id !== "" ? "YES" : "NO", error_value: "NO" },
-          { value: device.av_id !== "" ? "YES" : "NO", error_value: "NO" },
+          { value: device.rmm_id === "" || device.av_id === "" ? "NO" : "YES" },
+          { value: device.rmm_id !== "" ? "YES" : "NO" },
+          { value: device.av_id !== "" ? "YES" : "NO" },
           { value: device.os_type }
         ]
       };
@@ -82,9 +82,9 @@
     <FilteredTable 
       columns={[
         { label: "Name", filter: "Text" },
-        { label: "Healthy", filter: "Select", tooltip: "Agent in both VSAX and Sophos", custom_sort: boolean_sort_with_invalid },
-        { label: "VSAX", filter: "Select", tooltip: "Agent in VSAX site", custom_sort: boolean_sort_with_invalid },
-        { label: "Sophos", filter: "Select", tooltip: "Agent in Sophos site", custom_sort: boolean_sort_with_invalid },
+        { label: "Healthy", filter: "Select", tooltip: "Agent in both VSAX and Sophos", error_value: "NO", custom_sort: boolean_sort_with_invalid },
+        { label: "VSAX", filter: "Select", tooltip: "Agent in VSAX site", error_value: "NO", custom_sort: boolean_sort_with_invalid },
+        { label: "Sophos", filter: "Select", tooltip: "Agent in Sophos site", error_value: "NO", custom_sort: boolean_sort_with_invalid },
         { label: "OS", filter: "Select" }
       ]}
       data={row_data}
