@@ -4,8 +4,9 @@
   import Modal from "$lib/components/modal.svelte";
   import type { Company, Site } from "$lib/interfaces/i_db";
   import type { _ExtSite } from "$lib/interfaces/i_ext_info";
+    import { all_sites } from "$lib/stores";
 
-  export let data: { sites: Site[], companies: Company[], psa_sites: _ExtSite[], rmm_sites: _ExtSite[], av_sites: _ExtSite[] };
+  export let data: { companies: Company[], psa_sites: _ExtSite[], rmm_sites: _ExtSite[], av_sites: _ExtSite[] };
 
   let show_modal = false;
   let selected_name: string = "";
@@ -25,7 +26,7 @@
   };
 
   function set_selected(id: number) {
-    selected = data.sites.filter(site => site.site_id === id)[0];
+    selected = $all_sites.filter(site => site.site_id === id)[0];
   }
 
   function map_ext_site_to_options(sites: _ExtSite[]) {
@@ -72,7 +73,7 @@
           </tr>
         </thead>
         <tbody class="text-base">
-          {#each data.sites as site}
+          {#each $all_sites as site}
             <tr
               on:click={() => set_selected(site.site_id)}
               class={`${selected.site_id === site.site_id ? "bg-cscol-000" : "even:bg-cscol-400 odd:bg-cscol-500"} hover:bg-cscol-100 hover:cursor-pointer`}
