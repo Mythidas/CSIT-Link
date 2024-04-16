@@ -44,7 +44,10 @@
   }
 </script>
 
-<div class="flex w-full h-full p-3 bg-cscol-400">
+<div class="flex flex-col w-full h-full p-3 bg-cscol-400">
+  <div class="w-fit text-2xl mb-2 bg-cscol-000 p-2">
+    Devices: {data.devices.length}
+  </div>
   <FilteredTable
   columns={[
       { label: "Name", filter: "Text" },
