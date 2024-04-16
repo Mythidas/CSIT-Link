@@ -38,14 +38,24 @@
     loading = false;
   }
 
+  function get_force_warn_rmm(device: Device) {
+    const rmm_hb = new Date(device.rmm_last_heartbeat).getTime();
+    return (Date.now() - rmm_hb) > 2505600 * 1000;
+  }
+
+  function get_force_warn_av(device: Device) {
+    const av_hb = new Date(device.av_last_heartbeat).getTime();
+    return (Date.now() - av_hb) > 2505600 * 1000;
+  }
+
   function get_row_data(devices: Device[]) {
     return devices.map((device) => {
       return {
         cells: [
           { value: device.title }, 
           { value: device.rmm_id === "" || device.av_id === "" ? "NO" : "YES" },
-          { value: device.rmm_id !== "" ? "YES" : "NO" },
-          { value: device.av_id !== "" ? "YES" : "NO" },
+          { value: device.rmm_id !== "" ? "YES" : "NO", force_warn: get_force_warn_rmm(device) },
+          { value: device.av_id !== "" ? "YES" : "NO", force_warn: get_force_warn_av(device)  },
           { value: device.os_type }
         ]
       };

@@ -19,6 +19,8 @@
 
   export interface CellData {
     value: string,
+    force_error?: boolean,
+    force_warn?: boolean
   }
 
   export interface SortState {
@@ -156,7 +158,7 @@
       const _custom_warn = (value: string) => {
         return columns[index].custom_warn?.(value);
       }
-      const warn_check = _custom_warn(cell.value);
+      const warn_check = cell.force_warn || _custom_warn(cell.value);
       return (warn_check || columns[index].warn_value?.includes(cell.value)) && columns[index].error_display === "Row";
     }).length > 0;
 
@@ -164,7 +166,7 @@
       const _custom_error = (value: string) => {
         return columns[index].custom_error?.(value);
       }
-      const error_check = _custom_error(cell.value);
+      const error_check = cell.force_error || _custom_error(cell.value);
       return (error_check || columns[index].error_value?.includes(cell.value)) && columns[index].error_display === "Row";
     }).length > 0;
 
@@ -180,8 +182,8 @@
       return columns[index].custom_error?.(value);
     }
 
-    const is_warn = _custom_warn(cell.value) || columns[index].warn_value?.includes(cell.value);
-    const is_error = _custom_error(cell.value) || columns[index].error_value?.includes(cell.value);
+    const is_warn = cell.force_warn || _custom_warn(cell.value) || columns[index].warn_value?.includes(cell.value);
+    const is_error = cell.force_error || _custom_error(cell.value) || columns[index].error_value?.includes(cell.value);
     const bgcol = is_error ? "bg-errcol-100" : "bg-wrncol-100";
     return `${(is_error || is_warn) && bgcol} pl-2 text-base font-normal`
   }
