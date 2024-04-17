@@ -238,7 +238,6 @@ function main() {
                 case 3:
                     // Get rmm devices
                     _e.sent();
-                    if (!(all_rmm_devices.length < 0)) return [3 /*break*/, 11];
                     skip_to = 0;
                     _e.label = 4;
                 case 4:

@@ -157,44 +157,42 @@ async function main() {
     // Get rmm devices
     await log("Obtaining RMM devices...");
 
-    if (all_rmm_devices.length < 0) {
-      let skip_to = 0;
-      while (all_rmm_devices.length < 3500) {
-        const asset_api = await fetch(`${rmm_url}/assets?$skip=${skip_to}`, {
-          method: "GET",
-          headers: {
-            "authorization": `Basic ${rmm_auth}`,
-            "content-type": "application/json"
-          }
+    let skip_to = 0;
+    while (all_rmm_devices.length < 3500) {
+      const asset_api = await fetch(`${rmm_url}/assets?$skip=${skip_to}`, {
+        method: "GET",
+        headers: {
+          "authorization": `Basic ${rmm_auth}`,
+          "content-type": "application/json"
+        }
+      });
+      const asset_data = await asset_api.json();
+      
+      if (!asset_api.ok) {
+        await log("Failed to get rmm devices...");
+        await log (JSON.stringify(asset_data));
+        process.exit();
+      }
+      
+      const device_data = asset_data.Data;
+      for (let i = 0; i < device_data.length; i++) {
+        all_rmm_devices.push({ 
+          id: device_data[i].Identifier,
+          site_id: device_data[i].SiteId,
+          name: device_data[i].Name, 
+          os: device_data[i].Description,
+          os_type: device_data[i].GroupName.toLowerCase().includes("server") ? "Server" : "Workstation",
+          ip_lan: device_data[i].IpAddresses[0] || "",
+          last_heartbeat: device_data[i].LastSeenOnline,
+          firewall_enabled: device_data[i].FirewallEnabled
         });
-        const asset_data = await asset_api.json();
-        
-        if (!asset_api.ok) {
-          await log("Failed to get rmm devices...");
-          await log (JSON.stringify(asset_data));
-          process.exit();
-        }
-        
-        const device_data = asset_data.Data;
-        for (let i = 0; i < device_data.length; i++) {
-          all_rmm_devices.push({ 
-            id: device_data[i].Identifier,
-            site_id: device_data[i].SiteId,
-            name: device_data[i].Name, 
-            os: device_data[i].Description,
-            os_type: device_data[i].GroupName.toLowerCase().includes("server") ? "Server" : "Workstation",
-            ip_lan: device_data[i].IpAddresses[0] || "",
-            last_heartbeat: device_data[i].LastSeenOnline,
-            firewall_enabled: device_data[i].FirewallEnabled
-          });
-        }
-        
-        skip_to += device_data.length;
-        
-        await log(`Obtained ${all_rmm_devices.length} of ${asset_data.Meta.TotalCount} devices...`);
-        if (all_rmm_devices.length === asset_data.Meta.TotalCount) {
-          break;
-        }
+      }
+      
+      skip_to += device_data.length;
+      
+      await log(`Obtained ${all_rmm_devices.length} of ${asset_data.Meta.TotalCount} devices...`);
+      if (all_rmm_devices.length === asset_data.Meta.TotalCount) {
+        break;
       }
     }
 
