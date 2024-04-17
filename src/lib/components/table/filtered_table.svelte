@@ -192,11 +192,11 @@
 <svelte:window on:click={close_all_filters} />
 
 <div class="w-full h-full overflow-y-auto">
-  <table class={`table-auto w-full h-fit text-left`}>
-    <thead class="border-b-2 border-cscol-200 text-lg">
+  <table class={`relative table-auto w-full h-fit text-left`}>
+    <thead class="text-lg">
       <tr>
         {#each columns as col, index}
-          <th class={`pl-2`}>
+          <th class={`sticky top-0 pl-2 pb-1 bg-cscol-400 shadow-[inset_0_-2px_0_rgba(102,252,241,1)]`}>
             <div class={`${filter_open[index] && "relative"}`}>
               <div class="flex justify-between">
                 <div class="flex space-x-1">

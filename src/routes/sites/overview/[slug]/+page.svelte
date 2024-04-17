@@ -127,7 +127,7 @@
     <FilteredTable 
       columns={[
         { label: "Name", filter: "Text" },
-        { label: "Healthy", filter: "Select", tooltip: "Agent in both VSAX and Sophos", error_value: "NO", custom_sort: boolean_sort_with_invalid },
+        { label: "Healthy", filter: "Select", tooltip: "Agent in both VSAX and Sophos and Online within 30 days", error_value: "NO", custom_sort: boolean_sort_with_invalid },
         { label: `VSAX (${rmm_device_count})`, filter: "Select", tooltip: "Agent in VSAX site", error_value: "NO", custom_sort: boolean_sort_with_invalid },
         { label: `Sophos (${av_device_count})`, filter: "Select", tooltip: "Agent in Sophos site", error_value: "NO", custom_sort: boolean_sort_with_invalid },
         { label: "OS", filter: "Select" }
