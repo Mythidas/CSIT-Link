@@ -213,19 +213,23 @@ async function main() {
 
       await log(`SiteID: ${site.rmm_id} found ${rmm_devices.length} RMM devices`);
       
-      const av_res = await fetch(`${process.env.LOCAL_URI}/api/external/av/devices`, {
-        headers: {
-          "site-id": site.av_id,
-          "site-url": site.av_url
+      let av_devices: _ExtDevice[] = [];
+      if (!site.av_id) {
+        const av_res = await fetch(`${process.env.LOCAL_URI}/api/external/av/devices`, {
+          headers: {
+            "site-id": site.av_id,
+            "site-url": site.av_url
+          }
+        });
+        const av_data = await av_res.json();
+        if (!av_res.ok) {
+          await log(`Failed to get sophos devices ${site.title}...`);
+          await log(JSON.stringify(av_data));
+          continue;
         }
-      });
-      const av_data = await av_res.json();
-      if (!av_res.ok) {
-        await log(`Failed to get sophos devices ${site.title}...`);
-        await log(JSON.stringify(av_data));
-        continue;
+
+        av_devices = av_data.data;
       }
-      const av_devices = av_data.data;
       await log(`SiteID: ${site.av_id} found ${av_devices.length} AV devices`);
 
       let devices: Device[] = [];

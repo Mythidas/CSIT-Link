@@ -303,7 +303,7 @@ function main() {
                 case 16:
                     _e.trys.push([16, 22, 23, 28]);
                     _loop_1 = function () {
-                        var site, rmm_devices, av_res, av_data, av_devices, devices, i, _loop_2, i, db_devices;
+                        var site, rmm_devices, av_devices, av_res, av_data, devices, i, _loop_2, i, db_devices;
                         return __generator(this, function (_f) {
                             switch (_f.label) {
                                 case 0:
@@ -322,6 +322,8 @@ function main() {
                                     return [4 /*yield*/, log("SiteID: ".concat(site.rmm_id, " found ").concat(rmm_devices.length, " RMM devices"))];
                                 case 3:
                                     _f.sent();
+                                    av_devices = [];
+                                    if (!!site.av_id) return [3 /*break*/, 9];
                                     return [4 /*yield*/, fetch("".concat(process.env.LOCAL_URI, "/api/external/av/devices"), {
                                             headers: {
                                                 "site-id": site.av_id,
@@ -343,8 +345,9 @@ function main() {
                                     return [2 /*return*/, "continue"];
                                 case 8:
                                     av_devices = av_data.data;
-                                    return [4 /*yield*/, log("SiteID: ".concat(site.av_id, " found ").concat(av_devices.length, " AV devices"))];
-                                case 9:
+                                    _f.label = 9;
+                                case 9: return [4 /*yield*/, log("SiteID: ".concat(site.av_id, " found ").concat(av_devices.length, " AV devices"))];
+                                case 10:
                                     _f.sent();
                                     devices = [];
                                     for (i = 0; i < rmm_devices.length; i++) {
@@ -391,10 +394,10 @@ function main() {
                                         _loop_2(i);
                                     }
                                     return [4 /*yield*/, add_devices_by_site(pool_client, Number(site.site_id), devices)];
-                                case 10:
+                                case 11:
                                     db_devices = _f.sent();
                                     return [4 /*yield*/, log("Completed site ".concat(site.title, ": Collected ").concat(db_devices.length, " unique devices"))];
-                                case 11:
+                                case 12:
                                     _f.sent();
                                     return [2 /*return*/];
                             }
