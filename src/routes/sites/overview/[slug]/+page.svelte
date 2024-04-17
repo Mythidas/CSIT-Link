@@ -1,18 +1,17 @@
 <script lang="ts">
-    import { dev } from '$app/environment';
   import FilteredTable from '$lib/components/table/filtered_table.svelte';
   import { boolean_sort_with_invalid } from '$lib/helpers/hp_sorters';
   import { get_time_since } from '$lib/helpers/hp_time';
   import type { APIResponse } from '$lib/interfaces/i_api_response';
-  import type { Device } from '$lib/interfaces/i_db';
-  import { current_site } from '$lib/stores.js';
+  import type { Device, Site } from '$lib/interfaces/i_db';
 
-  export let data: { devices: Device[] };
+  export let data: { site: Site, devices: Device[] };
 
   let loading = false;
+  let last_sync = get_time_since(data.site?.last_update || "");
+  let mismatches = data.devices?.filter(dev => (!dev.av_id && has_av()) || (!dev.rmm_id && has_rmm())).length || 0;
   
   $: row_data = get_row_data(data.devices);
-  $: mismatches = data.devices?.filter(dev => (!dev.av_id && has_av()) || (!dev.rmm_id && has_rmm())).length || 0;
   $: rmm_device_count = data.devices?.filter(dev => dev.rmm_id !== "").length || 0;
   $: av_device_count = data.devices?.filter(dev => dev.av_id !== "").length || 0;
   $: healthy_devices = data.devices?.filter(device => {
@@ -27,11 +26,11 @@
   }).length || 0;
 
   function has_rmm() {
-    return $current_site?.rmm_id !== "";
+    return data.site?.rmm_id !== "";
   }
 
   function has_av() {
-    return $current_site?.av_id !== "";
+    return data.site?.av_id !== "";
   }
   
   async function realtime_reload() {
@@ -41,15 +40,18 @@
     try {
       const res = await fetch("/api/v1/devices", {
         headers: {
-          "site-id": $current_site?.site_id.toString() || ""
+          "site-id": data.site?.site_id.toString() || ""
         }
       });
       const res_data = await res.json() as APIResponse;
 
-      if (res.ok) {
-        data.devices = res_data.data;
-        row_data = res_data.data;
+      if (!res.ok) {
+        // TODO: Error popups
       }
+
+      data.devices = res_data.data;
+      row_data = res_data.data;
+      last_sync = get_time_since(new Date().toISOString());
     } catch (err) {
       console.log(err);
       data.devices = temp_data;
@@ -68,7 +70,7 @@
   }
 
   function get_healthy(device: Device) {
-    if (!$current_site?.rmm_id || !$current_site.av_id) return "YES";
+    if (!data.site?.rmm_id || !data.site.av_id) return "YES";
     return device.rmm_id === "" || device.av_id === "" ? "NO" : "YES";
   }
 
@@ -104,7 +106,7 @@
 <div class="flex flex-col w-full h-full space-y-3">
   <div class="flex flex-col w-full p-3 rounded-sm space-y-2 bg-cscol-400">
     <div class="flex space-x-3 text-3xl">
-      <h3>{$current_site?.title}</h3>
+      <h3>{data.site?.title}</h3>
       <button on:click={realtime_reload} disabled={loading}>
         <svg class={`${loading && "animate-spin-slow"}`} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline>
@@ -119,7 +121,7 @@
         <p class={`p-2 text-xl ${mismatches ? "bg-errcol-100" : "bg-cscol-000"}`}>Matching Devices: {(data.devices?.length || 0) - mismatches}</p>
       </div>
       <div class="flex space-x-1">
-        <p class="p-2 text-xl bg-cscol-000">Last Sync: {get_time_since($current_site?.last_update || "")}</p>
+        <p class="p-2 text-xl bg-cscol-000">Last Sync: {last_sync}</p>
       </div>
     </div>
   </div>

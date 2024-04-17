@@ -25,9 +25,10 @@ export async function load({ locals, url, fetch }) {
     }
 
     const db_devices = await db.get_devices_by_site_id(locals.db_conn, db_site.site_id);
+    const db_site_updated = await db.get_site(locals.db_conn, db_site.site_id);
 
     return {
-      site: db_site,
+      site: db_site_updated,
       devices: db_devices
     }
   } catch (err) {
