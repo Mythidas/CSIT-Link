@@ -192,7 +192,7 @@
 <svelte:window on:click={close_all_filters} />
 
 <div class="w-full h-full overflow-y-auto">
-  <table class={`relative table-auto w-full h-fit text-left`}>
+  <table class={`table-auto w-full h-fit text-left`}>
     <thead class="text-lg">
       <tr>
         {#each columns as col, index}
