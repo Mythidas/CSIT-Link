@@ -23,6 +23,6 @@ export const actions = {
 
     if (!title || !description || !app_ver) return null;
 
-    return (await db.add_patch(event.locals.db_conn, { id: -1, title: title, description: description, app_ver: app_ver }));
+    //return (await db.add_patch(event.locals.db_conn, { id: -1, title: title, description: description, app_ver: app_ver }));
   }
 } satisfies Actions;
