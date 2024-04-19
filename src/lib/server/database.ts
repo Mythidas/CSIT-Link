@@ -1,6 +1,6 @@
 import { dev } from "$app/environment";
 import { PG_HOST, PG_USER, PG_DATABASE, PG_PASSWORD, PG_PORT } from "$env/static/private";
-import type { Company, Device, Patch, Site } from "$lib/interfaces/i_db";
+import type { Auth, Company, Device, Patch, Site } from "$lib/interfaces/i_db";
 import type { _ExtDevice } from "$lib/interfaces/i_ext_info";
 import pg, { type PoolClient } from "pg";
 
@@ -108,7 +108,7 @@ export async function add_company(client: PoolClient, company: Company): Promise
 
 // DEVICES
 
-export async function get_devices_all(client: PoolClient): Promise<Device[]> {
+export async function get_devices(client: PoolClient): Promise<Device[]> {
   try {
     const sort_devices = (a: Device, b: Device) => {
       if (a.os_type < b.os_type) return -1;
@@ -223,5 +223,30 @@ export async function get_patches(client: PoolClient): Promise<Patch[]> {
   } catch (err) {
     console.log(err);
     return [];
+  }
+}
+
+// AUTH
+
+export async function get_auth(client: PoolClient, jwt_token: string): Promise<Auth> {
+  try {
+    const auth = (await client.query("SELECT * FROM Auth WHERE jwt_token = $1;", [jwt_token]))?.rows[0] 
+      || { id: -1, jwt_token: jwt_token, expiration: new Date().toISOString(), username: "" };
+    return auth;
+  } catch (err) {
+    console.log(err);
+    return { id: -1, jwt_token: jwt_token, expiration: new Date().toISOString(), username: "" };
+  }
+}
+
+export async function set_auth(client: PoolClient, username: string, jwt_token: string): Promise<boolean> {
+  try {
+    await client.query("DELETE FROM Auth WHERE username = $1;", [username]);
+    await client.query("INSERT INTO Auth (jwt_token, expiration, username) VALUES ($1,$2,$3);", [jwt_token, new Date(Date.now() + 4 * 60 * 1000).toISOString(), username]);
+
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
   }
 }

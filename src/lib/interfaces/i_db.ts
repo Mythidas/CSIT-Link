@@ -36,3 +36,10 @@ export interface Patch {
   build: number,
   description: string
 }
+
+export interface Auth {
+  id: number,
+  jwt_token: string,
+  expiration: string,
+  username: string,
+}

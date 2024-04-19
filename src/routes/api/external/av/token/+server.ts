@@ -1,3 +1,4 @@
+import { dev } from '$app/environment';
 import { AV_ID, AV_SC } from '$env/static/private';
 
 export async function GET({ cookies }) {
@@ -53,11 +54,15 @@ export async function GET({ cookies }) {
     cookies.set("av_pt_token", pt_data.id, {
       path: "/",
       maxAge: 3600,
+      httpOnly: true,
+      secure: !dev,
       sameSite: "strict"
     })
     cookies.set("av_jwt_token", token_data.access_token, {
       path: "/",
       maxAge: 3600,
+      httpOnly: true,
+      secure: !dev,
       sameSite: "strict"
     });
 

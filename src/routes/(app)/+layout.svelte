@@ -1,5 +1,5 @@
 <script lang="ts">
-  import "../app.css";
+  import "../../app.css";
   import { navigating, page } from "$app/stores";
   import { goto } from "$app/navigation";
   import NavItem from "$lib/components/site_navbar/nav_item.svelte";

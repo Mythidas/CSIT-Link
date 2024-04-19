@@ -36,7 +36,7 @@
 {:else}
 <div class="relative w-full overflow-visible">
   <input 
-    class="w-full text-2xl p-1 outline-none border-2 focus:border-cscol-100 text-cscol-600" 
+    class="w-full text-2xl p-1 outline-none border-2 focus:border-cscol-200 text-cscol-600" 
     bind:value={filter} 
     on:focus={() => opened = true}
     on:click|stopPropagation={() => {}}

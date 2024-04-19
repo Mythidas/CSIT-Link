@@ -1,6 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 import pg from "pg";
+import ldap from "ldapjs";
 
 declare global {
 	namespace App {

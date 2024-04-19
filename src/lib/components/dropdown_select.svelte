@@ -41,9 +41,9 @@
 
   let int_rounded = "";
   $: {
-    if (rounded === "All") int_rounded = "rounded-md";
-    else if (rounded === "Left") int_rounded = opened ? "rounded-tl-md" : "rounded-l-md";
-    else if (rounded === "Right") int_rounded = "rounded-r-md";
+    if (rounded === "All") int_rounded = "rounded-sm";
+    else if (rounded === "Left") int_rounded = opened ? "rounded-tl-sm" : "rounded-l-sm";
+    else if (rounded === "Right") int_rounded = "rounded-r-sm";
     else int_rounded = "";
   }
 

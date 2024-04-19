@@ -12,7 +12,7 @@ function has_av(site: Site | undefined) {
 export async function load({ locals }) {
   try {
     const db_sites = await db.get_sites(locals.db_conn);
-    const db_devices = await db.get_devices_all(locals.db_conn);
+    const db_devices = await db.get_devices(locals.db_conn);
     const filtered_devices = db_devices.filter(device => {
       const site = db_sites.find(site => site.site_id === device.site_id);
 
