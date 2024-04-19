@@ -4,7 +4,8 @@ export default {
   theme: {
     extend: {
       animation: {
-        "spin-slow": "spin 2s linear infinite"
+        "spin-slow": "spin 2s linear infinite",
+        "ping-sm": "ping-sm 2s cubic-bezier(0, 0, 0.1, 1) infinite" 
       }
     },
     colors: {

@@ -2,15 +2,26 @@
   import "../../../app.css";
   import { enhance } from "$app/forms";
   import { goto } from "$app/navigation";
+  import Error from "$lib/components/error.svelte";
 
   export let form;
+
+  let error_visible = false;
 
   $: {
     if (form?.success) {
       goto("/");
+    } else if (form?.success !== undefined) {
+      open_error();
     }
   }
+
+  function open_error() {
+    error_visible = true;
+  }
 </script>
+
+<Error message="Incorrect Username or Password" duration={3000} bind:visible={error_visible} />
 
 <main class="relative flex w-screen h-screen bg-cscol-600 text-cscol-font">
   {#if form?.success}
