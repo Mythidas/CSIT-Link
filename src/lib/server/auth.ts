@@ -3,6 +3,8 @@ import ldap from "ldapjs";
 import jwt from "jsonwebtoken";
 
 export async function validate(username: string, password: string) {
+  if (!username || !password) return false;
+
   try {
     return new Promise<boolean>((resolve, reject) => {
       const client = ldap.createClient({
@@ -10,11 +12,10 @@ export async function validate(username: string, password: string) {
       });
 
       client.on("error", (err) => {
-        if (err.errno === -4077) return;
-        console.log(err);
+        resolve(false);
       });
 
-      client.bind(`${username}@csit.loc`, password, (err, bnd) => {
+      client.bind(`${username}@csit.loc`, password, (err) => {
         resolve(err === null);
       });
     });
