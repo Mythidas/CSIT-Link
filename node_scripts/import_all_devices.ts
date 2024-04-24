@@ -61,6 +61,8 @@ async function log(message: string) {
   }
 }
 
+// Dump Logs are for troubleshooting only
+
 async function log_dump(message: string) {
   try {
     await fs.appendFile("import_devices_dump.log", `${message}\n`);
@@ -86,6 +88,8 @@ async function load_dump_logs() {
     return [];
   }
 }
+
+//
 
 export async function get_sites(client: pg.PoolClient): Promise<Site[]> {
   try {
@@ -158,7 +162,7 @@ async function main() {
     await log("Obtaining RMM devices...");
 
     let skip_to = 0;
-    while (all_rmm_devices.length < 3500) {
+    while (all_rmm_devices.length < 5000) {
       const asset_api = await fetch(`${rmm_url}/assets?$skip=${skip_to}`, {
         method: "GET",
         headers: {
@@ -197,7 +201,7 @@ async function main() {
     }
 
     await log(`Obtained ${all_rmm_devices.length} RMM devices...`);
-    //await log_dump(JSON.stringify(all_rmm_devices));
+    await log_dump(JSON.stringify(all_rmm_devices));
 
     await log("Clearing device table...");
     await pool_client.query("TRUNCATE TABLE Device RESTART IDENTITY");
@@ -214,8 +218,8 @@ async function main() {
       await log(`SiteID: ${site.rmm_id} found ${rmm_devices.length} RMM devices`);
       
       let av_devices: _ExtDevice[] = [];
-      if (!site.av_id) {
-        const av_res = await fetch(`${process.env.LOCAL_URI}/api/external/av/devices`, {
+      if (site.av_id) {
+        const av_res = await fetch(`${process.env.LOCAL_URL}/api/external/av/devices`, {
           headers: {
             "site-id": site.av_id,
             "site-url": site.av_url
@@ -282,6 +286,7 @@ async function main() {
     await log(`Finished in ${(Date.now() - start_time) / 1000 / 60} minutes!`);
     process.exit();
   } catch (err: any) {
+    await log("Script aborted...");
     await log(JSON.stringify(err));
     process.exit();
   }

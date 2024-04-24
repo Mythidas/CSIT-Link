@@ -3,6 +3,6 @@
 	"version": "0.2.0",
 	"private": true,
 	"scripts": {
-		"start": "node import-all-devices.js"
+		"start": "node import_all_devices.js"
 	}
 }
