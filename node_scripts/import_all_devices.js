@@ -80,6 +80,7 @@ function log(message) {
         });
     });
 }
+// Dump Logs are for troubleshooting only
 function log_dump(message) {
     return __awaiter(this, void 0, void 0, function () {
         var err_2;
@@ -140,6 +141,7 @@ function load_dump_logs() {
         });
     });
 }
+//
 function get_sites(client) {
     return __awaiter(this, void 0, void 0, function () {
         var err_5;
@@ -224,7 +226,7 @@ function main() {
         return __generator(this, function (_e) {
             switch (_e.label) {
                 case 0:
-                    _e.trys.push([0, 30, , 32]);
+                    _e.trys.push([0, 31, , 34]);
                     start_time = Date.now();
                     return [4 /*yield*/, pool.connect()];
                 case 1:
@@ -241,7 +243,7 @@ function main() {
                     skip_to = 0;
                     _e.label = 4;
                 case 4:
-                    if (!(all_rmm_devices.length < 3500)) return [3 /*break*/, 11];
+                    if (!(all_rmm_devices.length < 5000)) return [3 /*break*/, 11];
                     return [4 /*yield*/, fetch("".concat(rmm_url, "/assets?$skip=").concat(skip_to), {
                             method: "GET",
                             headers: {
@@ -288,20 +290,21 @@ function main() {
                 case 11: return [4 /*yield*/, log("Obtained ".concat(all_rmm_devices.length, " RMM devices..."))];
                 case 12:
                     _e.sent();
-                    //await log_dump(JSON.stringify(all_rmm_devices));
-                    return [4 /*yield*/, log("Clearing device table...")];
+                    return [4 /*yield*/, log_dump(JSON.stringify(all_rmm_devices))];
                 case 13:
-                    //await log_dump(JSON.stringify(all_rmm_devices));
                     _e.sent();
-                    return [4 /*yield*/, pool_client.query("TRUNCATE TABLE Device RESTART IDENTITY")];
+                    return [4 /*yield*/, log("Clearing device table...")];
                 case 14:
                     _e.sent();
-                    return [4 /*yield*/, log("Obtaining devices for ".concat(sites.length, " sites..."))];
+                    return [4 /*yield*/, pool_client.query("TRUNCATE TABLE Device RESTART IDENTITY")];
                 case 15:
                     _e.sent();
-                    _e.label = 16;
+                    return [4 /*yield*/, log("Obtaining devices for ".concat(sites.length, " sites..."))];
                 case 16:
-                    _e.trys.push([16, 22, 23, 28]);
+                    _e.sent();
+                    _e.label = 17;
+                case 17:
+                    _e.trys.push([17, 23, 24, 29]);
                     _loop_1 = function () {
                         var site, rmm_devices, av_devices, av_res, av_data, devices, i, _loop_2, i, db_devices;
                         return __generator(this, function (_f) {
@@ -323,8 +326,8 @@ function main() {
                                 case 3:
                                     _f.sent();
                                     av_devices = [];
-                                    if (!!site.av_id) return [3 /*break*/, 9];
-                                    return [4 /*yield*/, fetch("".concat(process.env.LOCAL_URI, "/api/external/av/devices"), {
+                                    if (!site.av_id) return [3 /*break*/, 9];
+                                    return [4 /*yield*/, fetch("".concat(process.env.LOCAL_URL, "/api/external/av/devices"), {
                                             headers: {
                                                 "site-id": site.av_id,
                                                 "site-url": site.av_url
@@ -404,47 +407,50 @@ function main() {
                         });
                     };
                     _a = true, sites_1 = __asyncValues(sites);
-                    _e.label = 17;
-                case 17: return [4 /*yield*/, sites_1.next()];
-                case 18:
-                    if (!(sites_1_1 = _e.sent(), _b = sites_1_1.done, !_b)) return [3 /*break*/, 21];
-                    return [5 /*yield**/, _loop_1()];
+                    _e.label = 18;
+                case 18: return [4 /*yield*/, sites_1.next()];
                 case 19:
-                    _e.sent();
-                    _e.label = 20;
+                    if (!(sites_1_1 = _e.sent(), _b = sites_1_1.done, !_b)) return [3 /*break*/, 22];
+                    return [5 /*yield**/, _loop_1()];
                 case 20:
+                    _e.sent();
+                    _e.label = 21;
+                case 21:
                     _a = true;
-                    return [3 /*break*/, 17];
-                case 21: return [3 /*break*/, 28];
-                case 22:
+                    return [3 /*break*/, 18];
+                case 22: return [3 /*break*/, 29];
+                case 23:
                     e_1_1 = _e.sent();
                     e_1 = { error: e_1_1 };
-                    return [3 /*break*/, 28];
-                case 23:
-                    _e.trys.push([23, , 26, 27]);
-                    if (!(!_a && !_b && (_c = sites_1.return))) return [3 /*break*/, 25];
-                    return [4 /*yield*/, _c.call(sites_1)];
+                    return [3 /*break*/, 29];
                 case 24:
+                    _e.trys.push([24, , 27, 28]);
+                    if (!(!_a && !_b && (_c = sites_1.return))) return [3 /*break*/, 26];
+                    return [4 /*yield*/, _c.call(sites_1)];
+                case 25:
                     _e.sent();
-                    _e.label = 25;
-                case 25: return [3 /*break*/, 27];
-                case 26:
+                    _e.label = 26;
+                case 26: return [3 /*break*/, 28];
+                case 27:
                     if (e_1) throw e_1.error;
                     return [7 /*endfinally*/];
-                case 27: return [7 /*endfinally*/];
-                case 28: return [4 /*yield*/, log("Finished in ".concat((Date.now() - start_time) / 1000 / 60, " minutes!"))];
-                case 29:
-                    _e.sent();
-                    process.exit();
-                    return [3 /*break*/, 32];
+                case 28: return [7 /*endfinally*/];
+                case 29: return [4 /*yield*/, log("Finished in ".concat((Date.now() - start_time) / 1000 / 60, " minutes!"))];
                 case 30:
-                    err_7 = _e.sent();
-                    return [4 /*yield*/, log(JSON.stringify(err_7))];
-                case 31:
                     _e.sent();
                     process.exit();
-                    return [3 /*break*/, 32];
-                case 32: return [2 /*return*/];
+                    return [3 /*break*/, 34];
+                case 31:
+                    err_7 = _e.sent();
+                    return [4 /*yield*/, log("Script aborted...")];
+                case 32:
+                    _e.sent();
+                    return [4 /*yield*/, log(JSON.stringify(err_7))];
+                case 33:
+                    _e.sent();
+                    process.exit();
+                    return [3 /*break*/, 34];
+                case 34: return [2 /*return*/];
             }
         });
     });
