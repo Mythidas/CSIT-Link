@@ -25,9 +25,9 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /apps/CSIT-Link
+            cd /apps/csit_tools
             git reset --hard HEAD~1
             git pull
             npm install
             npm run build
-            pm2 restart csit-link
+            pm2 restart csit_tools
