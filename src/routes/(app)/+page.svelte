@@ -19,7 +19,7 @@
 </script>
 
 <div class="mx-auto w-3/5 bg-cscol-400 text-center text-3xl font-bold py-8 rounded-sm">
-  Welcome to CSIT Link
+  Welcome to CSIT Tools
 </div>
 
 <div class="mx-auto my-2 w-3/5 h-2/4 bg-cscol-400 text-center text-3xl font-bold py-3 rounded-sm">

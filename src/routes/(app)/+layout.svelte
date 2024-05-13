@@ -43,7 +43,7 @@
   <!-- Top Nav -->
   <nav class="fixed flex top-0 shadow-lg w-full h-[75px] z-50">
     <div class="flex w-64 h-full font-bold text-3xl text-cscol-200">
-      <p class="ml-5 my-auto">CSIT Link</p>
+      <p class="ml-5 my-auto">CSIT Tools</p>
     </div>
     <div class="flex w-full">
       <div class="flex w-1/3 my-auto text-xl space-x-0">
