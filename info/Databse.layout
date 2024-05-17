@@ -1,0 +1,5 @@
+Databases:
+- Sites (Holds info about site and ID's for AV,RMM,PSA,Backup)
+- Companies (Container to allow fast queries for Site groups)
+- Devices (Info for devices for AV,RMM,Backup)
+

@@ -1,6 +1,6 @@
 <script lang="ts">
   interface _Option {
-    key: string,
+    value: string,
     label: string
   }
 

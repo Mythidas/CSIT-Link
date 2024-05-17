@@ -1,6 +1,6 @@
 <script lang="ts">
   interface _Option {
-    key: string,
+    value: string,
     label: string
   }
 
@@ -27,7 +27,7 @@
 
   function on_select(option: _Option) {
     selected = option;
-    selected_ptr = option.key;
+    selected_ptr = option.value;
     filter = "";
   }
 
