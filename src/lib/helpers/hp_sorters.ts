@@ -1,4 +1,4 @@
-import type { CellData, SortState } from "$lib/components/table/filtered_table.svelte";
+import type { CellData, SortState } from "../../../old_routes/table.svelte";
 
 export function boolean_sort_with_invalid(a: CellData, b: CellData, state: SortState): number {
   const prio = (val: string) => {

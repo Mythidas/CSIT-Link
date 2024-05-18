@@ -25,3 +25,14 @@ export async function get_sites(client: PoolClient): Promise<Site[]> {
     return [];
   }
 }
+
+// COMPANIES
+
+export async function get_companies(client: PoolClient): Promise<Company[]> {
+  try {
+    return (await client.query("SELECT * FROM Company")).rows;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+}

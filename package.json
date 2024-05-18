@@ -28,6 +28,7 @@
 		"@types/jsonwebtoken": "^9.0.6",
 		"@types/ldapjs": "^3.0.6",
 		"@types/pg": "^8.11.4",
+		"chart.js": "^4.4.3",
 		"dotenv": "^16.4.5",
 		"jsonwebtoken": "^9.0.2",
 		"ldapjs": "^3.0.7",
