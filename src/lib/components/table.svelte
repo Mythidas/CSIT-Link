@@ -7,17 +7,20 @@
 
 <script lang="ts">
   import Icon from "./icon.svelte";
+  import TableFilters, { type Filter, type FilterGroup } from "./table_filters.svelte";
 
   export let columns: Column[];
   export let data: any[];
+  export let filters: FilterGroup[] = [];
   export let on_select_row: (data: any) => void = () => { };
 
-  let filters_open = false;
   let sort_state = { key: "", asc: true };
   let inter_data = JSON.parse(JSON.stringify(data));
+  let filtered_data = inter_data;
+
   $: {
     if (sort_state.key) {
-      inter_data = inter_data.sort((a: any, b: any) => {
+      filtered_data = filtered_data.sort((a: any, b: any) => {
         if (sort_state.asc) {
           return a[sort_state.key].localeCompare(b[sort_state.key]);
         } else {
@@ -26,7 +29,7 @@
       });
     } else {
       inter_data = JSON.parse(JSON.stringify(data));
-    }    
+    }
   }
 
   function set_sort_key(key: string) {
@@ -42,15 +45,29 @@
       sort_state.asc = true;
     }
   }
+
+  function on_filter_change(filters: CustomEvent<Filter[]>) {
+    filtered_data = inter_data.filter((data: any) => {
+      for (let i = 0; i < filters.detail.length; i++) {
+        if (filters.detail[i].type === "Text") {
+          if (!data[filters.detail[i].key].toLowerCase().includes(filters.detail[i].value?.toString().toLowerCase() || "")) {
+            return false;
+          }
+        } else if (filters.detail[i].type === "Bool") {
+
+        } else {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }
   
 </script>
 
-<div class="flex w-full h-full space-x-2 overflow-hidden">
-  <div class={`${filters_open ? "w-80" : "w-14"} p-2 transition-[width] bg-base-150 stroke-font`}>
-    <button on:click={() => filters_open = !filters_open}>
-      <Icon icon="Filter"/>
-    </button>
-  </div>
+<div class="flex w-full h-full overflow-hidden">
+  <TableFilters bind:filters on:filter_change={on_filter_change}/>
   <div class="w-full h-full overflow-y-auto">
     <table class="table-auto text-left w-full h-fit bg-base-100">
       <thead>
@@ -72,7 +89,7 @@
         </tr>
       </thead>
       <tbody class="hover:cursor-pointer">
-        {#each inter_data as row}
+        {#each filtered_data as row}
         <tr class="even:bg-base-100 odd:bg-base-150 hover:bg-base-300" on:click={() => on_select_row(row)}>
           {#each columns as column}
           <td class="p-2">{row[column.key]}</td>

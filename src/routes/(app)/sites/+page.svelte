@@ -19,13 +19,22 @@
 </div>
 
 <Modal bind:show_modal={select_site_modal}>
-  <div class="flex flex-col space-y-2 overflow-hidden">
+  <div class="flex flex-col h-full space-y-2 overflow-hidden">
     <Table
       columns={[
         { key: "title", title: "Name" },
         { key: "company", title: "Company" }
       ]}
       data={data.sites.concat(data.sites).concat(data.sites)}
+      filters={[
+        {
+          name: "Site",
+          filters: [
+            { name: "Name", key: "title", type: "Text" },
+            { name: "Company", key: "company", type: "Text" },
+          ]
+        }
+      ]}
       on_select_row={(data) => {selected_site = data; select_site_modal = false}}
     />
     <Button on_click={() => select_site_modal = false}>
