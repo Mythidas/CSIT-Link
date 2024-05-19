@@ -12,7 +12,7 @@
 
 <div class="flex flex-col w-full h-full">
   <div class="w-full p-2 bg-base-200 shadow-md text-xl">
-    <Button on_click={() => select_site_modal = true}>
+    <Button on:click={() => select_site_modal = true}>
       {selected_site?.title || "Select Site"}
     </Button>
   </div>
@@ -37,7 +37,7 @@
       ]}
       on_select_row={(data) => {selected_site = data; select_site_modal = false}}
     />
-    <Button on_click={() => select_site_modal = false}>
+    <Button on:click={() => select_site_modal = false}>
       Close
     </Button>
   </div>
