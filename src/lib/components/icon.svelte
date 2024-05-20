@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let icon: "Home" | "Up" | "Down" | "Filter";
+  export let icon: "Home" | "Up" | "Down" | "Filter" | "Menu";
   export let size = 10;
 
   const _class = `w-${size} h-${size}`;
@@ -21,5 +21,10 @@
 {:else if icon === "Filter"}
 <svg class={_class} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+</svg>
+{:else if icon === "Menu"}
+<svg class={_class} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line>
+  <line x1="3" y1="18" x2="21" y2="18"></line>
 </svg>
 {/if}

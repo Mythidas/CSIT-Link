@@ -23,11 +23,11 @@
   import { createEventDispatcher } from "svelte";
   import Icon from "./icon.svelte";
   import Input from "./input.svelte";
-    import Button from "./button.svelte";
+  import DropdownButton from "./dropdown_button.svelte";
 
   export let filters: FilterGroup[] = [];
+  export let active_filters: Filter[] = [];
   
-  let active_filters: Filter[] = [];
   let filters_open = false;
   let search_filters = "";
 
@@ -62,17 +62,19 @@
     dispatch('filter_change', active_filters);
   }
 
-  function reset_filters() {
-    search_filters = "";
-    for (let i = 0; i < filters.length; i++) {
-      filters[i].expanded = false;
-      for (let j = 0; j < filters[i].filters.length; j++) {
-        filters[i].filters[j].active = false;
-        filters[i].filters[j].value = "";
+  function on_filter_combo(e: any) {
+    if (e.detail === "clear_filters") {
+      search_filters = "";
+      for (let i = 0; i < filters.length; i++) {
+        filters[i].expanded = false;
+        for (let j = 0; j < filters[i].filters.length; j++) {
+          filters[i].filters[j].active = false;
+          filters[i].filters[j].value = "";
+        }
       }
+      active_filters = [];
+      on_filter_change();
     }
-
-    active_filters = [];
   }
 </script>
 
@@ -87,13 +89,22 @@
       {/if}
     </button>
     {#if filters_open}
-    <div class="w-full">
+    <div class="flex w-full">
       <Input bind:value={search_filters} placeholder="Search filters..."/>
+      <DropdownButton 
+        options={[
+          { label: "Clear Filters", key: "clear_filters" },
+        ]}
+        align="Right"
+        on:select={on_filter_combo}
+      >
+        <Icon icon="Menu"/>
+      </DropdownButton>
     </div>
     {/if}
   </div>
   {#if filters_open}
-  <div class="flex flex-col w-full h-full justify-between">
+  <div class="flex flex-col w-full h-full overflow-hidden">
     <div class="flex flex-col border-t-2 border-base-300 overflow-y-auto">
       {#each filters as group}
       <div class={`${group.expanded && "pb-2"} border-b-2 border-base-300`}>
@@ -125,9 +136,6 @@
       </div> 
       {/each}
     </div>
-    <Button on:click={reset_filters}>
-      Clear Filters
-    </Button>
   </div>
   {/if}
 </div>
