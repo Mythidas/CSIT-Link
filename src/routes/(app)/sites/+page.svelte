@@ -31,6 +31,9 @@
       on:select_row={(data) => { selected_site = data.detail; sites_state = "Min"; }}
     />
   </AccordionTab>
+  <AccordionTab title="Charts" state="Mid">
+    
+  </AccordionTab>
   <AccordionTab title={`Devices (${data.devices.length})`} state="Max">
     <Table
       columns={[
