@@ -36,3 +36,23 @@ export async function get_companies(client: PoolClient): Promise<Company[]> {
     return [];
   }
 }
+
+// DEVICES
+
+export async function get_devices(client: PoolClient): Promise<Device[]> {
+  try {
+    const sites = await get_sites(client);
+
+    const sort_devices = (a: Device, b: Device) => {
+      const site_a = sites.find((site) => { return site.site_id === a.site_id; });
+      const site_b = sites.find((site) => { return site.site_id === b.site_id; });
+      return site_a?.title.toLowerCase().localeCompare(site_b?.title.toLowerCase() || "") || -1;
+    }
+
+    const devices = (await client.query("SELECT * FROM Device"))?.rows as Device[] || [] as Device[];
+    return devices.sort(sort_devices);
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+}

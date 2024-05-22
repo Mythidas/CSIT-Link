@@ -4,6 +4,8 @@ export async function load({ locals }) {
   try {
     const db_sites = await db.get_sites(locals.db_conn);
     const db_companies = await db.get_companies(locals.db_conn);
+    const db_devices = await db.get_devices(locals.db_conn);
+
     let sites_joined = [];
 
     for (let i = 0; i < db_sites.length; i++) {
@@ -11,7 +13,8 @@ export async function load({ locals }) {
     }
 
     return {
-      sites: sites_joined
+      sites: sites_joined,
+      devices: db_devices
     }
   } catch (err) {
     console.log(err);

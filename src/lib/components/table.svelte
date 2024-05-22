@@ -1,23 +1,25 @@
 <script lang="ts" context="module">
   export interface Column {
-    title: string,
+    label: string,
     key: string
   }
 </script>
 
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
   import Icon from "./icon.svelte";
   import TableFilters, { type Filter, type FilterGroup } from "./table_filters.svelte";
 
   export let columns: Column[];
   export let data: any[];
   export let filters: FilterGroup[] = [];
-  export let on_select_row: (data: any) => void = () => { };
 
   let sort_state = { key: "", asc: true };
   let inter_data = JSON.parse(JSON.stringify(data));
   let filtered_data = inter_data;
   let active_filters: Filter[] = [];
+
+  const dispatch = createEventDispatcher();
 
   function set_sort_key(key: string) {
     if (sort_state.key === key) {
@@ -65,6 +67,10 @@
       return true;
     });
   }
+
+  function on_select_row(data: any) {
+    dispatch('select_row', data);
+  }
   
 </script>
 
@@ -77,7 +83,7 @@
           {#each columns as column}
           <th class="sticky top-0 shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer" on:click={() => set_sort_key(column.key)}>
             <div class="flex w-full justify-between">
-              <p class="my-auto p-2 select-none">{column.title}</p>
+              <p class="my-auto p-2 select-none">{column.label}</p>
               {#if column.key === sort_state.key}
               <div class="my-auto">
                 <Icon icon={`${sort_state.asc ? "Up" : "Down"}`}/>
