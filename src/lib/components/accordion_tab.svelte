@@ -13,7 +13,7 @@
   }
 </script>
 
-<div class={`flex flex-col w-full min-h-14 ${state === "Max" ? "h-full" : "h-fit"} transition-all p-1 bg-base-200 shadow-md overflow-hidden`}>
+<div class={`flex flex-col w-full min-h-14 ${state === "Max" ? "h-full" : "h-fit"} transition-all p-2 bg-base-200 shadow-md overflow-hidden`}>
   <div class="flex justify-between text-font text-xl">
     <div class="w-fit">
       <Button on:click={on_title}>

@@ -1,14 +1,16 @@
 <script lang="ts">
   import AccordionBox from "$lib/components/accordion_box.svelte";
   import AccordionTab from "$lib/components/accordion_tab.svelte";
-  import Button from "$lib/components/button.svelte";
   import Table from "$lib/components/table.svelte";
   import type { Device, Site } from "$lib/interfaces/i_db";
 
-  export let data: { sites: Site[], devices: Device[] };
+  export let data: { sites: Site[], devices: Device[], total_devices: number, page: number, count: number };
 
   let selected_site: Site | null;
   let sites_state: "Min" | "Mid" | "Max";
+  let total_items = data.total_devices;
+  let page = data.page;
+  let count = data.count;
 </script>
 
 <AccordionBox>
@@ -28,11 +30,11 @@
           ]
         }
       ]}
+      total_items={1}
+      page={1}
+      count={1}
       on:select_row={(data) => { selected_site = data.detail; sites_state = "Min"; }}
     />
-  </AccordionTab>
-  <AccordionTab title="Charts" state="Mid">
-    
   </AccordionTab>
   <AccordionTab title={`Devices (${data.devices.length})`} state="Max">
     <Table
@@ -50,6 +52,9 @@
           ]
         }
       ]}
+      bind:total_items
+      bind:page
+      bind:count
     />
   </AccordionTab>
 </AccordionBox>
