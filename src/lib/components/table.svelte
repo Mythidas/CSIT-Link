@@ -109,7 +109,7 @@
       </table>
     </div>
     <div class="flex w-full h-fit justify-between px-2 border-t-2 border-base-300">
-      <div></div>
+      <div>Total: {total_items}</div>
       <div>{page}/{Math.ceil(total_items / (page * count))}</div>
       <div>
         Count: 

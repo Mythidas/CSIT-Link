@@ -81,7 +81,7 @@
 <div class={`flex flex-col ${filters_open ? "w-80" : " w-11"} space-y-2 p-2 transition-[width] bg-base-150 stroke-font border-r-2 border-accent-100`}>
   <div class="flex space-x-2">
     <button class={`${active_filters.length > 0 && "stroke-accent-100"} relative py-1 transition hover:scale-110`} on:click={() => filters_open = !filters_open}>
-      <Icon icon="Filter" size={8}/>
+      <Icon icon="Filter" size={24}/>
       {#if active_filters.length > 0}
       <div class="absolute p-0 text-sm -bottom-1 right-0">
         {active_filters.length}
@@ -98,7 +98,7 @@
         align="Right"
         on:select={on_filter_combo}
       >
-        <Icon icon="Menu"/>
+        <Icon icon="Menu" size={24}/>
       </DropdownButton>
     </div>
     {/if}
@@ -111,7 +111,7 @@
         <button class="flex w-full px-2 justify-between text-xl hover:bg-base-200" on:click={() => group.expanded = !group.expanded}>
           <p>{group.name}</p>
           <div class="my-auto">
-            <Icon icon={group.expanded ? "Up" : "Down"} size={8}/>
+            <Icon icon={group.expanded ? "Up" : "Down"} size={24}/>
           </div>
         </button>
         {#if group.expanded}
