@@ -6,6 +6,7 @@
   import NavSubItem from "$lib/components/site_navbar/nav_sub_item.svelte";
   import LoadingSpinner from "$lib/components/loading_spinner.svelte";
   import type { Site } from "$lib/interfaces/i_db";
+    import Icon from "$lib/components/icon.svelte";
 
   export let data: { current_site: Site };
 
@@ -21,9 +22,9 @@
   }
 </script>
 
-<main class="relative flex flex-col w-screen h-screen overflow-hidden bg-base-000 text-font">
+<main class="relative flex flex-col w-screen h-screen overflow-hidden bg-base-100 text-font">
   <!-- Top Nav -->
-  <nav class="fixed flex top-0 shadow-lg w-full h-[75px] z-50">
+  <nav class="fixed flex top-0 shadow-md w-full h-[75px] z-50 bg-base-000">
     <div class="flex w-64 h-full font-bold text-3xl text-accent-100">
       <p class="ml-5 my-auto">CSIT Tools</p>
     </div>
@@ -31,25 +32,16 @@
   <!-- Body -->
   <div class="flex w-full h-full pt-[75px]">
     <!-- Side Nav -->
-    <ul class="flex flex-col shadow-[inset_0_-2px_4px_rgba(0,0,0,0.6)] w-64 h-full p-1 bg-base-000">
-      <NavItem label={"Sites"} href="/sites" parent>
-        <NavSubItem label="Select Site" href="/sites" />
-        <NavSubItem label={data.current_site?.title || "No Site Selected"} href="" parent>
-          <NavSubItem label="Overview" href="/sites/overview/[slug]" custom_href={sites_custom_href} />
-          <NavSubItem label="Devices" href="/sites/devices/[slug]" custom_href={sites_custom_href} />
-        </NavSubItem>
-      </NavItem>
-      <!-- <NavItem label="Reports" href="/reports" parent>
-        <NavSubItem label="Devices" href="" parent>
-          <NavSubItem label="All" href="/reports/devices/all" />
-          <NavSubItem label="Unhealthy" href="/reports/devices/unhealthy" />
-        </NavSubItem>
-      </NavItem> -->
-      <!-- <NavItem label="Configuration" href="/configuration" parent>
-        <NavSubItem label="Companies" href="/configuration/companies" />
-        <NavSubItem label="Sites" href="/configuration/sites"/>
-      </NavItem> -->
-    </ul>
+    <nav class="flex flex-col shadow-[inset_0_-2px_4px_rgba(0,0,0,0.6)] w-44 h-full p-1 bg-base-000">
+      <button class="flex flex-col w-full p-2 bg-base-150 stroke-font border-l-2 border-base-150 hover:border-accent-100 hover:bg-base-200">
+        <div class="mx-auto">
+          <Icon size={12} icon="Home"/>
+        </div>
+        <div class="w-full p-1">
+          Sites
+        </div>
+      </button>
+    </nav>
     <!-- Contents -->
     <div class="flex flex-col p-3 w-full h-full overflow-hidden">
       {#if $navigating}

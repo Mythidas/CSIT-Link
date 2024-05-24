@@ -33,7 +33,7 @@
       data={get_row_data()}
       filters={[
         {
-          name: "Device",
+          name: "Site",
           filters: [
             { name: "Name", key: "title", type: "Text" },
             { name: "Company", key: "company", type: "Text" },
