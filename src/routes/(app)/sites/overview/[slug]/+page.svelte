@@ -1,5 +1,6 @@
 <script lang="ts">
-  import FilteredTable from '$lib/components/table/filtered_table.svelte';
+  import Table from '$lib/components/table.svelte';
+import FilteredTable from '$lib/components/table/filtered_table.svelte';
   import { boolean_sort_with_invalid } from '$lib/helpers/hp_sorters';
   import { get_time_since } from '$lib/helpers/hp_time';
   import type { APIResponse } from '$lib/interfaces/i_api_response';
@@ -104,7 +105,7 @@
 </script>
 
 <div class="flex flex-col w-full h-full space-y-3">
-  <div class="flex flex-col w-full p-3 rounded-sm space-y-2 bg-cscol-400">
+  <div class="flex flex-col w-full p-3 rounded-sm space-y-2 bg-base-200">
     <div class="flex space-x-3 text-3xl">
       <h3>{data.site?.title}</h3>
       <button on:click={realtime_reload} disabled={loading}>
@@ -116,17 +117,17 @@
     </div>
     <div class="flex w-full justify-between">
       <div class="flex space-x-1">
-        <p class="p-2 text-xl bg-cscol-000">Healthy Devices: {healthy_devices}</p>
-        <p class="p-2 text-xl bg-cscol-000">Unique Devices: {data.devices?.length}</p>
-        <p class={`p-2 text-xl ${mismatches ? "bg-errcol-100" : "bg-cscol-000"}`}>Matching Devices: {(data.devices?.length || 0) - mismatches}</p>
+        <p class="p-2 text-xl bg-base-300">Healthy Devices: {healthy_devices}</p>
+        <p class="p-2 text-xl bg-base-300">Unique Devices: {data.devices?.length}</p>
+        <p class={`p-2 text-xl ${mismatches ? "bg-errcol-100" : "bg-base-300"}`}>Matching Devices: {(data.devices?.length || 0) - mismatches}</p>
       </div>
       <div class="flex space-x-1">
-        <p class="p-2 text-xl bg-cscol-000">Last Sync: {last_sync}</p>
+        <p class="p-2 text-xl bg-base-300">Last Sync: {last_sync}</p>
       </div>
     </div>
   </div>
-  <div class="flex flex-col w-full h-5/6 p-3 rounded-sm bg-cscol-400">
-    <FilteredTable 
+  <div class="flex flex-col w-full h-5/6 p-3 rounded-sm bg-base-200">
+    <FilteredTable
       columns={[
         { label: "Name", filter: "Text" },
         { label: "Healthy", filter: "Select", tooltip: "Agent in both VSAX and Sophos and Online within 30 days", error_value: "NO", custom_sort: boolean_sort_with_invalid },

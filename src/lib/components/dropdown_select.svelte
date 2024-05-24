@@ -1,6 +1,8 @@
 <script lang="ts">
+    import Icon from "./icon.svelte";
+
   interface _Option {
-    key: string,
+    value: string,
     label: string
   }
 
@@ -27,7 +29,7 @@
 
   function on_select(option: _Option) {
     selected = option;
-    selected_ptr = option.key;
+    selected_ptr = option.value;
     filter = "";
   }
 
@@ -65,9 +67,11 @@
 {:else}
 <div class="relative w-full overflow-visible h-full">
   <div class="relative w-full overflow-visible h-full">
-    <button type="button" on:click|stopPropagation={() => opened = !opened} class={`${int_rounded} flex p-1 w-full justify-between border-2 border-cscol-000 bg-cscol-000 hover:bg-cscol-100`}>
+    <button type="button" on:click|stopPropagation={() => opened = !opened} class={`${int_rounded} flex w-full p-2 justify-between bg-base-200 stroke-font`}>
       <p>{selected ? selected.label : default_label}</p>
-      <img class="pt-1" src={opened ? "/chevron-up.svg" : "/chevron-down.svg"} alt="" />
+      <div class="my-auto">
+        <Icon icon={opened ? "Up" : "Down"}/>
+      </div>
     </button>
     {#if opened}
     <div class={`${get_size()} flex flex-col absolute w-full z-50 shadow-lg shadow-cscol-600 bg-cscol-400`}>
