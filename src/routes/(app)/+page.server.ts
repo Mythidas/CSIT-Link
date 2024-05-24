@@ -1,13 +1,5 @@
-import * as db from "$lib/server/database";
+import { redirect } from "@sveltejs/kit";
 
 export async function load({ locals, url }) {
-  try {
-    const db_patches = await db.get_patches(locals.db_conn);
-
-    return {
-      patches: db_patches
-    }
-  } catch (err) {
-    console.log(err);
-  }
+  redirect(301, "/sites")
 }

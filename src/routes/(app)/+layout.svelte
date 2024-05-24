@@ -58,7 +58,6 @@
   <div class="flex w-full h-full pt-[75px]">
     <!-- Side Nav -->
     <ul class="flex flex-col shadow-[inset_0_-2px_4px_rgba(0,0,0,0.6)] w-64 h-full bg-cscol-400">
-      <NavItem label="Home" href="/"/>
       <NavItem label={"Sites"} href="/sites" parent>
         <NavSubItem label="Select Site" href="/sites" />
         <NavSubItem label={$current_site?.title || "No Site Selected"} href="" parent>
