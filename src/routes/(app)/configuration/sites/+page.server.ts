@@ -1,26 +1,26 @@
-import * as db from "$lib/server/database";
-import type { APIResponse } from "$lib/interfaces/i_api_response.js";
-import { api_response_log } from "$lib/interfaces/i_api_response.js";
-import type { Actions } from "./$types.js";
+import * as db from "$lib/server/database_v2";
 import type { Site } from "$lib/interfaces/i_db.js";
+import type { Actions } from "@sveltejs/kit";
 
 export async function load({ fetch, locals }) {
   try {
+    const db_sites = await db.get_sites(locals.db_conn);
     const db_companies = await db.get_companies(locals.db_conn);
 
     const psa_sites_api = await fetch("/api/external/psa/sites");
-    const psa_sites_data = await psa_sites_api.json() as APIResponse;
-    if (!psa_sites_api.ok) api_response_log(psa_sites_data);
+    const psa_sites_data = await psa_sites_api.json();
+    if (!psa_sites_api.ok) return "Error fetching PSA Sites";
 
     const rmm_sites_api = await fetch("/api/external/rmm/sites");
-    const rmm_sites_data = await rmm_sites_api.json() as APIResponse;
-    if (!rmm_sites_api.ok) api_response_log(rmm_sites_data);
+    const rmm_sites_data = await rmm_sites_api.json();
+    if (!rmm_sites_api.ok) return "Error fetching RMM Sites";
 
     const av_sites_api = await fetch("/api/external/av/sites");
-    const av_sites_data = await av_sites_api.json() as APIResponse;
-    if (!av_sites_api.ok) api_response_log(av_sites_data);
+    const av_sites_data = await av_sites_api.json();
+    if (!av_sites_api.ok) return "Error fetching AV Sites";
 
     return {
+      sites: db_sites,
       companies: db_companies,
       rmm_sites: rmm_sites_data.data,
       av_sites: av_sites_data.data,
@@ -55,7 +55,7 @@ export const actions = {
       return "Invalid Data";
     }
 
-    if ((await db.add_site(event.locals.db_conn, site_data)).length > 0) {
+    if ((await db.add_site(event.locals.db_conn, site_data))) {
       return "Site Added";
     } else {
       return "Error adding site";

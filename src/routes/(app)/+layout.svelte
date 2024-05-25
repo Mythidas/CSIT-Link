@@ -19,9 +19,12 @@
   <!-- Body -->
   <div class="flex w-full h-full pt-[75px]">
     <!-- Side Nav -->
-    <nav class="flex flex-col shadow-[inset_0_-2px_4px_rgba(0,0,0,0.6)] w-44 h-full p-1 bg-base-000">
+    <nav class="flex flex-col space-y-1 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.6)] w-44 h-full p-1 bg-base-000">
       <NavLink href="/sites" label="Sites">
         <Icon size={32} icon="Home"/>
+      </NavLink>
+      <NavLink href="/configuration" label="Configuration">
+        <Icon size={32} icon="Menu"/>
       </NavLink>
     </nav>
     <!-- Contents -->

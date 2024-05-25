@@ -4,29 +4,47 @@ export interface Company {
 }
 
 export interface Site {
-  site_id: number,
-  title: string,
-  psa_id: string,
-  rmm_id: string,
-  av_id: string,
-  av_url: string,
-  company_id: number,
-  last_update: string
+  site_id: number;
+  title: string;
+  psa_id: string;
+  rmm_id: string;
+  av_id: string;
+  av_url: string;
+  company_id: number;
+  last_update: string;
 }
 
 export interface Device {
-  id: number,
-  title: string,
-  site_id: number,
-  rmm_id: string,
-  av_id: string,
-  rmm_last_heartbeat: string,
-  av_last_heartbeat: string,
-  os_type: "Workstation" | "Server",
-  os: string,
-  ip_lan: string,
-  firewall_enabled: boolean,
-  tamp_prot_enabled: boolean
+  device_id: number;
+  site_id: number;
+  hostname: string;
+  os: string;
+  mac: string;
+  ipv4: string;
+}
+
+export interface DeviceAV {
+  id: number;
+  device_id: number;
+  av_id: string;
+  url: string;
+  heartbeat: Date;
+  tamper: boolean;
+  health: string;
+}
+
+export interface DeviceRMM {
+  id: number;
+  device_id: number;
+  rmm_id: string;
+  heartbeat: Date;
+  firewall: boolean;
+  uac: boolean;
+}
+
+export interface DeviceBU {
+  id: number;
+  device_id: number;
 }
 
 export interface Patch {

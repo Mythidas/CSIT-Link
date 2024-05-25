@@ -1,6 +1,8 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import Button from "$lib/components/button.svelte";
   import Modal from "$lib/components/modal.svelte";
+    import Table from "$lib/components/table.svelte";
   import type { Company } from "$lib/interfaces/i_db";
 
   export let data: { companies: Company[] };
@@ -14,35 +16,34 @@
   }
 </script>
 
-<div class="flex flex-col p-3 mb-3 w-full h-fit bg-cscol-400 rounded-sm">
-  <div class="flex">
-    <button on:click={() => {show_modal = true}} class="bg-cscol-000 py-2 px-3 rounded-sm hover:bg-cscol-100">
+<div class="flex flex-col p-3 mb-3 w-full h-fit bg-base-200 rounded-sm">
+  <div class="w-fit">
+    <Button on:click={() => show_modal = true}>
       New Company
-    </button>
+    </Button>
   </div>
 </div>
 
-<div class="flex flex-col p-3 w-full h-full bg-cscol-400 rounded-sm">
-  <div class="flex w-full h-full">
-    <table class="table-auto w-full h-fit text-left overflow-y-scroll">
-      <thead class="border-b-2 border-cscol-200 text-lg">
-        <tr>
-          <th class="pl-1">ID</th>
-          <th>Name</th>
-        </tr>
-      </thead>
-      <tbody class="text-base">
-        {#each data.companies as company}
-          <tr
-            class={`even:bg-cscol-400 odd:bg-cscol-500 hover:bg-cscol-100 hover:cursor-pointer`}
-          >
-            <td class="pl-1">{company.company_id}</td>
-            <td>{company.title}</td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </div>
+<div class="flex flex-col p-3 w-full h-full bg-base-200 rounded-sm">
+  <Table
+    columns={[
+      { key: "company_id", label: "ID" },
+      { key: "title", label: "Name" }
+    ]}
+    data={data.companies}
+    filters={[
+      {
+        name: "Company",
+        filters: [
+          { key: "company_id", name: "ID", type: "Text" },
+          { key: "title", name: "Name", type: "Text" }
+        ]
+      }
+    ]}
+    page={1}
+    total_items={data.companies.length}
+  >
+  </Table>
 </div>
 
 <Modal bind:show_modal>
@@ -50,12 +51,12 @@
     <div class="mx-auto w-2/4">
       <div class="w-full mb-3">
         <h3 class="text-xl mb-1">Name*</h3>
-        <input required bind:value={selected_name} name="title" type="text" class="w-full p-1 outline-none border-cscol-100 focus:border-cscol-200 border-2 text-cscol-600" placeholder="Company Name..." />
+        <input required bind:value={selected_name} name="title" type="text" class="w-full p-1 outline-none border-base-200 focus:border-accent-100 border-b-2 text-base-000" placeholder="Company Name..." />
       </div>
     </div>
     <div class="flex w-full justify-center">
-      <button type="submit" class="bg-cscol-000 py-2 px-3 rounded-sm hover:bg-cscol-100">Save</button>
-      <button type="button" class="bg-errcol-100 mx-2 py-2 px-3 rounded-sm" on:click={close_modal}>Close</button>
+      <button type="submit" class="bg-success py-2 px-3 rounded-sm hover:bg-cscol-100">Save</button>
+      <button type="button" class="bg-error mx-2 py-2 px-3 rounded-sm" on:click={close_modal}>Close</button>
     </div>
   </form>
 </Modal>

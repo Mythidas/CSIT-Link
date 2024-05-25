@@ -17,14 +17,14 @@
 <div class="flex flex-col w-full h-full p-2 bg-base-200">
   <Table
     columns={[
-      { key: "title", label: "Name" },
+      { key: "hostname", label: "Name" },
     ]}
     data={data.devices}
     filters={[
       {
         name: "Device",
         filters: [
-          { name: "Name", key: "title", type: "Text" },
+          { name: "Name", key: "hostname", type: "Text" },
         ]
       }
     ]}

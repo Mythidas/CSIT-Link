@@ -17,7 +17,6 @@ export default {
       "cscol-500": "#141A21",
       "cscol-600": "#0B0C10",
       "cscol-font": "#FFFFFF",
-      "errcol-100": "#CC1B3E",
       "wrncol-100": "#B88E1D",
       
       "base-000": "#1A1A1A",
@@ -26,6 +25,8 @@ export default {
       "base-200": "#383838",
       "base-300": "#595959",
       "accent-100": "#7F85F5",
+      "error": "#CC1B3E",
+      "success": "#3C8C88",
       "font": "#FFFFFF"
     }
   },

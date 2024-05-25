@@ -39,6 +39,10 @@ export async function get_sites(client: PoolClient): Promise<Site[]> {
   }
 }
 
+export async function add_site(client: PoolClient, new_site: Site): Promise<Site | null> {
+  return null;
+}
+
 // COMPANIES
 
 export async function get_companies(client: PoolClient): Promise<Company[]> {
@@ -47,6 +51,15 @@ export async function get_companies(client: PoolClient): Promise<Company[]> {
   } catch (err) {
     console.log(err);
     return [];
+  }
+}
+
+export async function add_company(client: PoolClient, new_company: Company): Promise<Company | null> {
+  try {
+    return (await client.query("INSERT INTO Company(title) VALUES ($1)", [new_company.title])).rows[0] || null;
+  } catch (err) {
+    console.log(err);
+    return null;
   }
 }
 
@@ -77,10 +90,7 @@ export async function get_devices_by_site_id(client: PoolClient, site_id: number
     }
 
     const sort_devices = (a: Device, b: Device) => {
-      if (a.os_type < b.os_type) return -1;
-      if (a.os_type > b.os_type) return 1;
-
-      return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
+      return a.hostname.toLowerCase().localeCompare(b.hostname.toLowerCase());
     }
 
     const devices = (await client.query("SELECT * FROM Device WHERE site_id = $1", [site_id]))?.rows as Device[] || [] as Device[];

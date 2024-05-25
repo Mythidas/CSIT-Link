@@ -1,7 +1,6 @@
-import * as db from "$lib/server/database";
-import { api_response_log } from "$lib/interfaces/i_api_response.js";
+import * as db from "$lib/server/database_v2";
 import type { Actions } from "./$types.js";
-import type { Company, Site } from "$lib/interfaces/i_db.js";
+import type { Company } from "$lib/interfaces/i_db.js";
 
 export async function load({ locals }) {
   try {
@@ -24,14 +23,14 @@ export const actions = {
       title: form_data.get("title")?.toString() || "",
     }
 
-    if (company_data.title === "") {
+    if (!company_data.title) {
       return "Invalid Data";
     }
 
-    if ((await db.add_company(event.locals.db_conn, company_data)).length > 0) {
-      return "Site Added";
+    if ((await db.add_company(event.locals.db_conn, company_data))?.company_id) {
+      return "Company Added";
     } else {
-      return "Error adding site";
+      return "Error adding company";
     }
   }
 } satisfies Actions;
