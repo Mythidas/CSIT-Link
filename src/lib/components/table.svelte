@@ -22,6 +22,14 @@
   let filtered_data = inter_data;
   let active_filters: Filter[] = [];
 
+  $: {
+    if (data.length > 0) {
+      inter_data = JSON.parse(JSON.stringify(data));
+      filtered_data = inter_data;
+      sort_data();
+    }
+  }
+
   const dispatch = createEventDispatcher();
 
   function set_sort_key(key: string) {
@@ -44,6 +52,8 @@
   }
 
   function sort_data() {
+    if (!sort_state.key) return;
+
     filtered_data = filtered_data.sort((a: any, b: any) => {
       if (sort_state.asc) {
         return a[sort_state.key].localeCompare(b[sort_state.key]);

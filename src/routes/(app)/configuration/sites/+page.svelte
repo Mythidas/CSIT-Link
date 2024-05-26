@@ -1,0 +1,72 @@
+<script lang="ts">
+  import { enhance } from "$app/forms";
+  import Button from "$lib/components/button.svelte";
+  import Input from "$lib/components/input.svelte";
+  import Modal from "$lib/components/modal.svelte";
+  import Select from "$lib/components/select.svelte";
+  import Table from "$lib/components/table.svelte";
+  import type { Site } from "$lib/interfaces/i_db";
+
+  export let data: { sites: Site[], rmm_sites: any[], av_sites: any[], psa_sites: any[] };
+
+  let show_modal = false;
+  let form: HTMLFormElement;
+  let site_name = "";
+
+  function on_submit() {
+    site_name = "";
+    show_modal = false;
+  }
+</script>
+
+<div class="flex flex-col p-3 w-full h-fit bg-base-200 rounded-sm">
+  <div class="w-fit">
+    <Button on:click={() => show_modal = true}>
+      New Site
+    </Button>
+  </div>
+</div>
+
+<div class="flex flex-col p-3 w-full h-full bg-base-200 rounded-sm">
+  <Table
+    columns={[
+      { key: "title", label: "Name" },
+      { key: "company", label: "Company" }
+    ]}
+    data={data.sites}
+    filters={[
+      {
+        name: "Site",
+        filters: [
+          { name: "Name", key: "title", type: "Text" },
+          { name: "Company", key: "company", type: "Text" },
+        ]
+      }
+    ]}
+    total_items={data.sites.length}
+    page={1}
+  />
+</div>
+
+<Modal bind:open={show_modal} title="New Site" on:accept={() => form.requestSubmit()}>
+  <form class="flex flex-col w-2/4 h-full mx-auto" method="post" use:enhance bind:this={form} on:submit={on_submit}>
+    <div class="w-full mb-3 space-y-3">
+      <div>
+        <label for="title" class="text-xl">Name*</label>
+        <Input bind:value={site_name} required name="title" placeholder="Site name..."/>
+      </div>
+      <div>
+        <label for="psa" class="text-xl">PSA Site*</label>
+        <Select name="psa" required placeholder="Select site..." options={data.psa_sites.map(site => {return { key: site.id, label: site.name }})}/>
+      </div>
+      <div>
+        <label for="rmm" class="text-xl">RMM Site</label>
+        <Select name="rmm" required placeholder="Select site..." options={data.rmm_sites.map(site => {return { key: site.id, label: site.name }})}/>
+      </div>
+      <div>
+        <label for="av" class="text-xl">AV Site</label>
+        <Select name="av" required placeholder="Select site..." options={data.av_sites.map(site => {return { key: `${site.id}|${site.api_url}`, label: site.name }})}/>
+      </div>
+    </div>
+  </form>
+</Modal>

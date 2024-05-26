@@ -1,30 +1,35 @@
 import * as db from "$lib/server/database_v2";
+import * as psa from "$lib/server/api_psa.js";
+import * as rmm from "$lib/server/api_rmm.js";
+import * as av from "$lib/server/api_av.js";
 import type { Site } from "$lib/interfaces/i_db.js";
 import type { Actions } from "@sveltejs/kit";
 
-export async function load({ fetch, locals }) {
+export async function load({ locals, cookies }) {
   try {
+    const psa_sites = await psa.get_sites();
+    if (psa_sites.meta.status !== 200) return "Error fetching PSA Sites";
+
+    const rmm_sites = await rmm.get_sites();
+    if (psa_sites.meta.status !== 200) return "Error fetching RMM Sites";
+
+    const av_sites = await av.get_sites(cookies);
+    if (av_sites.meta.status !== 200) return "Error fetching AV Sites";
+
+    let sites_merge = [];
     const db_sites = await db.get_sites(locals.db_conn);
     const db_companies = await db.get_companies(locals.db_conn);
 
-    const psa_sites_api = await fetch("/api/external/psa/sites");
-    const psa_sites_data = await psa_sites_api.json();
-    if (!psa_sites_api.ok) return "Error fetching PSA Sites";
-
-    const rmm_sites_api = await fetch("/api/external/rmm/sites");
-    const rmm_sites_data = await rmm_sites_api.json();
-    if (!rmm_sites_api.ok) return "Error fetching RMM Sites";
-
-    const av_sites_api = await fetch("/api/external/av/sites");
-    const av_sites_data = await av_sites_api.json();
-    if (!av_sites_api.ok) return "Error fetching AV Sites";
+    for (let i = 0; i < db_sites.length; i++) {
+      const company = db_companies.find(comp => { return comp.company_id === db_sites[i].company_id });
+      sites_merge.push({ company: company?.title || "(None)", ...db_sites[i] });
+    }
 
     return {
-      sites: db_sites,
-      companies: db_companies,
-      rmm_sites: rmm_sites_data.data,
-      av_sites: av_sites_data.data,
-      psa_sites: psa_sites_data.data
+      sites: sites_merge,
+      rmm_sites: rmm_sites.data,
+      av_sites: av_sites.data,
+      psa_sites: psa_sites.data
     }
   } catch (err) {
     console.log(err);
@@ -36,16 +41,16 @@ export const actions = {
   default: async (event) => {
     const form_data = await event.request.formData();
 
-    const psa = form_data.get("psa")?.toString().split("|") || [];
-    const rmm = form_data.get("rmm")?.toString().split("|") || [];
+    const psa = form_data.get("psa")?.toString();
+    const rmm = form_data.get("rmm")?.toString();
     const av = form_data.get("av")?.toString().split("|") || [];
 
     const site_data: Site = {
       site_id: 0,
       title: form_data.get("title")?.toString() || "",
       company_id: Number(form_data.get("company_id")?.toString()) || -1,
-      psa_id: psa[0] || "",
-      rmm_id: rmm[0] || "",
+      psa_id: psa || "",
+      rmm_id: rmm || "",
       av_id: av[0] || "",
       av_url: av[1] || "",
       last_update: ""

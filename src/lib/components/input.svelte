@@ -3,6 +3,8 @@
 
   export let value: any;
   export let placeholder = "";
+  export let required = false;
+  export let name = "";
   
   const dispatch = createEventDispatcher();
 
@@ -21,4 +23,7 @@
   placeholder={placeholder}
   on:change={handle_on_change}
   on:input={handle_on_input}
+  required={required}
+  name={name}
+  id={name}
 />

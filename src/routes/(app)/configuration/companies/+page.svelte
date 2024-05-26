@@ -2,7 +2,7 @@
   import { enhance } from "$app/forms";
   import Button from "$lib/components/button.svelte";
   import Modal from "$lib/components/modal.svelte";
-    import Table from "$lib/components/table.svelte";
+  import Table from "$lib/components/table.svelte";
   import type { Company } from "$lib/interfaces/i_db";
 
   export let data: { companies: Company[] };
@@ -16,7 +16,7 @@
   }
 </script>
 
-<div class="flex flex-col p-3 mb-3 w-full h-fit bg-base-200 rounded-sm">
+<div class="flex flex-col p-3 w-full h-fit bg-base-200 rounded-sm">
   <div class="w-fit">
     <Button on:click={() => show_modal = true}>
       New Company
@@ -46,7 +46,7 @@
   </Table>
 </div>
 
-<Modal bind:show_modal>
+<Modal bind:open={show_modal}>
   <form class="flex flex-col w-full h-full justify-between" method="post" use:enhance>
     <div class="mx-auto w-2/4">
       <div class="w-full mb-3">

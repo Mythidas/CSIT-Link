@@ -40,7 +40,30 @@ export async function get_sites(client: PoolClient): Promise<Site[]> {
 }
 
 export async function add_site(client: PoolClient, new_site: Site): Promise<Site | null> {
-  return null;
+  let values = [
+    new_site.title,
+    new_site.psa_id,
+    new_site.rmm_id,
+    new_site.av_id,
+    new_site.av_url
+  ];
+
+  let col_state = "title,psa_id,rmm_id,av_id,av_url";
+  let col_values = "$1,$2,$3,$4,$5";
+
+  if (new_site.company_id >= 0) {
+    col_state += ",company_id";
+    col_values += ",$6";
+    values.push(new_site.company_id.toString());
+  }
+
+  try {
+    const res = await client.query(`INSERT INTO Site (${col_state}) VALUES (${col_values})`, values);
+    return res.rows[0];
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
 }
 
 // COMPANIES

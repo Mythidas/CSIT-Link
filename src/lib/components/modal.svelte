@@ -1,21 +1,33 @@
-<script lang="ts">
-  export let show_modal: boolean;
+<script>
+  import { createEventDispatcher } from 'svelte'
+  import Button from './button.svelte';
+  
+  export let open = false;
+  export let title = "";
 
-  let dialog: HTMLDialogElement;
-
-  $: if (dialog && show_modal) {
-    dialog.showModal();
-  } else if (dialog && !show_modal) {
-    dialog.close();
-  };
+  const dispatch = createEventDispatcher();
 </script>
 
-{#if show_modal}
-<dialog
-  bind:this={dialog}
-  on:close={() => (show_modal = false)}
-  class="flex flex-col w-2/3 h-2/3 text-font p-3 bg-base-200 backdrop:backdrop-blur-[1px]"
->
-  <slot />
-</dialog>
+{#if open}
+<div class="modal z-50 fixed w-full h-full top-0 left-0 flex items-center justify-center p-8 lg:p-0">
+  <div class="modal-overlay fixed w-full h-full bg-base-100 bg-opacity-75"></div>
+  <div class="z-50 w-1/2 p-2 mx-auto space-y-2 bg-base-200 shadow-xl overflow-y-auto">
+    <div class="head bg-gray-100 p-2 text-2xl font-bold">
+      {title}
+    </div>
+    <hr />
+    <div class="content p-2">
+      <slot />
+    </div>
+    <hr />
+    <div class="footer flex p-2 justify-center space-x-1">
+      <Button width="w-20" color="Success" on:click={() => dispatch('accept')}>
+        Accept
+      </Button>
+      <Button width="w-20" color="Error" on:click={() => { dispatch('close'); open = false; }}>
+        Close
+      </Button>
+    </div>
+  </div>
+</div>
 {/if}
