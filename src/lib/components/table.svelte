@@ -88,8 +88,8 @@
 
 <div class="flex w-full h-full overflow-hidden">
   <TableFilters bind:filters bind:active_filters on:filter_change={(e) => on_filter_change(e.detail)}/>
-  <div class="flex flex-col w-full h-full justify-between">
-    <div class="w-full h-full overflow-y-auto">
+  <div class="relative flex flex-col w-full h-full justify-between">
+    <div class="w-full h-full overflow-auto">
       <table class="table-auto text-left w-full h-fit bg-base-100">
         <thead>
           <tr>

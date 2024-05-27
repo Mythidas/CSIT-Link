@@ -21,30 +21,38 @@ export interface Device {
   os: string;
   mac: string;
   ipv4: string;
-}
-
-export interface DeviceAV {
-  id: number;
-  device_id: number;
-  av_id: string;
-  url: string;
-  heartbeat: Date;
-  tamper: boolean;
-  health: string;
+  wan: string;
 }
 
 export interface DeviceRMM {
   id: number;
   device_id: number;
+  site_id: number;
   rmm_id: string;
   heartbeat: Date;
   firewall: boolean;
   uac: boolean;
 }
 
+export interface DeviceAV {
+  id: number;
+  device_id: number;
+  site_id: number;
+  av_id: string;
+  heartbeat: Date;
+  tamper: boolean;
+  health: string;
+}
+
 export interface DeviceBU {
   id: number;
   device_id: number;
+}
+
+export interface DeviceAll {
+  base: Device;
+  rmm: DeviceRMM;
+  av: DeviceAV;
 }
 
 export interface Patch {
