@@ -212,6 +212,7 @@ export async function load_devices_by_site_id(client: PoolClient, site_id: numbe
     device_query = device_query.slice(0, -1) + " RETURNING device_id, site_id, hostname;";
 
     let new_device_res: Device[] = [];
+
     if (paramter_counter > 1) {
       new_device_res = (await client.query(device_query, device_values))?.rows as Device[] || [];
     }
@@ -267,7 +268,6 @@ export async function load_devices_by_site_id(client: PoolClient, site_id: numbe
     // Update existing devices
     for (let i = 0; i < pre_devices.length; i++) {
       if (pre_devices[i].device_id < 0) continue;
-      console.log(i)
 
       let update_query = "UPDATE Device SET ipv4 = $1, wan = $2 WHERE device_id = $3;";
       let update_rmm_query = "UPDATE DeviceRMM SET heartbeat = $1, firewall = $2, uac = $3 WHERE device_id = $4;";

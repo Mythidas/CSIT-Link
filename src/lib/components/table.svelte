@@ -6,6 +6,8 @@
 </script>
 
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { page as _page } from "$app/stores"
   import { createEventDispatcher } from "svelte";
   import Icon from "./icon.svelte";
   import TableFilters, { type Filter, type FilterGroup } from "./table_filters.svelte";
@@ -84,11 +86,23 @@
   function on_select_row(data: any) {
     dispatch('select_row', data);
   }
+
+  function on_page_up() {
+    if (page < Math.ceil(total_items / (page * count))) {
+      goto(`${$_page.url.origin + $_page.url.pathname}?page=${page + 1}&count=${count}`);
+    }
+  }
+
+  function on_page_down() {
+    if (page > 1) {
+      goto(`${$_page.url.origin + $_page.url.pathname}?page=${page - 1}&count=${count}`);
+    }
+  }
 </script>
 
-<div class="flex w-full h-full overflow-hidden">
+<div class="flex w-full h-full">
   <TableFilters bind:filters bind:active_filters on:filter_change={(e) => on_filter_change(e.detail)}/>
-  <div class="relative flex flex-col w-full h-full justify-between">
+  <div class="flex flex-col w-full h-full  justify-between">
     <div class="w-full h-full overflow-auto">
       <table class="table-auto text-left w-full h-fit bg-base-100">
         <thead>
@@ -120,7 +134,11 @@
     </div>
     <div class="flex w-full h-fit justify-between px-2 border-t-2 border-base-300">
       <div>Total: {total_items}</div>
-      <div>{page}/{Math.ceil(total_items / (page * count))}</div>
+      <div class="flex stroke-font">
+        <button type="button" on:click={on_page_down} class=""><Icon icon="Down"></Icon></button>
+        {page}/{Math.ceil(total_items / count)}
+        <button type="button" on:click={on_page_up}><Icon icon="Up"></Icon></button>
+      </div>
       <div>
         Count: 
         <select on:select={(e) => count = Number(e.target)} class="bg-base-100 border-none" value={count.toString()}>

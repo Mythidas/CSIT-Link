@@ -2,13 +2,9 @@
   import Table from "$lib/components/table.svelte";
   import type { DeviceAll, Site } from "$lib/interfaces/i_db";
 
-  export let data: { site: Site, devices: DeviceAll[] };
+  export let data: { site: Site, devices: { data: DeviceAll[], total: number }, page: number, count: number };
 
-  let total_items = data.devices.length;
-  let page = 1;
-  let count = 25;
-
-  $: data_pooled = data.devices.map((dev: DeviceAll) => {
+  $: data_pooled = data.devices.data.map((dev: DeviceAll) => {
     return {...dev.base, ...dev.rmm, ...dev.av};
   })
 </script>
@@ -18,7 +14,7 @@
   <p>{">"}</p>
   <p>{data.site.title}</p>
 </h3>
-<div class="flex flex-col w-full h-full p-2 bg-base-200">
+<div class="flex flex-col w-full h-full p-2 bg-base-200 overflow-hidden">
   <Table
     columns={[
       { key: "hostname", label: "Name" },
@@ -32,8 +28,8 @@
         ]
       }
     ]}
-    bind:total_items
-    bind:page
-    bind:count
+    total_items={data.devices.total}
+    page={data.page}
+    count={data.count}
   />
 </div>
