@@ -24,6 +24,9 @@
   import Icon from "./icon.svelte";
   import Input from "./input.svelte";
   import DropdownButton from "./dropdown_button.svelte";
+    import Button from "./button.svelte";
+    import { page } from "$app/stores";
+    import { goto } from "$app/navigation";
 
   export let filters: FilterGroup[] = [];
   export let active_filters: Filter[] = [];
@@ -76,6 +79,31 @@
       on_filter_change();
     }
   }
+
+  function on_apply_filters() {
+    const filter_index = $page.url.href.indexOf("filters");
+    const is_ampersand = $page.url.href[filter_index - 1] === '&';
+    if (filter_index > -1) {
+      const end_index = $page.url.href.indexOf("&", filter_index);
+      let current_href = $page.url.href.slice(0, is_ampersand ? filter_index - 1 : filter_index) + $page.url.href.slice(end_index === -1 ? $page.url.href.length : end_index);
+      goto(current_href += get_filter_string());
+    } else {
+      goto($page.url.href += "?" + get_filter_string());
+    }
+  }
+
+  function get_filter_string(): string {
+    if (active_filters.length === 0) return "";
+    else {
+      let filter = `&filters=[`;
+      for (let i = 0; i < active_filters.length; i++) {
+        filter += `{"key":"${active_filters[i].key}","value":"${active_filters[i].value}"},`
+      }
+
+      filter = filter.slice(0, filter.length - 1);
+      return filter += ']';
+    }
+  }
 </script>
 
 <div class={`flex flex-col ${filters_open ? "w-80" : " w-11"} space-y-2 p-2 transition-[width] bg-base-150 stroke-font border-r-2 border-accent-100`}>
@@ -104,7 +132,7 @@
     {/if}
   </div>
   {#if filters_open}
-  <div class="flex flex-col w-full h-full overflow-hidden">
+  <div class="flex flex-col w-full h-full justify-between overflow-hidden">
     <div class="flex flex-col border-t-2 border-base-300 overflow-y-auto">
       {#each filters as group}
       <div class={`${group.expanded && "pb-2"} border-b-2 border-base-300`}>
@@ -135,6 +163,11 @@
         {/if}
       </div> 
       {/each}
+    </div>
+    <div class="flex w-full">
+      <Button width="w-full" on:click={on_apply_filters}>
+        Apply Filters
+      </Button>
     </div>
   </div>
   {/if}
