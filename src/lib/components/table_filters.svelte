@@ -24,15 +24,13 @@
   import Icon from "./icon.svelte";
   import Input from "./input.svelte";
   import DropdownButton from "./dropdown_button.svelte";
-    import Button from "./button.svelte";
-    import { page } from "$app/stores";
-    import { goto } from "$app/navigation";
 
   export let filters: FilterGroup[] = [];
   export let active_filters: Filter[] = [];
   
   let filters_open = false;
   let search_filters = "";
+  let filter_timeout: NodeJS.Timeout;
 
   const dispatch = createEventDispatcher();
 
@@ -62,7 +60,12 @@
   }
 
   function on_filter_change() {
-    dispatch('filter_change', active_filters);
+    clearTimeout(filter_timeout);
+    filter_timeout = setTimeout(() => {
+      dispatch('filter_change', active_filters);
+    }, 1000);
+
+    // dispatch('filter_change', active_filters);
   }
 
   function on_filter_combo(e: any) {
@@ -77,31 +80,6 @@
       }
       active_filters = [];
       on_filter_change();
-    }
-  }
-
-  function on_apply_filters() {
-    const filter_index = $page.url.href.indexOf("filters");
-    const is_ampersand = $page.url.href[filter_index - 1] === '&';
-    if (filter_index > -1) {
-      const end_index = $page.url.href.indexOf("&", filter_index);
-      let current_href = $page.url.href.slice(0, is_ampersand ? filter_index - 1 : filter_index) + $page.url.href.slice(end_index === -1 ? $page.url.href.length : end_index);
-      goto(current_href += get_filter_string());
-    } else {
-      goto($page.url.href += "?" + get_filter_string());
-    }
-  }
-
-  function get_filter_string(): string {
-    if (active_filters.length === 0) return "";
-    else {
-      let filter = `&filters=[`;
-      for (let i = 0; i < active_filters.length; i++) {
-        filter += `{"key":"${active_filters[i].key}","value":"${active_filters[i].value}"},`
-      }
-
-      filter = filter.slice(0, filter.length - 1);
-      return filter += ']';
     }
   }
 </script>
@@ -163,11 +141,6 @@
         {/if}
       </div> 
       {/each}
-    </div>
-    <div class="flex w-full">
-      <Button width="w-full" on:click={on_apply_filters}>
-        Apply Filters
-      </Button>
     </div>
   </div>
   {/if}

@@ -16,7 +16,7 @@
   export let total_items: number;
   export let count = 25;
   export let columns: Column[];
-  export let data: any[] = []; // Used for static data
+  export let data: any[] | string = []; // Used for static data
   export let filters: FilterGroup[] = [];
 
   let sort_state = { key: "", asc: true };
@@ -26,8 +26,7 @@
 
   $: {
     if (data.length > 0) {
-      inter_data = JSON.parse(JSON.stringify(data));
-      filtered_data = inter_data;
+      filtered_data = JSON.parse(JSON.stringify(inter_data));
       sort_data();
     }
   }
@@ -40,7 +39,6 @@
         sort_state.key = "";
         sort_state.asc = true;
 
-        inter_data = JSON.parse(JSON.stringify(data));
         on_filter_change(active_filters);
       } else {
         sort_state.asc = false;
