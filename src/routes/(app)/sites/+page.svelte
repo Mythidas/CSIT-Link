@@ -14,7 +14,7 @@
   <Table
     columns={[
       { key: "title", label: "Name" },
-      { key: "company", label: "Company" }
+      { key: "company_title", label: "Company", default: "" }
     ]}
     data="/api/v2/sites"
     filters={[
@@ -22,7 +22,12 @@
         name: "Site",
         filters: [
           { name: "Name", key: "title", type: "Text" },
-          { name: "Company", key: "company", type: "Text" },
+        ]
+      },
+      {
+        name: "Company",
+        filters: [
+          { name: "Name", key: "title", type: "Text" }
         ]
       }
     ]}

@@ -1,12 +1,12 @@
 <script lang="ts">
   import Table from "$lib/components/table.svelte";
-  import type { DeviceAll, Site } from "$lib/interfaces/i_db";
+  import type { Site } from "$lib/interfaces/i_db";
 
-  export let data: { site: Site, devices: { data: DeviceAll[], total: number }, page: number, count: number };
+  export let data: { site: Site, page: number, count: number };
 
-  $: data_pooled = data.devices.data.map((dev: DeviceAll) => {
-    return {...dev.base, ...dev.rmm, ...dev.av};
-  })
+  let total_items = 1;
+  let page = data.page;
+  let count = data.count;
 </script>
 
 <h3 class="flex space-x-2 text-2xl p-2 bg-base-200">
@@ -19,7 +19,7 @@
     columns={[
       { key: "hostname", label: "Name" },
     ]}
-    data={data_pooled}
+    data={`/api/v2/devices/${data.site.site_id}`}
     filters={[
       {
         name: "Device",
@@ -28,8 +28,8 @@
         ]
       }
     ]}
-    total_items={data.devices.total}
-    page={data.page}
-    count={data.count}
+    bind:total_items
+    bind:page
+    bind:count
   />
 </div>

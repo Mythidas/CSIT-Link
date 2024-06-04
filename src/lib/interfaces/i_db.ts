@@ -11,6 +11,7 @@ export interface Site {
   av_id: string;
   av_url: string;
   company_id: number;
+  company_title: string;
   last_update: string;
 }
 

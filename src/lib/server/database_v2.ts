@@ -27,16 +27,28 @@ export async function get_site(client: PoolClient, site_id: number): Promise<Sit
       return null;
     }
 
-    return (await client.query("SELECT * FROM Site WHERE site_id = $1", [site_id])).rows[0];
+    return (await client.query("SELECT * FROM Site WHERE site_id = $1;", [site_id])).rows[0];
   } catch (err) {
     console.log(err);
     return null;
   }
 }
 
-export async function get_sites(client: PoolClient): Promise<Site[]> {
+export async function get_sites(client: PoolClient, columns?: string[], values?: string[], types?: string[], sorting?: { key: string, asc: boolean }): Promise<Site[]> {
   try {
-    return (await client.query("SELECT * FROM Site")).rows.sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase())) as Site[];
+    if (columns && columns.length > 0) {
+      const query_filters = gen_filter_string(columns, values || [], types || []);
+      
+      if (query_filters.query) {
+        return gen_sorted_data((await client.query(`SELECT se.*, cy.title AS company_title 
+        FROM Site se 
+        LEFT JOIN company cy ON se.company_id = cy.company_id ${query_filters.query};`, query_filters.values)).rows, sorting || { key: "", asc: true }) as Site[];
+      }
+    }
+      
+    return gen_sorted_data((await client.query(`SELECT se.*, cy.title AS company_title 
+    FROM Site se 
+    LEFT JOIN company cy ON se.company_id = cy.company_id;`)).rows, sorting || { key: "", asc: true }) as Site[];
   } catch (err) {
     console.log(err);
     return [];
@@ -104,6 +116,29 @@ export async function add_company(client: PoolClient, new_company: Company): Pro
 
 // DEVICES
 
+export async function get_devices(client: PoolClient, columns: string[], values: string[], types: string[], sorting: { key: string, asc: boolean }): Promise<DeviceAll[]> {
+  try {
+    if (columns && columns.length > 0) {
+      const query_filters = gen_filter_string(columns, values, types);
+      
+      if (query_filters.query) {
+        return gen_sorted_data((await client.query(`SELECT de.*, dv.*, dm.* 
+        FROM Device de 
+        LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
+        LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id ${query_filters.query};`, query_filters.values)).rows, sorting) as DeviceAll[];
+      }
+    }
+      
+    return gen_sorted_data((await client.query(`SELECT de.*, dv.*, dm.* 
+    FROM Device de 
+    LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
+    LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id;`)).rows, sorting) as DeviceAll[];
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+}
+
 export async function get_devices_all(client: PoolClient): Promise<Device[]> {
   try {
     const sites = await get_sites(client);
@@ -146,10 +181,10 @@ export async function get_devices_by_site_id(client: PoolClient, site_id: number
   }
 }
 
-export async function load_devices_by_site_id(client: PoolClient, site_id: number, cookies: Cookies): Promise<DeviceAll[]> {
+export async function load_devices_by_site_id(client: PoolClient, site_id: number, cookies: Cookies): Promise<void> {
   try {
     const site = await get_site(client, site_id);
-    if (!site) return [];
+    if (!site) return;
     const devices = await get_devices_by_site_id(client, site_id);
 
     const rmm_device_res = await rmm.get_devices(site.rmm_id);
@@ -307,10 +342,53 @@ export async function load_devices_by_site_id(client: PoolClient, site_id: numbe
     }
 
     await client.query("UPDATE Site SET last_update = $1 WHERE site_id = $2;", [new Date().toISOString(), site_id.toString()]);
-
-    return await get_devices_by_site_id(client, site_id);
   } catch (err) {
     console.log(err);
-    return [];
   }
+}
+
+// HELPERS
+
+function gen_filter_string(columns: string[], values: string[], types: string[]): { query: string, values: string[] } {
+  let query_filters = "";
+  let value_index = 1;
+  let values_trimmed = [];
+
+  for (let i = 0; i < columns.length; i++) {
+    if (values[i]) {
+      if (!query_filters) {
+        query_filters += "WHERE ";
+      } else {
+        query_filters += " AND ";
+      }
+
+      switch(types[i]) {
+        case "Text": query_filters += `${columns[i]} ILIKE $${value_index++}`; break;
+        case "Number": query_filters += `${columns[i]} = $${value_index++}`; break;
+      }
+
+      if (types[i] === "Text") {
+        values[i] = `%${values[i]}%`;
+      }
+
+      values_trimmed.push(values[i]);
+    }
+  }
+
+  return value_index > 1 ? { query: query_filters, values: values_trimmed } : { query: "", values };
+}
+
+function gen_sorted_data(data: any[], sorting: { key: string, asc: boolean }): any[] {
+  if (!sorting.key) return data;
+
+  return data.sort((a: any, b: any) => {
+    if (!a[sorting.key]) return 1;
+    if (!b[sorting.key]) return -1;
+
+    if (sorting.asc) {
+      return a[sorting.key].localeCompare(b[sorting.key]);
+    } else {
+      return b[sorting.key].localeCompare(a[sorting.key]);
+    }
+  });
 }

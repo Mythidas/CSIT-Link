@@ -6,10 +6,11 @@
   export interface Filter {
     name: string; // Display name of the filter
     key: string; // Data property to filter on
-    type: "Text" | "Select" | "Bool"; // Filter input type
+    type: "Text" | "Select" | "Bool" | "Number"; // Filter input type
     options?: FilterOption[]; // Available options for select filters
     value?: string | boolean; // Current filter value
-    active?: boolean; // Whether the filter is currently applied
+    active?: boolean; // Whether the filter is currently applied,
+    group?: string;
   }
 
   export interface FilterGroup {
@@ -46,17 +47,18 @@
     }
   }
 
-  function on_active_change(e: any, filter: Filter) {
+  function on_active_change(e: any, filter: Filter, group: string) {
     if (e.target.checked === true) {
+      filter.group = group;
       active_filters = [filter, ...active_filters];
     } else {
       filter.value = "";
       active_filters = active_filters.filter(item => {
         return item.key !== filter.key;
       })
+      
+      dispatch('filter_change', active_filters);
     }
-
-    dispatch('filter_change', active_filters);
   }
 
   function on_filter_change() {
@@ -64,8 +66,6 @@
     filter_timeout = setTimeout(() => {
       dispatch('filter_change', active_filters);
     }, 1000);
-
-    // dispatch('filter_change', active_filters);
   }
 
   function on_filter_combo(e: any) {
@@ -125,7 +125,7 @@
           {#each group.filters as filter}
           {#if !search_filters || filter.name.toLowerCase().includes(search_filters.toLowerCase())}
           <div class="flex space-x-2">
-            <input id={filter.key} type="checkbox" class="w-4 accent-accent-100" bind:checked={filter.active} on:change={e => on_active_change(e, filter)} />
+            <input id={filter.key} type="checkbox" class="w-4 accent-accent-100" bind:checked={filter.active} on:change={e => on_active_change(e, filter, group.name)} />
             <label for={filter.key}>{filter.name}</label>
           </div>
           {#if filter.active}
