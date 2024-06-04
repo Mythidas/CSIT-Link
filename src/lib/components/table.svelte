@@ -2,7 +2,9 @@
   export interface Column {
     label: string;
     key: string;
+    group: string;
     default?: string;
+    type?: "String" | "Date" | "Bool"
   }
 </script>
 
@@ -20,9 +22,9 @@
   export let columns: Column[];
   export let data: string = ""; // Used for static data
   export let filters: FilterGroup[] = [];
+  export let sort_state = { key: "", group: "", asc: true };
 
   let _data = JSON.parse(JSON.stringify(data));
-  let sort_state = { key: "", asc: true };
   let filtered_data = _data;
   let active_filters: Filter[] = [];
   let loading = true;
@@ -54,6 +56,7 @@
       filtered_data = JSON.parse(JSON.stringify(response.data.data));
       total_items = response.data.meta.total;
       loading = false;
+      console.log(filtered_data);
     } catch (err) {
       console.log(err);
     }
@@ -64,7 +67,8 @@
     count = Number(_target.value || 25);
   }
 
-  function set_sort_key(key: string) {
+  function set_sort_key(key: string, group: string) {
+    sort_state.group = group;
     if (sort_state.key === key) {
       if (!sort_state.asc) {
         sort_state.asc = true;
@@ -104,6 +108,36 @@
       page--;
     }
   }
+
+  function calculate_time_since(date_string: string): string {
+    // Parse the ISO string into a Date object
+    const then: Date = new Date(date_string);
+
+    // Get the current time
+    const now: Date = new Date();
+
+    // Calculate the difference in milliseconds
+    const difference: number = now.getTime() - then.getTime();
+
+    // Calculate days, hours, and minutes
+    const days: number = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const hours: number = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes: number = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+
+    // Build the output string
+    let output: string = "";
+    if (days > 0) {
+      output += `${days}d, `;
+    }
+    if (hours > 0) {
+      output += `${hours}h, `;
+    }
+    if (minutes > 0) {
+      output += `${minutes}m`;
+    }
+
+    return output ? `${output} ago` : "Just now";
+  }
 </script>
 
 <div class="flex w-full h-full">
@@ -115,7 +149,7 @@
         <thead>
           <tr>
             {#each columns as column}
-            <th class="sticky top-0 shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer" on:click={() => set_sort_key(column.key)}>
+            <th class="sticky top-0 shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer" on:click={() => set_sort_key(column.key, column.group)}>
               <div class="flex w-full justify-between">
                 <p class="my-auto p-2 select-none">{column.label}</p>
                 {#if column.key === sort_state.key}
@@ -132,7 +166,13 @@
           {#each filtered_data as row}
           <tr class="even:bg-base-100 odd:bg-base-150 hover:bg-base-300" on:click={() => on_select_row(row)}>
             {#each columns as column}
-            <td class="px-2 py-1">{row[column.key] || column.default}</td>
+              {#if !column.type || column?.type === "String"}
+              <td class="px-2 py-1">{row[column.key] || column.default}</td>
+              {:else if column.type === "Date"}
+              <td class="px-2 py-1">{row[column.key] ? calculate_time_since(row[column.key]) : column.default}</td>
+              {:else if column.type === "Bool"}
+              <td class="px-2 py-1">{row[column.key] === null ? column.default : (row[column.key] ? "Yes" : "No")}</td>
+              {/if}
             {/each}
           </tr>
           {/each}

@@ -1,11 +1,15 @@
 import * as db from "$lib/server/database_v2.js";
 
-export async function POST({ request, locals, params }) {
+export async function POST({ request, locals, params, cookies }) {
   try {
     const data = await request.json();
     const site = await db.get_site(locals.db_conn, Number(params.slug || -1));
     if (!site) {
       return Response.json({ meta: { error: "Invalid Site in URL", status: 500 }}, { status: 500 });
+    }
+
+    if (!await db.is_site_updated(locals.db_conn, site.site_id)) {
+      await db.load_devices_by_site_id(locals.db_conn, site.site_id, cookies);
     }
 
     let columns = ["de.site_id"], values = [site.site_id.toString()], types = ["Number"];

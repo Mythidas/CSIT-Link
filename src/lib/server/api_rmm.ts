@@ -74,9 +74,10 @@ export async function get_devices(rmm_site_id: string): Promise<APIResponse> {
         device_id: -1,
         site_id: -1,
         rmm_id: device_data[i].Identifier,
-        heartbeat: device_data[i].LastSeenOnline,
+        heartbeat_rmm: device_data[i].LastSeenOnline,
         firewall: device_data[i].FirewallEnabled,
-        uac: device_data[i].UacEnabled
+        uac: device_data[i].UacEnabled,
+        memory: convert_bytes_to_gbytes(device_data[i].MemoryTotal)
       });
     }
 
@@ -85,4 +86,10 @@ export async function get_devices(rmm_site_id: string): Promise<APIResponse> {
     console.log(err);
     return { meta: { error: err, status: 501 }};
   }
+}
+
+function convert_bytes_to_gbytes(bytes: number) {
+  const GIGABYTE = Math.pow(1024, 3);
+  const gigabytes = bytes / GIGABYTE;
+  return Math.floor(gigabytes * 1024);
 }

@@ -30,9 +30,10 @@ export interface DeviceRMM {
   device_id: number;
   site_id: number;
   rmm_id: string;
-  heartbeat: Date;
+  heartbeat_rmm: string;
   firewall: boolean;
   uac: boolean;
+  memory: number;
 }
 
 export interface DeviceAV {
@@ -40,7 +41,7 @@ export interface DeviceAV {
   device_id: number;
   site_id: number;
   av_id: string;
-  heartbeat: Date;
+  heartbeat_av: string;
   tamper: boolean;
   health: string;
 }

@@ -34,10 +34,10 @@ export async function get_site(client: PoolClient, site_id: number): Promise<Sit
   }
 }
 
-export async function get_sites(client: PoolClient, columns?: string[], values?: string[], types?: string[], sorting?: { key: string, asc: boolean }): Promise<Site[]> {
+export async function get_sites(client: PoolClient, columns?: string[], values?: string[], types?: string[], sorting?: { key: string, group: string, asc: boolean }): Promise<Site[]> {
   try {
     if (columns && columns.length > 0) {
-      const query_filters = gen_filter_string(columns, values || [], types || []);
+      const query_filters = gen_filter_string(columns, values || [], types || [], sorting || { key: "", group: "", asc: true });
       
       if (query_filters.query) {
         return gen_sorted_data((await client.query(`SELECT se.*, cy.title AS company_title 
@@ -116,23 +116,23 @@ export async function add_company(client: PoolClient, new_company: Company): Pro
 
 // DEVICES
 
-export async function get_devices(client: PoolClient, columns: string[], values: string[], types: string[], sorting: { key: string, asc: boolean }): Promise<DeviceAll[]> {
+export async function get_devices(client: PoolClient, columns: string[], values: string[], types: string[], sorting: { key: string, group: string, asc: boolean }): Promise<DeviceAll[]> {
   try {
     if (columns && columns.length > 0) {
-      const query_filters = gen_filter_string(columns, values, types);
+      const query_filters = gen_filter_string(columns, values, types, sorting);
       
       if (query_filters.query) {
-        return gen_sorted_data((await client.query(`SELECT de.*, dv.*, dm.* 
+        return (await client.query(`SELECT de.*, dv.*, dm.* 
         FROM Device de 
         LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
-        LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id ${query_filters.query};`, query_filters.values)).rows, sorting) as DeviceAll[];
+        LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id ${query_filters.query};`, query_filters.values)).rows as DeviceAll[];
       }
     }
       
-    return gen_sorted_data((await client.query(`SELECT de.*, dv.*, dm.* 
+    return (await client.query(`SELECT de.*, dv.*, dm.* 
     FROM Device de 
     LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
-    LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id;`)).rows, sorting) as DeviceAll[];
+    LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id;`)).rows as DeviceAll[];
   } catch (err) {
     console.log(err);
     return [];
@@ -254,7 +254,7 @@ export async function load_devices_by_site_id(client: PoolClient, site_id: numbe
 
     if (new_device_res.length > 0) {
       // Insert RMM relations for new devices
-      let rmm_device_query = "INSERT INTO DeviceRMM (device_id,site_id,rmm_id,heartbeat,firewall,uac) VALUES "
+      let rmm_device_query = "INSERT INTO DeviceRMM (device_id,site_id,rmm_id,heartbeat_rmm,firewall,uac,memory) VALUES "
       let rmm_device_values:string [] = [];
       paramter_counter = 1;
       for (let i = 0; i < new_device_res.length; i++) {
@@ -268,16 +268,17 @@ export async function load_devices_by_site_id(client: PoolClient, site_id: numbe
         rmm_device_values.push(new_device_res[i].device_id.toString());
         rmm_device_values.push(new_device_res[i].site_id.toString());
         rmm_device_values.push(_device.rmm_id);
-        rmm_device_values.push(new Date(_device.heartbeat || "").toISOString());
+        rmm_device_values.push(_device.heartbeat_rmm || "");
         rmm_device_values.push(String(_device.firewall));
         rmm_device_values.push(String(_device.uac));
+        rmm_device_values.push(String(_device.memory || 0));
       }
       rmm_device_query = rmm_device_query.slice(0, -1) + ";";
 
       const new_device_rmm_res = (await client.query(rmm_device_query, rmm_device_values))?.rows as DeviceRMM[] || [];
 
       // Insert AV relations for new devices
-      let av_device_query = "INSERT INTO DeviceAV (device_id,site_id,av_id,heartbeat,tamper,health) VALUES "
+      let av_device_query = "INSERT INTO DeviceAV (device_id,site_id,av_id,heartbeat_av,tamper,health) VALUES "
       let av_device_values:string [] = [];
       paramter_counter = 1;
       for (let i = 0; i < new_device_res.length; i++) {
@@ -291,7 +292,7 @@ export async function load_devices_by_site_id(client: PoolClient, site_id: numbe
         av_device_values.push(new_device_res[i].device_id.toString());
         av_device_values.push(new_device_res[i].site_id.toString());
         av_device_values.push(_device.av_id);
-        av_device_values.push(new Date(_device.heartbeat || "").toISOString());
+        av_device_values.push(_device.heartbeat_av || "");
         av_device_values.push(String(_device.tamper));
         av_device_values.push(_device.health);
       }
@@ -305,8 +306,8 @@ export async function load_devices_by_site_id(client: PoolClient, site_id: numbe
       if (pre_devices[i].device_id < 0) continue;
 
       let update_query = "UPDATE Device SET ipv4 = $1, wan = $2 WHERE device_id = $3;";
-      let update_rmm_query = "UPDATE DeviceRMM SET heartbeat = $1, firewall = $2, uac = $3 WHERE device_id = $4;";
-      let update_av_query = "UPDATE DeviceAV SET heartbeat = $1, tamper = $2, health = $3 WHERE device_id = $4;";
+      let update_rmm_query = "UPDATE DeviceRMM SET heartbeat_rmm = $1, firewall = $2, uac = $3, memory = $4 WHERE device_id = $5;";
+      let update_av_query = "UPDATE DeviceAV SET heartbeat_av = $1, tamper = $2, health = $3 WHERE device_id = $4;";
 
       const _device_av_index = av_device_res.data.device_list.findIndex((dev: Device) => {
         return dev.hostname.toLowerCase() === pre_devices[i].hostname.toLowerCase();
@@ -325,15 +326,16 @@ export async function load_devices_by_site_id(client: PoolClient, site_id: numbe
       ]);
       if (_device_rmm) {
         await client.query(update_rmm_query, [
-          new Date(_device_rmm.heartbeat || "").toISOString(),
+          _device_rmm.heartbeat_rmm || "",
           String(_device_rmm.firewall),
           String(_device_rmm.uac),
+          String(_device_rmm.memory || 0),
           String(pre_devices[i].device_id)
         ]);
       }
       if (_device_av) {
         await client.query(update_av_query, [
-          new Date(_device_av.heartbeat || "").toISOString(),
+         _device_av.heartbeat_av || "",
           String(_device_av.tamper),
           _device_av.health,
           String(pre_devices[i].device_id)
@@ -349,10 +351,14 @@ export async function load_devices_by_site_id(client: PoolClient, site_id: numbe
 
 // HELPERS
 
-function gen_filter_string(columns: string[], values: string[], types: string[]): { query: string, values: string[] } {
+function gen_filter_string(columns: string[], values: string[], types: string[], sorting: { key: string, group: string, asc: boolean }): { query: string, values: string[] } {
   let query_filters = "";
   let value_index = 1;
   let values_trimmed = [];
+  let sorting_query = "";
+  if (sorting.key) {
+    sorting_query = ` ORDER BY ${sorting.group[0] + sorting.group[sorting.group.length - 1]}.${sorting.key} ${sorting.asc ? "ASC" : "DESC"}`;
+  }
 
   for (let i = 0; i < columns.length; i++) {
     if (values[i]) {
@@ -375,7 +381,7 @@ function gen_filter_string(columns: string[], values: string[], types: string[])
     }
   }
 
-  return value_index > 1 ? { query: query_filters, values: values_trimmed } : { query: "", values };
+  return value_index > 1 ? { query: query_filters + sorting_query, values: values_trimmed } : { query: sorting_query + "", values };
 }
 
 function gen_sorted_data(data: any[], sorting: { key: string, asc: boolean }): any[] {

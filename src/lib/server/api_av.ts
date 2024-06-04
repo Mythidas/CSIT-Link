@@ -142,7 +142,7 @@ export async function get_devices(av_site_id: string, av_site_url: string, cooki
           device_id: -1,
           site_id: -1,
           av_id: device_data.items[0].id,
-          heartbeat: device_data.items[i].lastSeenAt,
+          heartbeat_av: device_data.items[i].lastSeenAt,
           tamper: device_data.items[i].tamperProtectionEnabled,
           health: device_data.items[i].health.overall
         });
