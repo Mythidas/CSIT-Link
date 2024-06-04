@@ -13,8 +13,8 @@
 <div class="flex flex-col w-full h-full p-2 bg-base-200">
   <Table
     columns={[
-      { key: "title", label: "Name" },
-      { key: "company_title", label: "Company", default: "" }
+      { key: "title", label: "Name", group: "Site" },
+      { key: "company_title", label: "Company", group: "Company", default: "-" }
     ]}
     data="/api/v2/sites"
     filters={[

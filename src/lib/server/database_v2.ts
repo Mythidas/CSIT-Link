@@ -40,15 +40,15 @@ export async function get_sites(client: PoolClient, columns?: string[], values?:
       const query_filters = gen_filter_string(columns, values || [], types || [], sorting || { key: "", group: "", asc: true });
       
       if (query_filters.query) {
-        return gen_sorted_data((await client.query(`SELECT se.*, cy.title AS company_title 
+        return (await client.query(`SELECT se.*, cy.title AS company_title 
         FROM Site se 
-        LEFT JOIN company cy ON se.company_id = cy.company_id ${query_filters.query};`, query_filters.values)).rows, sorting || { key: "", asc: true }) as Site[];
+        LEFT JOIN company cy ON se.company_id = cy.company_id ${query_filters.query};`, query_filters.values)).rows as Site[];
       }
     }
       
-    return gen_sorted_data((await client.query(`SELECT se.*, cy.title AS company_title 
+    return (await client.query(`SELECT se.*, cy.title AS company_title 
     FROM Site se 
-    LEFT JOIN company cy ON se.company_id = cy.company_id;`)).rows, sorting || { key: "", asc: true }) as Site[];
+    LEFT JOIN company cy ON se.company_id = cy.company_id;`)).rows as Site[];
   } catch (err) {
     console.log(err);
     return [];
@@ -382,19 +382,4 @@ function gen_filter_string(columns: string[], values: string[], types: string[],
   }
 
   return value_index > 1 ? { query: query_filters + sorting_query, values: values_trimmed } : { query: sorting_query + "", values };
-}
-
-function gen_sorted_data(data: any[], sorting: { key: string, asc: boolean }): any[] {
-  if (!sorting.key) return data;
-
-  return data.sort((a: any, b: any) => {
-    if (!a[sorting.key]) return 1;
-    if (!b[sorting.key]) return -1;
-
-    if (sorting.asc) {
-      return a[sorting.key].localeCompare(b[sorting.key]);
-    } else {
-      return b[sorting.key].localeCompare(a[sorting.key]);
-    }
-  });
 }
