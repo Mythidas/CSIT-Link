@@ -1,6 +1,5 @@
 <script>
   import Icon from "./icon.svelte";
-
 </script>
 
 <div class="flex w-full h-full p-3">

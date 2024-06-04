@@ -1,7 +1,7 @@
 export interface APIResponse {
   data?: any;
   meta: {
-    total?: any;
+    total?: number;
     error?: any;
     status: number;
   }

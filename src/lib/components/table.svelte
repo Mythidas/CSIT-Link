@@ -6,11 +6,12 @@
 </script>
 
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { page as _page } from "$app/stores"
   import { createEventDispatcher } from "svelte";
   import Icon from "./icon.svelte";
   import TableFilters, { type Filter, type FilterGroup } from "./table_filters.svelte";
+  import LoadingSpinner from "./loading_spinner.svelte";
+  import axios from "axios";
+  import { PUBLIC_LOCAL_URL } from "$env/static/public";
 
   export let page: number;
   export let total_items: number;
@@ -19,19 +20,48 @@
   export let data: any[] | string = []; // Used for static data
   export let filters: FilterGroup[] = [];
 
+  let _data = JSON.parse(JSON.stringify(data));
   let sort_state = { key: "", asc: true };
-  let inter_data = JSON.parse(JSON.stringify(data));
-  let filtered_data = inter_data;
+  let filtered_data = _data;
   let active_filters: Filter[] = [];
+  let loading = true;
 
-  $: {
-    if (data.length > 0) {
-      filtered_data = JSON.parse(JSON.stringify(inter_data));
+  $: if (typeof data === "object" && data.length > 0) {
+    filtered_data = JSON.parse(JSON.stringify(_data));
+    sort_data();
+  }
+
+  $: fetch_data(active_filters, page, count);
+
+  const dispatch = createEventDispatcher();
+
+  async function fetch_data(filters: Filter[], page: number, count: number) {
+    if (typeof data !== "string") return;
+
+    loading = true;
+    
+    try {
+      const response = await axios.post(`${PUBLIC_LOCAL_URL}${data}`, {
+        page,
+        count,
+        filters: active_filters
+      });
+
+      if (response.status !== 200) return;
+
+      filtered_data = JSON.parse(JSON.stringify(response.data.data));
+      total_items = filtered_data.length;
       sort_data();
+      loading = false;
+    } catch (err) {
+      console.log(err);
     }
   }
 
-  const dispatch = createEventDispatcher();
+  function on_count_change(e: Event) {
+    const _target = e.target as HTMLSelectElement;
+    count = Number(_target.value || 25);
+  }
 
   function set_sort_key(key: string) {
     if (sort_state.key === key) {
@@ -64,7 +94,7 @@
   }
 
   function on_filter_change(filters: Filter[]) {
-    filtered_data = inter_data.filter((data: any) => {
+    filtered_data = _data.filter((data: any) => {
       for (let i = 0; i < filters.length; i++) {
         if (filters[i].type === "Text") {
           if (!data[filters[i].key].toLowerCase().includes(filters[i].value?.toString().toLowerCase() || "")) {
@@ -87,13 +117,13 @@
 
   function on_page_up() {
     if (page < Math.ceil(total_items / (page * count))) {
-      goto(`${$_page.url.origin + $_page.url.pathname}?page=${page + 1}&count=${count}`);
+      page++;
     }
   }
 
   function on_page_down() {
     if (page > 1) {
-      goto(`${$_page.url.origin + $_page.url.pathname}?page=${page - 1}&count=${count}`);
+      page--;
     }
   }
 </script>
@@ -102,6 +132,7 @@
   <TableFilters bind:filters bind:active_filters on:filter_change={(e) => on_filter_change(e.detail)}/>
   <div class="flex flex-col w-full h-full  justify-between">
     <div class="w-full h-full overflow-auto">
+      {#if !loading}
       <table class="table-auto text-left w-full h-fit bg-base-100">
         <thead>
           <tr>
@@ -129,6 +160,11 @@
           {/each}
         </tbody>
       </table>
+      {:else}
+      <div class="flex w-full h-full bg-base-100">
+        <LoadingSpinner />
+      </div>
+      {/if}
     </div>
     <div class="flex w-full h-fit justify-between px-2 border-t-2 border-base-300">
       <div>Total: {total_items}</div>
@@ -139,7 +175,7 @@
       </div>
       <div>
         Count: 
-        <select on:select={(e) => count = Number(e.target)} class="bg-base-100 border-none" value={count.toString()}>
+        <select on:change={on_count_change} class="bg-base-100 border-none">
           <option value="25">25</option>
           <option value="50">50</option>
           <option value="100">100</option>
