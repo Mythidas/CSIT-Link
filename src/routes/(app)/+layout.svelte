@@ -23,6 +23,9 @@
       <NavLink href="/sites" label="Sites">
         <Icon size={32} icon="Home"/>
       </NavLink>
+      <NavLink href="/devices" label="Devices">
+        <Icon size={32} icon="Monitor"/>
+      </NavLink>
       <NavLink href="/configuration" label="Configuration">
         <Icon size={32} icon="Menu"/>
       </NavLink>

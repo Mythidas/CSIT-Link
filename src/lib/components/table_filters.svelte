@@ -6,7 +6,7 @@
   export interface Filter {
     name: string; // Display name of the filter
     key: string; // Data property to filter on
-    type: "Text" | "Select" | "Bool" | "Number"; // Filter input type
+    type: "Text" | "Select" | "Bool" | "Number" | "Date"; // Filter input type
     options?: FilterOption[]; // Available options for select filters
     value?: string | boolean; // Current filter value
     active?: boolean; // Whether the filter is currently applied,
@@ -25,6 +25,8 @@
   import Icon from "./icon.svelte";
   import Input from "./input.svelte";
   import DropdownButton from "./dropdown_button.svelte";
+    import Checkbox from "./checkbox.svelte";
+    import Select from "./select.svelte";
 
   export let filters: FilterGroup[] = [];
   export let active_filters: Filter[] = [];
@@ -114,7 +116,7 @@
     <div class="flex flex-col border-t-2 border-base-300 overflow-y-auto">
       {#each filters as group}
       <div class={`${group.expanded && "pb-2"} border-b-2 border-base-300`}>
-        <button class="flex w-full px-2 justify-between text-xl hover:bg-base-200" on:click={() => group.expanded = !group.expanded}>
+        <button class="flex w-full px-2 py-1 justify-between text-xl hover:bg-base-200" on:click={() => group.expanded = !group.expanded}>
           <p>{group.name}</p>
           <div class="my-auto">
             <Icon icon={group.expanded ? "Up" : "Down"} size={24}/>
@@ -130,8 +132,14 @@
           </div>
           {#if filter.active}
           <div class="pl-6">
-            {#if filter.type === "Text"}
+            {#if filter.type === "Text" || filter.type === "Number"}
             <Input bind:value={filter.value} placeholder={`Enter ${filter.name}...`} on:input={on_filter_change} />
+            {:else if filter.type === "Bool"}
+            <Select bind:value={filter.value} options={[{ key: "true", label: "Enabled" }, { key: "false", label: "Disabled" }]} on:select={on_filter_change}/>
+            {:else if filter.type === "Date"}
+            <p>Not Implemented</p>
+            {:else if filter.type === "Select"}
+            <p>Not Implemented</p>
             {/if}
           </div>
           {/if}

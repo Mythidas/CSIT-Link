@@ -23,11 +23,11 @@
   export let data: string = ""; // Used for static data
   export let filters: FilterGroup[] = [];
   export let sort_state = { key: "", group: "", asc: true };
+  export let loading = true;
 
   let _data = JSON.parse(JSON.stringify(data));
   let filtered_data = _data;
   let active_filters: Filter[] = [];
-  let loading = true;
   
   const dispatch = createEventDispatcher();
   onMount(() => {
@@ -56,7 +56,6 @@
       filtered_data = JSON.parse(JSON.stringify(response.data.data));
       total_items = response.data.meta.total;
       loading = false;
-      console.log(filtered_data);
     } catch (err) {
       console.log(err);
     }
@@ -98,7 +97,7 @@
   }
 
   function on_page_up() {
-    if (page < Math.ceil(total_items / (page * count))) {
+    if (page < Math.ceil(total_items / count)) {
       page++;
     }
   }

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
 
+  export let value: any;
   export let options: { key: string; label: string; }[] = [];
   export let placeholder = "Select...";
   export let searchable = true;
@@ -8,7 +9,6 @@
   export let name = "";
 
   let label = "";
-  let value = "";
   let open = false;
   let search = "";
 
@@ -44,7 +44,7 @@
     <input id={name} name={name} required={required} bind:value={value} class="absolute left-0 w-full py-1 -z-10 outline-none" on:change={(e) => console.log(e)}/>
   </div>
   {#if open}
-  <div class="absolute w-fit h-48 flex flex-col overflow-auto bg-base-300 overflow-ellipsis z-50">
+  <div class="absolute w-fit h-fit max-h-48 flex flex-col overflow-auto bg-base-300 overflow-ellipsis z-50">
     {#if searchable}
     <!-- svelte-ignore a11y-autofocus -->
     <input 

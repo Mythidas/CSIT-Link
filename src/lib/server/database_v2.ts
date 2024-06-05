@@ -118,17 +118,16 @@ export async function add_company(client: PoolClient, new_company: Company): Pro
 
 export async function get_devices(client: PoolClient, columns: string[], values: string[], types: string[], sorting: { key: string, group: string, asc: boolean }): Promise<DeviceAll[]> {
   try {
-    if (columns && columns.length > 0) {
-      const query_filters = gen_filter_string(columns, values, types, sorting);
-      
-      if (query_filters.query) {
-        return (await client.query(`SELECT de.*, dv.*, dm.* 
-        FROM Device de 
-        LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
-        LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id ${query_filters.query};`, query_filters.values)).rows as DeviceAll[];
-      }
+    const query_filters = gen_filter_string(columns, values, types, sorting);
+    
+    if (query_filters.query) {
+      console.log(query_filters.query)
+      return (await client.query(`SELECT de.*, dv.*, dm.* 
+      FROM Device de 
+      LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
+      LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id ${query_filters.query};`, query_filters.values)).rows as DeviceAll[];
     }
-      
+
     return (await client.query(`SELECT de.*, dv.*, dm.* 
     FROM Device de 
     LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
@@ -371,6 +370,7 @@ function gen_filter_string(columns: string[], values: string[], types: string[],
       switch(types[i]) {
         case "Text": query_filters += `${columns[i]} ILIKE $${value_index++}`; break;
         case "Number": query_filters += `${columns[i]} = $${value_index++}`; break;
+        case "Bool": query_filters += `${columns[i]} = $${value_index++}`; break;
       }
 
       if (types[i] === "Text") {

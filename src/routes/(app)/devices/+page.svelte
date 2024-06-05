@@ -1,21 +1,11 @@
 <script lang="ts">
   import Table from "$lib/components/table.svelte";
-  import type { Site } from "$lib/interfaces/i_db";
-
-  export let data: { site: Site };
 
   let total_items = 1;
   let page = 1;
   let count = 25;
-
-  $: site_id = data.site.site_id;
 </script>
 
-<h3 class="flex space-x-2 text-2xl p-2 bg-base-200">
-  <a href="/sites">Sites</a>
-  <p>{">"}</p>
-  <p>{data.site.title}</p>
-</h3>
 <div class="flex flex-col w-full h-full p-2 bg-base-200 overflow-hidden">
   <Table
     columns={[
@@ -28,19 +18,12 @@
       { key: "tamper", label: "Tamper Protection", group: "DeviceAV", default: "-", type: "Bool" },
       { key: "health", label: "Sophos Health", group: "DeviceAV", default: "-" },
     ]}
-    data={`/api/v2/devices/${site_id}`}
+    data={`/api/v2/devices`}
     filters={[
       {
         name: "Device",
         filters: [
           { name: "Name", key: "hostname", type: "Text" },
-        ]
-      },
-      {
-        name: "Device RMM",
-        filters: [
-          { name: "Heartbeat", key: "heartbeat_rmm", type: "Date" },
-          { name: "Windows Firewall", key: "firewall", type: "Bool" },
         ]
       }
     ]}
