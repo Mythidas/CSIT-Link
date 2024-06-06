@@ -121,7 +121,7 @@ export async function get_devices(client: PoolClient, columns: string[], values:
     const query_filters = gen_filter_string(columns, values, types, sorting);
     
     if (query_filters.query) {
-      console.log(query_filters.query)
+      console.log(query_filters.query);
       return (await client.query(`SELECT de.*, dv.*, dm.* 
       FROM Device de 
       LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
@@ -367,13 +367,23 @@ function gen_filter_string(columns: string[], values: string[], types: string[],
         query_filters += " AND ";
       }
 
+      const _f_index = Math.max(values[i].lastIndexOf('>'), values[i].lastIndexOf('<'), values[i].lastIndexOf('='));
+      const _formula = _f_index >= 0 ? values[i].slice(0, _f_index + 1) : ">=";
       switch(types[i]) {
         case "Text": query_filters += `${columns[i]} ILIKE $${value_index++}`; break;
-        case "Number": query_filters += `${columns[i]} = $${value_index++}`; break;
+        case "Number": query_filters += `${columns[i]} ${_formula} $${value_index++}`; break;
         case "Bool": query_filters += `${columns[i]} = $${value_index++}`; break;
+        case "Select": query_filters += `${columns[i]} ILIKE $${value_index++}`; break;
+        case "Date": query_filters += `${columns[i]} ${_formula} $${value_index++}`; break;
+        default: query_filters += `${columns[i]} ILIKE $${value_index++}`; break;
       }
 
-      if (types[i] === "Text") {
+      if (_f_index > -1) {
+        values[i] = values[i].slice(_f_index + 1);
+        if (!values[i]) values[i] = "0";
+      }
+
+      if (types[i] === "Text" || types[i] === "Select") {
         values[i] = `%${values[i]}%`;
       }
 

@@ -12,7 +12,6 @@ export async function POST({ request, locals }) {
       types.push(data.filters[i].type);
     }
 
-    console.log(data);
     const start_index = (data.page - 1) * data.count;
     const devices = await db.get_devices(locals.db_conn, columns, values, types, data.sorting);
     const devices_filtered = devices.slice(start_index, start_index + data.count);

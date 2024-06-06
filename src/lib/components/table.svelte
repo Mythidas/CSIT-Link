@@ -1,13 +1,3 @@
-<script lang="ts" context="module">
-  export interface Column {
-    label: string;
-    key: string;
-    group: string;
-    default?: string;
-    type?: "String" | "Date" | "Bool"
-  }
-</script>
-
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
   import Icon from "./icon.svelte";
@@ -19,15 +9,15 @@
   export let page: number;
   export let total_items: number;
   export let count = 25;
-  export let columns: Column[];
+  export let columns: Filter[];
   export let data: string = ""; // Used for static data
-  export let filters: FilterGroup[] = [];
   export let sort_state = { key: "", group: "", asc: true };
   export let loading = true;
-
+  
   let _data = JSON.parse(JSON.stringify(data));
   let filtered_data = _data;
   let active_filters: Filter[] = [];
+  let filters: FilterGroup[] = [];
   
   const dispatch = createEventDispatcher();
   onMount(() => {
@@ -37,6 +27,25 @@
   $: fetch_data(page, count);
   $: if (page > Math.ceil(total_items / count) || page <= 0) {
     page = Math.min(Math.max(page, 1), Math.ceil(total_items / count));
+  }
+  $: {
+    let _filters: FilterGroup[] = [];
+    for (let i = 0; i < columns.length; i++) {
+      const _group = _filters.find((_filter: FilterGroup) => {
+        return _filter.name === columns[i].group;
+      });
+
+      if (_group) {
+        _group.filters.push({...columns[i]});
+      } else {
+        _filters.push({
+          name: columns[i].group,
+          filters: [columns[i]]
+        })
+      }
+    }
+
+    filters = _filters;
   }
 
   async function fetch_data(page: number, count: number) {
@@ -88,7 +97,6 @@
   }
 
   function on_filter_change(filters: Filter[]) {
-    console.log(active_filters);
     fetch_data(page, count);
   }
 
@@ -140,7 +148,7 @@
 </script>
 
 <div class="flex w-full h-full">
-  <TableFilters bind:filters bind:active_filters on:filter_change={(e) => on_filter_change(e.detail)}/>
+  <TableFilters filters={filters} bind:active_filters on:filter_change={(e) => on_filter_change(e.detail)}/>
   <div class="flex flex-col w-full h-full  justify-between">
     <div class="w-full h-full overflow-auto">
       {#if !loading}
@@ -150,7 +158,7 @@
             {#each columns as column}
             <th class="sticky top-0 shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer" on:click={() => set_sort_key(column.key, column.group)}>
               <div class="flex w-full justify-between">
-                <p class="my-auto p-2 select-none">{column.label}</p>
+                <p class="my-auto p-2 select-none">{column.name}</p>
                 {#if column.key === sort_state.key}
                 <div class="my-auto">
                   <Icon icon={`${sort_state.asc ? "Up" : "Down"}`}/>
@@ -165,7 +173,7 @@
           {#each filtered_data as row}
           <tr class="even:bg-base-100 odd:bg-base-150 hover:bg-base-300" on:click={() => on_select_row(row)}>
             {#each columns as column}
-              {#if !column.type || column?.type === "String"}
+              {#if !column.type || column?.type === "Text" || column?.type === "Number"}
               <td class="px-2 py-1">{row[column.key] || column.default}</td>
               {:else if column.type === "Date"}
               <td class="px-2 py-1">{row[column.key] ? calculate_time_since(row[column.key]) : column.default}</td>

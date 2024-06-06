@@ -19,31 +19,19 @@
 <div class="flex flex-col w-full h-full p-2 bg-base-200 overflow-hidden">
   <Table
     columns={[
-      { key: "hostname", label: "Name", group: "Device" },
-      { key: "heartbeat_rmm", label: "VSA Heartbeat", group: "DeviceRMM", default: "-", type: "Date" },
-      { key: "firewall", label: "Windows Firewall", group: "DeviceRMM", default: "-", type: "Bool" },
-      { key: "uac", label: "UAC Enabled", group: "DeviceRMM", default: "-", type: "Bool" },
-      { key: "memory", label: "Memory Total", group: "DeviceRMM", default: "-" },
-      { key: "heartbeat_av", label: "Sophos Heartbeat", group: "DeviceAV", default: "-", type: "Date" },
-      { key: "tamper", label: "Tamper Protection", group: "DeviceAV", default: "-", type: "Bool" },
-      { key: "health", label: "Sophos Health", group: "DeviceAV", default: "-" },
+      { key: "hostname", name: "Name", group: "Device", default: "-", type: "Text" },
+      { key: "os", name: "OS", group: "Device", default: "-", type: "Text" },
+      { key: "ipv4", name: "LAN", group: "Device", default: "-", type: "Text" },
+      { key: "wan", name: "WAN", group: "Device", default: "-", type: "Text" },
+      { key: "heartbeat_rmm", name: "VSA Heartbeat", group: "DeviceRMM", default: "-", type: "Date" },
+      { key: "firewall", name: "Windows Firewall", group: "DeviceRMM", default: "-", type: "Bool" },
+      { key: "uac", name: "UAC Enabled", group: "DeviceRMM", default: "-", type: "Bool" },
+      { key: "memory", name: "Memory Total", group: "DeviceRMM", default: "-", type: "Text" },
+      { key: "heartbeat_av", name: "Sophos Heartbeat", group: "DeviceAV", default: "-", type: "Date" },
+      { key: "tamper", name: "Tamper Protection", group: "DeviceAV", default: "-", type: "Bool" },
+      { key: "health", name: "Sophos Health", group: "DeviceAV", default: "-", type: "Text" },
     ]}
     data={`/api/v2/devices/${site_id}`}
-    filters={[
-      {
-        name: "Device",
-        filters: [
-          { name: "Name", key: "hostname", type: "Text" },
-        ]
-      },
-      {
-        name: "Device RMM",
-        filters: [
-          { name: "Heartbeat", key: "heartbeat_rmm", type: "Date" },
-          { name: "Windows Firewall", key: "firewall", type: "Bool" },
-        ]
-      }
-    ]}
     bind:total_items
     bind:page
     bind:count

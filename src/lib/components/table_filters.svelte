@@ -6,11 +6,12 @@
   export interface Filter {
     name: string; // Display name of the filter
     key: string; // Data property to filter on
+    group: string;
     type: "Text" | "Select" | "Bool" | "Number" | "Date"; // Filter input type
     options?: FilterOption[]; // Available options for select filters
     value?: string | boolean; // Current filter value
     active?: boolean; // Whether the filter is currently applied,
-    group?: string;
+    default?: string;
   }
 
   export interface FilterGroup {
@@ -25,8 +26,7 @@
   import Icon from "./icon.svelte";
   import Input from "./input.svelte";
   import DropdownButton from "./dropdown_button.svelte";
-    import Checkbox from "./checkbox.svelte";
-    import Select from "./select.svelte";
+  import Select from "./select.svelte";
 
   export let filters: FilterGroup[] = [];
   export let active_filters: Filter[] = [];
@@ -84,6 +84,11 @@
       on_filter_change();
     }
   }
+
+  function get_30_days() {
+    console.log(new Date(new Date().getTime() + 30 * 24 * 3600 * 1000).toISOString())
+    return new Date(new Date().getTime() + 30 * 24 * 3600 * 1000).toISOString();
+  }
 </script>
 
 <div class={`flex flex-col ${filters_open ? "w-80" : " w-11"} space-y-2 p-2 transition-[width] bg-base-150 stroke-font border-r-2 border-accent-100`}>
@@ -132,14 +137,16 @@
           </div>
           {#if filter.active}
           <div class="pl-6">
-            {#if filter.type === "Text" || filter.type === "Number"}
-            <Input bind:value={filter.value} placeholder={`Enter ${filter.name}...`} on:input={on_filter_change} />
+            {#if filter.type === "Text"}
+            <Input bind:value={filter.value} placeholder={`Search ${filter.name}...`} on:input={on_filter_change} />
             {:else if filter.type === "Bool"}
             <Select bind:value={filter.value} options={[{ key: "true", label: "Enabled" }, { key: "false", label: "Disabled" }]} on:select={on_filter_change}/>
             {:else if filter.type === "Date"}
-            <p>Not Implemented</p>
+            <Select bind:value={filter.value} options={[{ key: `< ${get_30_days()}`, label: "< 30d" }, { key: `> ${get_30_days()}`, label: "> 30d" }]} on:select={on_filter_change}/>
             {:else if filter.type === "Select"}
             <p>Not Implemented</p>
+            {:else if filter.type === "Number"}
+            <Input bind:value={filter.value} placeholder={`Enter Forumla...`} on:input={on_filter_change} />
             {/if}
           </div>
           {/if}
