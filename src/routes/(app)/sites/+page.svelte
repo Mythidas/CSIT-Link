@@ -13,24 +13,10 @@
 <div class="flex flex-col w-full h-full p-2 bg-base-200">
   <Table
     columns={[
-      { key: "title", label: "Name", group: "Site" },
-      { key: "company_title", label: "Company", group: "Company", default: "-" }
+      { key: "title", name: "Name", group: "Site", type: "Text" },
+      { key: "company_title", name: "Name", group: "Company", type: "Text", default: "-" }
     ]}
     data="/api/v2/sites"
-    filters={[
-      {
-        name: "Site",
-        filters: [
-          { name: "Name", key: "title", type: "Text" },
-        ]
-      },
-      {
-        name: "Company",
-        filters: [
-          { name: "Name", key: "title", type: "Text" }
-        ]
-      }
-    ]}
     bind:total_items
     bind:page
     bind:count

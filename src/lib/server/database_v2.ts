@@ -13,7 +13,7 @@ const pool = new pg.Pool({
   host: PG_HOST,
   database: PG_DATABASE,
   password: PG_PASSWORD,
-  ssl: dev,
+  ssl: true,
   port: Number(PG_PORT)
 })
 

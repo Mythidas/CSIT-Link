@@ -1,9 +1,20 @@
-import { connect as db } from "$lib/server/database";
+import { sequence } from '@sveltejs/kit/hooks';
+import { connect } from "$lib/server/database";
+import type { Handle } from '@sveltejs/kit';
+import { handle as second } from "$lib/auth";
+import { dev } from '$app/environment';
+import axios from 'axios';
+import https from "https";
 
-export const handle = async({ event, resolve }) => {
+export const first: Handle = async({ event, resolve }) => {
   try {
-    const db_conn = await db();
-    event.locals = { db_conn };
+    if (dev) {
+      const agent = new https.Agent({ rejectUnauthorized: false });
+      axios.defaults.httpsAgent = agent;
+    }
+
+    const db_conn = await connect();
+    event.locals.db_conn = db_conn;
     const response = await resolve(event);
     db_conn.release();
     return response;
@@ -12,3 +23,5 @@ export const handle = async({ event, resolve }) => {
     return await resolve(event);
   }
 }
+
+export const handle = sequence(first, second);
