@@ -3,6 +3,7 @@ import { SvelteKitAuth } from "@auth/sveltekit"
 import Entra from "@auth/sveltekit/providers/microsoft-entra-id"
  
 export const { handle, signIn, signOut } = SvelteKitAuth({
+  trustHost: true,
   providers: [
     Entra({
       clientId: AUTH_MICROSOFT_ENTRA_ID_ID,
