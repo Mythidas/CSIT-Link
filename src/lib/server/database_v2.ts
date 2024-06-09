@@ -310,7 +310,6 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
     }
 
     // Update existing devices
-
     console.log("Update devices [load_devices_by_site_id]");
     for (let i = 0; i < pre_devices.length; i++) {
       if (pre_devices[i].device_id < 0) continue;
@@ -350,6 +349,20 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
           _device_av.health,
           String(pre_devices[i].device_id)
         ]);
+      }
+    }
+
+    // Remove deleted devices
+    console.log("Delete removed devices [load_devices_by_site_id]");
+    for (let i = 0; i < devices.length; i++) {
+      const _device = pre_devices.find(dev => {
+        return dev.hostname.toLowerCase() === devices[i].hostname.toLowerCase();
+      })
+
+      if (!_device) {
+        await client.query(`DELETE FROM DeviceRMM WHERE device_id = $1;
+        DELETE FROM DeviceAV WHERE device_id = $1;
+        DELETE FROM Device WHERE device_id = $1;`, [devices[i].device_id.toString()]);
       }
     }
 
