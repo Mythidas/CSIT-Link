@@ -6,10 +6,11 @@
   let count = 25;
 </script>
 
-<div class="flex flex-col w-full h-full p-2 bg-base-200 overflow-hidden">
+<div class="flex flex-col w-full h-full p-2 bg-base-200">
   <Table
     columns={[
       { key: "hostname", name: "Name", group: "Device", default: "-", type: "Text" },
+      { key: "title", name: "SIte", group: "Site", default: "-", type: "Text" },
       { key: "os", name: "OS", group: "Device", default: "-", type: "Text" },
       { key: "ipv4", name: "LAN", group: "Device", default: "-", type: "Text" },
       { key: "wan", name: "WAN", group: "Device", default: "-", type: "Text" },

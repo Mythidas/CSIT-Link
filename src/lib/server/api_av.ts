@@ -128,7 +128,7 @@ export async function get_devices(av_site_id: string, av_site_url: string, cooki
     if (device_data.items) {
       for (let i = 0; i < device_data.items.length; i++) {
         device_list.push({ 
-          device_id: device_data.items[i].id,
+          device_id: -1,
           site_id: -1,
           hostname: device_data.items[i].hostname,
           os: device_data.items[i].os.name, 

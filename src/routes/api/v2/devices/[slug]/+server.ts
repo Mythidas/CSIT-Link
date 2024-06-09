@@ -12,7 +12,7 @@ export async function POST({ request, locals, params, cookies }) {
       await db.load_devices_by_site_id(locals.db_conn, site.site_id, cookies);
     }
 
-    let columns = ["de.site_id"], values = [site.site_id.toString()], types = ["Number"];
+    let columns = ["de.site_id"], values = ["= " + site.site_id.toString()], types = ["Number"];
 
     for (let i = 0; i < data.filters.length; i++) {
       columns.push(`${data.filters[i].group[0].toLowerCase()}${data.filters[i].group[data.filters[i].group.length - 1].toLowerCase()}.${data.filters[i].key}`);

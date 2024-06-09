@@ -2,11 +2,9 @@
   import "../../app.css";
   import { navigating, page } from "$app/stores";
   import LoadingSpinner from "$lib/components/loading_spinner.svelte";
-  import type { Site } from "$lib/interfaces/i_db";
   import Icon from "$lib/components/icon.svelte";
   import NavLink from "$lib/components/nav_link.svelte";
 
-  // export let data: { current_site: Site };
 </script>
 
 <main class="relative flex flex-col w-screen h-screen overflow-hidden bg-base-100 text-font">

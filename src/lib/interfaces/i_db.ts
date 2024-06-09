@@ -51,10 +51,8 @@ export interface DeviceBU {
   device_id: number;
 }
 
-export interface DeviceAll {
-  base: Device;
-  rmm: DeviceRMM;
-  av: DeviceAV;
+export interface DeviceAll extends Device, DeviceRMM, DeviceAV {
+  
 }
 
 export interface Patch {

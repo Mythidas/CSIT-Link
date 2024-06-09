@@ -12,7 +12,7 @@
   export let columns: Filter[];
   export let data: string = ""; // Used for static data
   export let sort_state = { key: "", group: "", asc: true };
-  export let loading = true;
+  export let loading = false;
   
   let _data = JSON.parse(JSON.stringify(data));
   let filtered_data = _data;
@@ -24,7 +24,6 @@
     fetch_data(page, count);
   })
 
-  $: fetch_data(page, count);
   $: if (page > Math.ceil(total_items / count) || page <= 0) {
     page = Math.min(Math.max(page, 1), Math.ceil(total_items / count));
   }
@@ -49,7 +48,7 @@
   }
 
   async function fetch_data(page: number, count: number) {
-    if (typeof data !== "string") return;
+    if (loading) return;
 
     loading = true;
     try {
@@ -73,6 +72,7 @@
   function on_count_change(e: Event) {
     const _target = e.target as HTMLSelectElement;
     count = Number(_target.value || 25);
+    fetch_data(page, count);
   }
 
   function set_sort_key(key: string, group: string) {
@@ -107,12 +107,14 @@
   function on_page_up() {
     if (page < Math.ceil(total_items / count)) {
       page++;
+      fetch_data(page, count);
     }
   }
 
   function on_page_down() {
     if (page > 1) {
       page--;
+      fetch_data(page, count);
     }
   }
 
@@ -149,7 +151,7 @@
 
 <div class="flex w-full h-full">
   <TableFilters filters={filters} bind:active_filters on:filter_change={(e) => on_filter_change(e.detail)}/>
-  <div class="flex flex-col w-full h-full  justify-between">
+  <div class="flex flex-col w-full h-full justify-between">
     <div class="w-full h-full overflow-auto">
       {#if !loading}
       <table class="table-auto text-left w-full h-fit bg-base-100">
