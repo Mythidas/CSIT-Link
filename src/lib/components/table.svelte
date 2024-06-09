@@ -11,11 +11,13 @@
   export let count = 25;
   export let columns: Filter[];
   export let data: string = ""; // Used for static data
-  export let sort_state = { key: "", group: "", asc: true };
+  export let sort_state = { key: "", group: "", asc: true, type: "" };
   export let loading = false;
+  export let sticky_first = false;
   
   let active_filters: Filter[] = [];
   let filters: FilterGroup[] = [];
+  let first_child_sticky = "first:sticky first:left-0 first:z-40 first:bg-base-200 first:shadow-[inset_-2px_0_0_rgba(127,133,245,0.3)]";
   
   const dispatch = createEventDispatcher();
   onMount(() => {
@@ -75,8 +77,9 @@
     fetch_data(page, count);
   }
 
-  function set_sort_key(key: string, group: string) {
+  function set_sort_key(key: string, group: string, type: string) {
     sort_state.group = group;
+    sort_state.type = type;
     if (sort_state.key === key) {
       if (!sort_state.asc) {
         sort_state.asc = true;
@@ -147,14 +150,14 @@
 
 <div class="flex w-full h-full">
   <TableFilters filters={filters} bind:active_filters on:filter_change={(e) => on_filter_change(e.detail)}/>
-  <div class="flex flex-col w-full h-full justify-between">
+  <div class="flex flex-col w-full h-full justify-between overflow-hidden">
     <div class="w-full h-full overflow-auto">
       {#if !loading}
       <table class="table-auto text-left w-full h-fit bg-base-100">
         <thead>
           <tr>
             {#each columns as column}
-            <th class="sticky top-0 shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer" on:click={() => set_sort_key(column.key, column.group)}>
+            <th class="sticky top-0 first:left-0 first:z-50 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer" on:click={() => set_sort_key(column.key, column.group, column.type)}>
               <div class="flex w-full justify-between">
                 <p class="my-auto p-2 select-none">{column.name}</p>
                 {#if column.key === sort_state.key}
@@ -172,11 +175,11 @@
           <tr class="even:bg-base-100 odd:bg-base-150 hover:bg-base-300" on:click={() => on_select_row(row)}>
             {#each columns as column}
               {#if !column.type || column?.type === "Text" || column?.type === "Number"}
-              <td class="px-2 py-1">{row[column.key] || column.default}</td>
+              <td class={`px-2 py-1 whitespace-nowrap ${sticky_first && first_child_sticky}`}>{row[column.key] || column.default}</td>
               {:else if column.type === "Date"}
-              <td class="px-2 py-1">{row[column.key] ? calculate_time_since(row[column.key]) : column.default}</td>
+              <td class={`px-2 py-1 whitespace-nowrap ${sticky_first && first_child_sticky}`}>{row[column.key] ? calculate_time_since(row[column.key]) : column.default}</td>
               {:else if column.type === "Bool"}
-              <td class="px-2 py-1">{row[column.key] === null ? column.default : (row[column.key] ? "Yes" : "No")}</td>
+              <td class={`px-2 py-1 whitespace-nowrap ${sticky_first && first_child_sticky}`}>{row[column.key] === null ? column.default : (row[column.key] ? "Yes" : "No")}</td>
               {/if}
             {/each}
           </tr>

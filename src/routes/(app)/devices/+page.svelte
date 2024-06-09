@@ -26,5 +26,6 @@
     bind:total_items
     bind:page
     bind:count
+    sticky_first
   />
 </div>

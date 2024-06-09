@@ -20,6 +20,13 @@ const pool = new pg.Pool({
 
 export const connect = async () => await pool.connect();
 
+interface SortState {
+  key: string;
+  group: string; 
+  asc: boolean; 
+  type: string;
+}
+
 // SITES
 
 export async function get_site(client: PoolClient, site_id: number): Promise<Site | null> {
@@ -35,7 +42,7 @@ export async function get_site(client: PoolClient, site_id: number): Promise<Sit
   }
 }
 
-export async function get_sites(client: PoolClient, columns: string[], values: string[], types: string[], sorting: { key: string, group: string, asc: boolean }): Promise<Site[]> {
+export async function get_sites(client: PoolClient, columns: string[], values: string[], types: string[], sorting: SortState): Promise<Site[]> {
   try {
     const query_filters = gen_filter_string(columns, values, types, sorting);
     
@@ -115,7 +122,7 @@ export async function add_company(client: PoolClient, new_company: Company): Pro
 
 // DEVICES
 
-export async function get_devices(client: PoolClient, columns: string[], values: string[], types: string[], sorting: { key: string, group: string, asc: boolean }): Promise<DeviceAll[]> {
+export async function get_devices(client: PoolClient, columns: string[], values: string[], types: string[], sorting: SortState): Promise<DeviceAll[]> {
   try {
     const query_filters = gen_filter_string(columns, values, types, sorting);
     
@@ -140,7 +147,7 @@ export async function get_devices(client: PoolClient, columns: string[], values:
 
 export async function get_devices_all(client: PoolClient): Promise<Device[]> {
   try {
-    const sites = await get_sites(client, [], [], [], { key: "", group: "", asc: true });
+    const sites = await get_sites(client, [], [], [], { key: "", group: "", asc: true, type: "" });
 
     const sort_devices = (a: Device, b: Device) => {
       const site_a = sites.find((site) => { return site.site_id === a.site_id; });
@@ -374,13 +381,17 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
 
 // HELPERS
 
-function gen_filter_string(columns: string[], values: string[], types: string[], sorting: { key: string, group: string, asc: boolean }): { query: string, values: string[] } {
+function gen_filter_string(columns: string[], values: string[], types: string[], sorting: SortState): { query: string, values: string[] } {
   let query_filters = "";
   let value_index = 1;
   let values_trimmed = [];
   let sorting_query = "";
   if (sorting.key) {
-    sorting_query = ` ORDER BY ${sorting.group[0] + sorting.group[sorting.group.length - 1]}.${sorting.key} ${sorting.asc ? "ASC" : "DESC"}`;
+    switch (sorting.type) {
+      case "Text": sorting_query = ` ORDER BY LOWER(${sorting.group[0] + sorting.group[sorting.group.length - 1]}.${sorting.key}) ${sorting.asc ? "ASC" : "DESC"}`; break;
+      case "Select": sorting_query = ` ORDER BY LOWER(${sorting.group[0] + sorting.group[sorting.group.length - 1]}.${sorting.key}) ${sorting.asc ? "ASC" : "DESC"}`; break;
+      default: sorting_query = ` ORDER BY ${sorting.group[0] + sorting.group[sorting.group.length - 1]}.${sorting.key} ${sorting.asc ? "ASC" : "DESC"}`;
+    }
   }
 
   for (let i = 0; i < columns.length; i++) {
