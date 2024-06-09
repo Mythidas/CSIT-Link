@@ -85,9 +85,12 @@
     }
   }
 
-  function get_30_days() {
-    console.log(new Date(new Date().getTime() + 30 * 24 * 3600 * 1000).toISOString())
+  function forward_30_days() {
     return new Date(new Date().getTime() + 30 * 24 * 3600 * 1000).toISOString();
+  }
+
+  function backward_30_days() {
+    return new Date(new Date().getTime() - 30 * 24 * 3600 * 1000).toISOString();
   }
 </script>
 
@@ -142,7 +145,7 @@
             {:else if filter.type === "Bool"}
             <Select bind:value={filter.value} options={[{ key: "true", label: "Enabled" }, { key: "false", label: "Disabled" }]} on:select={on_filter_change}/>
             {:else if filter.type === "Date"}
-            <Select bind:value={filter.value} options={[{ key: `< ${get_30_days()}`, label: "< 30d" }, { key: `> ${get_30_days()}`, label: "> 30d" }]} on:select={on_filter_change}/>
+            <Select bind:value={filter.value} options={[{ key: `> ${backward_30_days()}`, label: "< 30d" }, { key: `<= ${backward_30_days()}`, label: "> 30d" }]} on:select={on_filter_change}/>
             {:else if filter.type === "Select"}
             <p>Not Implemented</p>
             {:else if filter.type === "Number"}

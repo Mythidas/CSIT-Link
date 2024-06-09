@@ -14,18 +14,18 @@
   export let sort_state = { key: "", group: "", asc: true };
   export let loading = false;
   
-  let _data = JSON.parse(JSON.stringify(data));
-  let filtered_data = _data;
   let active_filters: Filter[] = [];
   let filters: FilterGroup[] = [];
   
   const dispatch = createEventDispatcher();
   onMount(() => {
     fetch_data(page, count);
-  })
-
+  });
+    
+  $: filtered_data = [];
   $: if (page > Math.ceil(total_items / count) || page <= 0) {
     page = Math.min(Math.max(page, 1), Math.ceil(total_items / count));
+    fetch_data(page, count);
   }
   $: {
     let _filters: FilterGroup[] = [];
@@ -88,10 +88,6 @@
       sort_state.asc = true;
     }
 
-    sort_data();
-  }
-
-  function sort_data() {
     if (!sort_state.key) return;
     fetch_data(page, count);
   }

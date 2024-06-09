@@ -8,7 +8,7 @@ export async function POST({ request, locals, params, cookies }) {
       return Response.json({ meta: { error: "Invalid Site in URL", status: 500 }}, { status: 500 });
     }
 
-    if (!await db.is_site_updated(locals.db_conn, site.site_id)) {
+    if (!(await db.is_site_updated(locals.db_conn, site.site_id))) {
       await db.load_devices_by_site_id(locals.db_conn, site.site_id, cookies);
     }
 

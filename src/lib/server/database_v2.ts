@@ -35,16 +35,14 @@ export async function get_site(client: PoolClient, site_id: number): Promise<Sit
   }
 }
 
-export async function get_sites(client: PoolClient, columns?: string[], values?: string[], types?: string[], sorting?: { key: string, group: string, asc: boolean }): Promise<Site[]> {
+export async function get_sites(client: PoolClient, columns: string[], values: string[], types: string[], sorting: { key: string, group: string, asc: boolean }): Promise<Site[]> {
   try {
-    if (columns && columns.length > 0) {
-      const query_filters = gen_filter_string(columns, values || [], types || [], sorting || { key: "", group: "", asc: true });
-      
-      if (query_filters.query) {
-        return (await client.query(`SELECT se.*, cy.title AS company_title 
-        FROM Site se 
-        LEFT JOIN company cy ON se.company_id = cy.company_id ${query_filters.query};`, query_filters.values)).rows as Site[];
-      }
+    const query_filters = gen_filter_string(columns, values, types, sorting);
+    
+    if (query_filters.query) {
+      return (await client.query(`SELECT se.*, cy.title AS company_title 
+      FROM Site se 
+      LEFT JOIN company cy ON se.company_id = cy.company_id ${query_filters.query};`, query_filters.values)).rows as Site[];
     }
       
     return (await client.query(`SELECT se.*, cy.title AS company_title 
@@ -142,7 +140,7 @@ export async function get_devices(client: PoolClient, columns: string[], values:
 
 export async function get_devices_all(client: PoolClient): Promise<Device[]> {
   try {
-    const sites = await get_sites(client);
+    const sites = await get_sites(client, [], [], [], { key: "", group: "", asc: true });
 
     const sort_devices = (a: Device, b: Device) => {
       const site_a = sites.find((site) => { return site.site_id === a.site_id; });
@@ -190,7 +188,7 @@ export async function load_devices_by_site_id(client: PoolClient, site_id: numbe
   const rmm_device_res = await rmm.get_devices(site.rmm_id);
   const av_device_res = await av.get_devices(site.av_id, site.av_url, cookies);
 
-  load_devices(client, site, devices, rmm_device_res.data, av_device_res.data);
+  await load_devices(client, site, devices, rmm_device_res.data, av_device_res.data);
 }
 
 export async function load_devices(client: PoolClient, site: Site, devices: DeviceAll[], rmm_device_res: { device_list: Device[], rmm_list: DeviceRMM[] }, av_device_res: { device_list: Device[], av_list: DeviceAV[] }): Promise<void> {
@@ -336,7 +334,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
       ]);
       if (_device_rmm) {
         await client.query(update_rmm_query, [
-          _device_rmm.heartbeat_rmm || "",
+          _device_rmm.heartbeat_rmm,
           String(_device_rmm.firewall),
           String(_device_rmm.uac),
           String(_device_rmm.memory || 0),
@@ -345,7 +343,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
       }
       if (_device_av) {
         await client.query(update_av_query, [
-         _device_av.heartbeat_av || "",
+         _device_av.heartbeat_av,
           String(_device_av.tamper),
           _device_av.health,
           String(pre_devices[i].device_id)
@@ -405,7 +403,7 @@ function gen_filter_string(columns: string[], values: string[], types: string[],
       }
 
       if (_f_index > -1) {
-        values[i] = values[i].slice(_f_index + 1);
+        values[i] = values[i].slice(_f_index + 1).trim();
         if (!values[i]) values[i] = "0";
       }
 
