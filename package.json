@@ -6,7 +6,9 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-    "start": "node -r dotenv/config build",
+    "start": "concurrently \"npm run start:main\" \"npm run start:scripts\"",
+		"start:main": "node -r dotenv/config build",
+    "start:scripts": "node ./node_scripts/server.js",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
@@ -31,6 +33,7 @@
 		"@types/ldapjs": "^3.0.6",
 		"@types/pg": "^8.11.4",
 		"axios": "^1.7.2",
+		"concurrently": "^8.2.2",
 		"dotenv": "^16.4.5",
 		"jsonwebtoken": "^9.0.2",
 		"ldapjs": "^3.0.7",

@@ -1,8 +1,17 @@
 {
-	"name": "csit_tools",
-	"version": "0.2.0",
-	"private": true,
-	"scripts": {
-		"start": "node import_all_devices.js"
-	}
+  "name": "node_scripts",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.19.2",
+    "node-schedule": "^2.1.1"
+  }
 }
