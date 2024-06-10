@@ -144,6 +144,7 @@ export async function get_devices_all(): Promise<APIResponse> {
       }
         
       total = asset_data.Meta.TotalCount;
+      console.log(`Obtained ${device_list.length} rmm devices...`);
     }
 
     return { data: { device_list, rmm_list }, meta: { status: 200 }};

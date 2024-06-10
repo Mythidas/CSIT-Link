@@ -3,10 +3,9 @@ import * as rmm from "$lib/server/api_rmm";
 import * as av from "$lib/server/api_av";
 import type { Device, DeviceRMM } from "$lib/interfaces/i_db.js";
 
-import * as fs from 'fs/promises';
-
 export async function POST({ locals, cookies }) {
   try {
+    console.log("Starting Devices Sync...");
     const db_sites = await db.get_sites(locals.db_conn, [], [], [], { key: "", asc: true, group: "", type: "" });
     const rmm_devices = await rmm.get_devices_all();
 

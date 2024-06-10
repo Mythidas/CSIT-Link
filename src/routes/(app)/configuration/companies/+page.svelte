@@ -27,19 +27,9 @@
 <div class="flex flex-col p-3 w-full h-full bg-base-200 rounded-sm">
   <Table
     columns={[
-      { key: "company_id", label: "ID" },
-      { key: "title", label: "Name" }
+      { key: "title", name: "Name", group: "Company", type: "Text" }
     ]}
-    data={data.companies}
-    filters={[
-      {
-        name: "Company",
-        filters: [
-          { key: "company_id", name: "ID", type: "Text" },
-          { key: "title", name: "Name", type: "Text" }
-        ]
-      }
-    ]}
+    data="/api/v2/companies"
     page={1}
     total_items={data.companies.length}
   >

@@ -1,5 +1,5 @@
 import { sequence } from '@sveltejs/kit/hooks';
-import { connect } from "$lib/server/database";
+import { connect } from "$lib/server/database_v2";
 import type { Handle } from '@sveltejs/kit';
 import { handle as second } from "$lib/auth";
 import { dev } from '$app/environment';

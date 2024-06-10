@@ -17,7 +17,7 @@ export async function load({ locals, cookies }) {
     if (av_sites.meta.status !== 200) return "Error fetching AV Sites";
 
     let sites_merge = [];
-    const db_sites = await db.get_sites(locals.db_conn);
+    const db_sites = await db.get_sites(locals.db_conn, [], [], [], { key: "", group: "", asc: true, type: "" });
     const db_companies = await db.get_companies(locals.db_conn);
 
     for (let i = 0; i < db_sites.length; i++) {
@@ -47,6 +47,7 @@ export const actions = {
 
     const site_data: Site = {
       site_id: 0,
+      company_title: "",
       title: form_data.get("title")?.toString() || "",
       company_id: Number(form_data.get("company_id")?.toString()) || -1,
       psa_id: psa || "",
