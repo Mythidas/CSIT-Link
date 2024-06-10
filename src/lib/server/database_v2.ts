@@ -323,43 +323,47 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
       let update_rmm_query = "UPDATE DeviceRMM SET heartbeat_rmm = $1, firewall = $2, uac = $3, memory = $4 WHERE device_id = $5;";
       let update_av_query = "UPDATE DeviceAV SET heartbeat_av = $1, tamper = $2, health = $3 WHERE device_id = $4;";
 
-      await client.query(update_query, [
-        pre_devices[i].ipv4,
-        pre_devices[i].wan,
-        pre_devices[i].device_id.toString()
-      ]);
+      try {
+        await client.query(update_query, [
+          pre_devices[i].ipv4,
+          pre_devices[i].wan,
+          pre_devices[i].device_id.toString()
+        ]);
 
-      if (av_device_res.device_list) {
-        const _device_av_index = av_device_res.device_list.findIndex((dev: Device) => {
-          return dev.hostname.toLowerCase() === pre_devices[i].hostname.toLowerCase();
-        })
-        const _device_av = av_device_res.av_list[_device_av_index] as DeviceAV;
+        if (av_device_res.device_list) {
+          const _device_av_index = av_device_res.device_list.findIndex((dev: Device) => {
+            return dev.hostname.toLowerCase() === pre_devices[i].hostname.toLowerCase();
+          })
+          const _device_av = av_device_res.av_list[_device_av_index] as DeviceAV;
 
-        if (_device_av) {
-          await client.query(update_av_query, [
-           _device_av.heartbeat_av,
-            String(_device_av.tamper),
-            _device_av.health,
-            String(pre_devices[i].device_id)
-          ]);
+          if (_device_av) {
+            await client.query(update_av_query, [
+            _device_av.heartbeat_av,
+              String(_device_av.tamper),
+              _device_av.health,
+              String(pre_devices[i].device_id)
+            ]);
+          }
         }
-      }
 
-      if (rmm_device_res.device_list) {
-        const _device_rmm_index = rmm_device_res.device_list.findIndex((dev: Device) => {
-          return dev.hostname.toLowerCase() === pre_devices[i].hostname.toLowerCase();
-        })
-        const _device_rmm = rmm_device_res.rmm_list[_device_rmm_index] as DeviceRMM;
+        if (rmm_device_res.device_list) {
+          const _device_rmm_index = rmm_device_res.device_list.findIndex((dev: Device) => {
+            return dev.hostname.toLowerCase() === pre_devices[i].hostname.toLowerCase();
+          })
+          const _device_rmm = rmm_device_res.rmm_list[_device_rmm_index] as DeviceRMM;
 
-        if (_device_rmm) {
-          await client.query(update_rmm_query, [
-            _device_rmm.heartbeat_rmm,
-            String(_device_rmm.firewall),
-            String(_device_rmm.uac),
-            String(_device_rmm.memory || 0),
-            String(pre_devices[i].device_id)
-          ]);
+          if (_device_rmm) {
+            await client.query(update_rmm_query, [
+              _device_rmm.heartbeat_rmm,
+              String(_device_rmm.firewall),
+              String(_device_rmm.uac),
+              String(_device_rmm.memory || 0),
+              String(pre_devices[i].device_id)
+            ]);
+          }
         }
+      } catch (err) {
+        console.log(`Failed to Update Devices: ${site.title} [load_devices]`)
       }
     }
 
