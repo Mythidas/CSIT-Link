@@ -24,9 +24,6 @@
       <NavLink href="/devices" label="Devices">
         <Icon size={32} icon="Monitor"/>
       </NavLink>
-      <NavLink href="/configuration" label="Configuration">
-        <Icon size={32} icon="Menu"/>
-      </NavLink>
     </nav>
     <!-- Contents -->
     <div class="flex flex-col p-2 space-y-2 w-full h-full overflow-hidden">
