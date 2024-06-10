@@ -7,7 +7,7 @@ import * as fs from 'fs/promises';
 
 export async function POST({ locals, cookies }) {
   try {
-    const db_sites = await db.get_sites(locals.db_conn);
+    const db_sites = await db.get_sites(locals.db_conn, [], [], [], { key: "", asc: true, group: "", type: "" });
     const rmm_devices = await rmm.get_devices_all();
 
     if (!rmm_devices.data) {
