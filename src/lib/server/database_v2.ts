@@ -259,7 +259,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
     let new_device_res: Device[] = [];
 
     if (paramter_counter > 1) {
-      console.log(`Inserted new Unique Devices: ${site.title} [load_devices_by_site_id]`)
+      console.log(`Inserted new Unique Devices: ${site.title} [load_devices]`)
       new_device_res = (await client.query(device_query, device_values))?.rows as Device[] || [];
     }
 
@@ -286,7 +286,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
       }
       rmm_device_query = rmm_device_query.slice(0, -1) + ";";
 
-      console.log(`Inserted new DeviceRMM: ${site.title} [load_devices_by_site_id]`)
+      console.log(`Inserted new DeviceRMM: ${site.title} [load_devices]`)
       const new_device_rmm_res = (await client.query(rmm_device_query, rmm_device_values))?.rows as DeviceRMM[] || [];
 
       // Insert AV relations for new devices
@@ -310,12 +310,12 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
       }
       av_device_query = av_device_query.slice(0, -1) + ";";
 
-      console.log(`Inserted new DeviceAV: ${site.title} [load_devices_by_site_id]`)
+      console.log(`Inserted new DeviceAV: ${site.title} [load_devices]`)
       const new_device_av_res = (await client.query(av_device_query, av_device_values))?.rows as DeviceRMM[] || [];
     }
 
     // Update existing devices
-    console.log(`Update Devices: ${site.title} [load_devices_by_site_id]`)
+    console.log(`Update Devices: ${site.title} [load_devices]`)
     for (let i = 0; i < pre_devices.length; i++) {
       if (pre_devices[i].device_id < 0) continue;
 
@@ -323,42 +323,48 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
       let update_rmm_query = "UPDATE DeviceRMM SET heartbeat_rmm = $1, firewall = $2, uac = $3, memory = $4 WHERE device_id = $5;";
       let update_av_query = "UPDATE DeviceAV SET heartbeat_av = $1, tamper = $2, health = $3 WHERE device_id = $4;";
 
-      const _device_av_index = av_device_res.device_list.findIndex((dev: Device) => {
-        return dev.hostname.toLowerCase() === pre_devices[i].hostname.toLowerCase();
-      })
-      const _device_av = av_device_res.av_list[_device_av_index] as DeviceAV;
-
-      const _device_rmm_index = rmm_device_res.device_list.findIndex((dev: Device) => {
-        return dev.hostname.toLowerCase() === pre_devices[i].hostname.toLowerCase();
-      })
-      const _device_rmm = rmm_device_res.rmm_list[_device_rmm_index] as DeviceRMM;
-
       await client.query(update_query, [
         pre_devices[i].ipv4,
         pre_devices[i].wan,
         pre_devices[i].device_id.toString()
       ]);
-      if (_device_rmm) {
-        await client.query(update_rmm_query, [
-          _device_rmm.heartbeat_rmm,
-          String(_device_rmm.firewall),
-          String(_device_rmm.uac),
-          String(_device_rmm.memory || 0),
-          String(pre_devices[i].device_id)
-        ]);
+
+      if (av_device_res.device_list) {
+        const _device_av_index = av_device_res.device_list.findIndex((dev: Device) => {
+          return dev.hostname.toLowerCase() === pre_devices[i].hostname.toLowerCase();
+        })
+        const _device_av = av_device_res.av_list[_device_av_index] as DeviceAV;
+
+        if (_device_av) {
+          await client.query(update_av_query, [
+           _device_av.heartbeat_av,
+            String(_device_av.tamper),
+            _device_av.health,
+            String(pre_devices[i].device_id)
+          ]);
+        }
       }
-      if (_device_av) {
-        await client.query(update_av_query, [
-         _device_av.heartbeat_av,
-          String(_device_av.tamper),
-          _device_av.health,
-          String(pre_devices[i].device_id)
-        ]);
+
+      if (rmm_device_res.device_list) {
+        const _device_rmm_index = rmm_device_res.device_list.findIndex((dev: Device) => {
+          return dev.hostname.toLowerCase() === pre_devices[i].hostname.toLowerCase();
+        })
+        const _device_rmm = rmm_device_res.rmm_list[_device_rmm_index] as DeviceRMM;
+
+        if (_device_rmm) {
+          await client.query(update_rmm_query, [
+            _device_rmm.heartbeat_rmm,
+            String(_device_rmm.firewall),
+            String(_device_rmm.uac),
+            String(_device_rmm.memory || 0),
+            String(pre_devices[i].device_id)
+          ]);
+        }
       }
     }
 
     // Remove deleted devices
-    console.log(`Delete Removed Devices: ${site.title} [load_devices_by_site_id]`)
+    console.log(`Delete Removed Devices: ${site.title} [load_devices]`)
     for (let i = 0; i < devices.length; i++) {
       const _device = pre_devices.find(dev => {
         return dev.hostname.toLowerCase() === devices[i].hostname.toLowerCase();
