@@ -10,7 +10,7 @@
 <h3 class="flex text-2xl p-2 bg-base-200">
   All Sites <p class="px-2 ml-2 bg-accent-100 rounded-md">{total_items}</p>
 </h3>
-<div class="flex flex-col w-full h-full p-2 bg-base-200">
+<div class="flex flex-col w-full h-[99%] p-2 bg-base-200 overflow-hidden">
   <Table
     columns={[
       { key: "title", name: "Name", group: "Site", type: "Text" },
