@@ -194,7 +194,7 @@ export async function load_devices_by_site_id(client: PoolClient, site_id: numbe
   const rmm_device_res = await rmm.get_devices(site.rmm_id);
   const av_device_res = await av.get_devices(site.av_id, site.av_url, cookies);
 
-  await load_devices(client, site, devices, rmm_device_res.data, av_device_res.data);
+  await load_devices(client, site, devices, rmm_device_res.data || { device_list: [], rmm_list: [] }, av_device_res.data || { device_list: [], rmm_list: [] });
 }
 
 export async function load_devices(client: PoolClient, site: Site, devices: DeviceAll[], rmm_device_res: { device_list: Device[], rmm_list: DeviceRMM[] }, av_device_res: { device_list: Device[], av_list: DeviceAV[] }): Promise<void> {
@@ -259,7 +259,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
     let new_device_res: Device[] = [];
 
     if (paramter_counter > 1) {
-      console.log("Inserted new Unique Devices [load_devices_by_site_id]")
+      console.log(`Inserted new Unique Devices: ${site.title} [load_devices_by_site_id]`)
       new_device_res = (await client.query(device_query, device_values))?.rows as Device[] || [];
     }
 
@@ -286,7 +286,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
       }
       rmm_device_query = rmm_device_query.slice(0, -1) + ";";
 
-      console.log("Inserted new DeviceRMM [load_devices_by_site_id]")
+      console.log(`Inserted new DeviceRMM: ${site.title} [load_devices_by_site_id]`)
       const new_device_rmm_res = (await client.query(rmm_device_query, rmm_device_values))?.rows as DeviceRMM[] || [];
 
       // Insert AV relations for new devices
@@ -310,12 +310,12 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
       }
       av_device_query = av_device_query.slice(0, -1) + ";";
 
-      console.log("Inserted new DeviceAV [load_devices_by_site_id]");
+      console.log(`Inserted new DeviceAV: ${site.title} [load_devices_by_site_id]`)
       const new_device_av_res = (await client.query(av_device_query, av_device_values))?.rows as DeviceRMM[] || [];
     }
 
     // Update existing devices
-    console.log("Update devices [load_devices_by_site_id]");
+    console.log(`Update Devices: ${site.title} [load_devices_by_site_id]`)
     for (let i = 0; i < pre_devices.length; i++) {
       if (pre_devices[i].device_id < 0) continue;
 
@@ -358,7 +358,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
     }
 
     // Remove deleted devices
-    console.log("Delete removed devices [load_devices_by_site_id]");
+    console.log(`Delete Removed Devices: ${site.title} [load_devices_by_site_id]`)
     for (let i = 0; i < devices.length; i++) {
       const _device = pre_devices.find(dev => {
         return dev.hostname.toLowerCase() === devices[i].hostname.toLowerCase();
@@ -373,7 +373,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
 
     await client.query("UPDATE Site SET last_update = $1 WHERE site_id = $2;", [new Date().toISOString(), site.site_id.toString()]);
   } catch (err) {
-    console.log(`${err} [load_devices]`);
+    console.log(`${err}: ${site.title} [load_devices]`);
     return;
   }
 }
