@@ -6,6 +6,7 @@
   import Select from "$lib/components/select.svelte";
   import Table from "$lib/components/table.svelte";
   import type { Site } from "$lib/interfaces/i_db";
+  import axios from "axios";
 
   export let data: { sites: Site[], rmm_sites: any[], av_sites: any[], psa_sites: any[] };
 
@@ -17,6 +18,10 @@
     site_name = "";
     show_modal = false;
   }
+
+  async function sync_devices() {
+    await axios.post("/api/v2/devices/sync");
+  }
 </script>
 
 <div class="flex flex-col p-3 w-full h-fit bg-base-200 rounded-sm">
@@ -25,24 +30,20 @@
       New Site
     </Button>
   </div>
+  <div class="w-fit">
+    <Button on:click={sync_devices}>
+      Sync Devices
+    </Button>
+  </div>
 </div>
 
 <div class="flex flex-col p-3 w-full h-full bg-base-200 rounded-sm">
   <Table
     columns={[
-      { key: "title", label: "Name" },
-      { key: "company", label: "Company" }
+      { key: "title", name: "Name", group: "Site", type: "Text" },
+      { key: "company", name: "Company", group: "Company", type: "Text" }
     ]}
-    data={data.sites}
-    filters={[
-      {
-        name: "Site",
-        filters: [
-          { name: "Name", key: "title", type: "Text" },
-          { name: "Company", key: "company", type: "Text" },
-        ]
-      }
-    ]}
+    data="/api/v2/sites"
     total_items={data.sites.length}
     page={1}
   />
@@ -57,15 +58,15 @@
       </div>
       <div>
         <label for="psa" class="text-xl">PSA Site*</label>
-        <Select name="psa" required placeholder="Select site..." options={data.psa_sites.map(site => {return { key: site.id, label: site.name }})}/>
+        <Select value="" name="psa" required placeholder="Select site..." options={data.psa_sites.map(site => {return { key: site.id, label: site.name }})}/>
       </div>
       <div>
         <label for="rmm" class="text-xl">RMM Site</label>
-        <Select name="rmm" required placeholder="Select site..." options={data.rmm_sites.map(site => {return { key: site.id, label: site.name }})}/>
+        <Select value="" name="rmm" required placeholder="Select site..." options={data.rmm_sites.map(site => {return { key: site.id, label: site.name }})}/>
       </div>
       <div>
         <label for="av" class="text-xl">AV Site</label>
-        <Select name="av" required placeholder="Select site..." options={data.av_sites.map(site => {return { key: `${site.id}|${site.api_url}`, label: site.name }})}/>
+        <Select value="" name="av" required placeholder="Select site..." options={data.av_sites.map(site => {return { key: `${site.id}|${site.api_url}`, label: site.name }})}/>
       </div>
     </div>
   </form>
