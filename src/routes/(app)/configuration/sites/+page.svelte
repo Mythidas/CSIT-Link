@@ -20,7 +20,7 @@
   }
 
   async function sync_devices() {
-    await axios.post("/api/v2/devices/sync");
+    await axios.get("/api/v2/devices/sync");
   }
 </script>
 

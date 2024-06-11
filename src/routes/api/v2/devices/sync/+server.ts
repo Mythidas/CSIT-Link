@@ -33,7 +33,7 @@ async function get_data_from_file(file_path: string) {
   }
 }
 
-export async function POST({ locals, cookies }) {
+export async function GET({ locals, cookies }) {
   try {
     console.log("[API/V2/Devices/Sync] Starting Devices Sync...");
     const db_sites = await db.get_sites(locals.db_conn, [], [], [], { key: "", asc: true, group: "", type: "" });
