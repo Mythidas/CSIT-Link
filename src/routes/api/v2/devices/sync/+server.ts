@@ -37,9 +37,9 @@ export async function POST({ locals, cookies }) {
   try {
     console.log("[API/V2/Devices/Sync] Starting Devices Sync...");
     const db_sites = await db.get_sites(locals.db_conn, [], [], [], { key: "", asc: true, group: "", type: "" });
-    const rmm_devices = await rmm.get_devices_all();
+    const rmm_devices = await get_data_from_file("./rmm_devices");
 
-    await save_date_to_file("./rmm_devices", JSON.stringify(rmm_devices));
+    await save_date_to_file("./rmm_devices", JSON.stringify(rmm_devices, null, 2));
 
     if (!rmm_devices.data) {
       return Response.json({
@@ -59,7 +59,7 @@ export async function POST({ locals, cookies }) {
         let rmm_list: DeviceRMM[] = [];
 
         for (let i = 0; i < rmm_devices.data.device_list.length; i++) {
-          if (rmm_devices.data.device_list[i].rmm_id === site.rmm_id) {
+          if (Number(rmm_devices.data.device_list[i].rmm_id) === Number(site.rmm_id)) {
             device_list.push({...rmm_devices.data.device_list[i]});
             rmm_list.push({...rmm_devices.data.rmm_list[i]});
           }
