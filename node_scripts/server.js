@@ -19,6 +19,10 @@ app.get('/', (req, res) => {
   res.send('Welcome to my server!');
 });
 
+fetch("https://localhost:2301/api/v2/test", {
+  method: "POST"
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
