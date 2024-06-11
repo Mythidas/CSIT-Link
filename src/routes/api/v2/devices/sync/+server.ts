@@ -20,26 +20,30 @@ export async function POST({ locals, cookies }) {
     
     console.log(`Total RMM Devices: ${rmm_devices.data.device_list.length} [API/V2/Devices/Sync]`);
     for await (const site of db_sites) {
-      const devices = await db.get_devices_by_site_id(locals.db_conn, site.site_id);
-      const av_devices_res = await av.get_devices(site.av_id, site.av_url, cookies);
-      let device_list: Device[] = [];
-      let rmm_list: DeviceRMM[] = [];
+      try {
+        const devices = await db.get_devices_by_site_id(locals.db_conn, site.site_id);
+        const av_devices_res = await av.get_devices(site.av_id, site.av_url, cookies);
+        let device_list: Device[] = [];
+        let rmm_list: DeviceRMM[] = [];
 
-      for (let i = 0; i < rmm_devices.data.device_list.length; i++) {
-        if (Number(rmm_devices.data.device_list[i].site_id) === Number(site.rmm_id)) {
-          device_list.push(rmm_devices.data.device_list[i]);
-          rmm_list.push(rmm_devices.data.rmm_list[i]);
+        for (let i = 0; i < rmm_devices.data.device_list.length; i++) {
+          if (Number(rmm_devices.data.device_list[i].site_id) === Number(site.rmm_id)) {
+            device_list.push(rmm_devices.data.device_list[i]);
+            rmm_list.push(rmm_devices.data.rmm_list[i]);
+          }
         }
+
+        if (device_list.length === 0 &&
+          rmm_list.length === 0 &&
+          !av_devices_res.data &&
+          av_devices_res.data.device_list.length === 0 &&
+          devices.length === 0
+        ) continue;
+
+        await db.load_devices(locals.db_conn, site, devices, { device_list, rmm_list }, av_devices_res.data || { device_list: [], av_list: [] });
+      } catch (err) {
+        console.log(`Error loading site: ${site.title} [API/V2/Devices/Sync]`);
       }
-
-      if (device_list.length === 0 &&
-        rmm_list.length === 0 &&
-        !av_devices_res.data &&
-        av_devices_res.data.device_list.length === 0 &&
-        devices.length === 0
-      ) continue;
-
-      await db.load_devices(locals.db_conn, site, devices, { device_list, rmm_list }, av_devices_res.data);
     }
     console.log("Finished Syncing Devices... [API/V2/Devices/Sync]");
 
