@@ -37,7 +37,7 @@ export async function POST({ locals, cookies }) {
   try {
     console.log("[API/V2/Devices/Sync] Starting Devices Sync...");
     const db_sites = await db.get_sites(locals.db_conn, [], [], [], { key: "", asc: true, group: "", type: "" });
-    const rmm_devices = await get_data_from_file("./rmm_devices");
+    const rmm_devices = await rmm.get_devices_all();
 
     await save_date_to_file("./rmm_devices", JSON.stringify(rmm_devices, null, 2));
 
