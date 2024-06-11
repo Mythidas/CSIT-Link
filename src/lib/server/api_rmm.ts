@@ -90,7 +90,7 @@ export async function get_devices(rmm_site_id: string): Promise<APIResponse> {
 
 export async function get_devices_all(): Promise<APIResponse> {
   try {
-    let device_list: Device[] = [];
+    let device_list: any[] = [];
     let rmm_list: DeviceRMM[] = [];
     let total = 200;
 
@@ -123,7 +123,8 @@ export async function get_devices_all(): Promise<APIResponse> {
 
         device_list.push({ 
           device_id: -1,
-          site_id: device_data[i].SiteId || 0,
+          site_id: -1,
+          rmm_id: device_data[i].SiteId || "",
           hostname: device_data[i].Name || "",
           os: device_data[i].Description || "",
           ipv4,
