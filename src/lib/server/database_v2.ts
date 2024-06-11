@@ -338,7 +338,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
 
           if (_device_av) {
             await client.query(update_av_query, [
-            _device_av.heartbeat_av,
+              _device_av.heartbeat_av,
               String(_device_av.tamper),
               _device_av.health,
               String(pre_devices[i].device_id)

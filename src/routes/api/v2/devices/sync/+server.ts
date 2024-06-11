@@ -3,11 +3,43 @@ import * as rmm from "$lib/server/api_rmm";
 import * as av from "$lib/server/api_av";
 import type { Device, DeviceRMM } from "$lib/interfaces/i_db.js";
 
+import { promises as fs } from 'fs';
+
+async function save_date_to_file(filePath: string, data: string): Promise<void> {
+  try {
+    // Check if the file exists
+    await fs.access(filePath);
+  } catch (err) {
+    // If the file doesn't exist, create it with 'wx' flag (write only, create if doesn't exist)
+    await fs.writeFile(filePath, data, { flag: 'wx' });
+    console.log(`File created: ${filePath}`);
+    return;
+  }
+
+  // If the file exists, handle the case (e.g., throw error, append data)
+  // Handle existing'' file logic here (optional)
+}
+
+async function get_data_from_file(file_path: string) {
+  try {
+    // Check if the file exists
+    await fs.access(file_path);
+    // Load data if file exists
+    const data = await fs.readFile(file_path, 'utf-8');
+    return JSON.parse(data);
+  } catch (err) {
+    // If the file doesn't exist, run the other function
+    return await rmm.get_devices_all();
+  }
+}
+
 export async function POST({ locals, cookies }) {
   try {
     console.log("[API/V2/Devices/Sync] Starting Devices Sync...");
     const db_sites = await db.get_sites(locals.db_conn, [], [], [], { key: "", asc: true, group: "", type: "" });
     const rmm_devices = await rmm.get_devices_all();
+
+    await save_date_to_file("./rmm_devices", JSON.stringify(rmm_devices));
 
     if (!rmm_devices.data) {
       return Response.json({

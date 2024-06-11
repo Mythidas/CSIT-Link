@@ -135,7 +135,7 @@ export async function get_devices_all(): Promise<APIResponse> {
         rmm_list.push({
           id: -1,
           device_id: -1,
-          site_id: device_data[i].SiteId || 0,
+          site_id: -1,
           rmm_id: device_data[i].Identifier || "",
           heartbeat_rmm: device_data[i].LastSeenOnline || "",
           firewall: device_data[i].FirewallEnabled || false,
