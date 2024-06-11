@@ -14,10 +14,10 @@ rule.hour = 23;
 
 // Sync devices at midnight everyday
 const job = schedule.scheduleJob(rule, () => {
-  https.post("/devices/sync");
+  https.get("/devices/sync");
 })
 
-https.post("/test");
+https.get("/test");
 
 console.log(`Next sync at: ${job.nextInvocation().toISOString()}`);
 
