@@ -5,20 +5,20 @@ import type { Device, DeviceRMM } from "$lib/interfaces/i_db.js";
 
 export async function POST({ locals, cookies }) {
   try {
-    console.log("Starting Devices Sync... [API/V2/Devices/Sync]");
+    console.log("[API/V2/Devices/Sync] Starting Devices Sync...");
     const db_sites = await db.get_sites(locals.db_conn, [], [], [], { key: "", asc: true, group: "", type: "" });
     const rmm_devices = await rmm.get_devices_all();
 
     if (!rmm_devices.data) {
       return Response.json({
         meta: {
-          error: "Failed to get RMM Devices [API/V2/Devices/Sync]",
+          error: "[API/V2/Devices/Sync] Failed to get RMM Devices",
           status: 500
         }
       }, { status: 500 });
     }
     
-    console.log(`Total RMM Devices: ${rmm_devices.data.device_list.length} [API/V2/Devices/Sync]`);
+    console.log(`[API/V2/Devices/Sync] Total RMM Devices: ${rmm_devices.data.device_list.length}`);
     for await (const site of db_sites) {
       try {
         const devices = await db.get_devices_by_site_id(locals.db_conn, site.site_id);
@@ -42,10 +42,10 @@ export async function POST({ locals, cookies }) {
 
         await db.load_devices(locals.db_conn, site, devices, { device_list, rmm_list }, av_devices_res.data || { device_list: [], av_list: [] });
       } catch (err) {
-        console.log(`Error loading site: ${site.title} [API/V2/Devices/Sync]`);
+        console.log(`[API/V2/Devices/Sync] Error loading site: ${site.title}`);
       }
     }
-    console.log("Finished Syncing Devices... [API/V2/Devices/Sync]");
+    console.log("[API/V2/Devices/Sync] Finished Syncing Devices...");
 
     return Response.json({
       data: "Devices Synced",
@@ -54,7 +54,7 @@ export async function POST({ locals, cookies }) {
       }
     }, { status: 200 });
   } catch (err) {
-    console.log(`${err} [API/V2/Devices/Sync]`);
+    console.log(`[API/V2/Devices/Sync] ${err}`);
     return Response.json({
       meta: {
         error: err,
