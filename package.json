@@ -6,7 +6,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-    "start": "concurrently \"npm run start:main\" \"npm run start:scripts\"",
+    "start": "npm run start:main",
 		"start:main": "node -r dotenv/config build",
     "start:scripts": "node ./node_scripts/server.js",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
