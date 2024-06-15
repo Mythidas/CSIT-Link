@@ -1,12 +1,30 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
   import Table from "$lib/components/table.svelte";
+  import axios from "axios";
+
+  export let data;
 
   let total_items = 1;
-  let page = 1;
-  let count = 25;
+  let filtered_data: any[];
+
+  async function on_option_select(e: any) {
+    const _target = e.detail;
+    if (_target === "Delete Sophos Agent") {
+      for await (const device of filtered_data) {
+        if (device.checked) {
+          const res = await axios.delete(`/api/v2/devices/host/${device.device_id}/delete`);
+          console.log(res.data);
+        }
+      }
+
+      goto($page.url.href);
+    }
+  }
 </script>
 
-<div class="flex flex-col w-full h-full p-2 bg-base-200">
+<div class="flex w-full h-full p-2 bg-base-200">
   <Table
     columns={[
       { key: "hostname", name: "Name", group: "Device", default: "-", type: "Text" },
@@ -24,8 +42,15 @@
     ]}
     data={`/api/v2/devices`}
     bind:total_items
-    bind:page
-    bind:count
+    page={1}
+    count={25}
+    bind:filtered_data
     sticky_first
+    options={data.is_admin ? [
+      "Enable Tamper Protection",
+      "Disable Tamper Protection",
+      "Delete Sophos Agent"
+    ] : []}
+    on:option={on_option_select}
   />
 </div>

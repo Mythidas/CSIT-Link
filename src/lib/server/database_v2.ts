@@ -121,6 +121,20 @@ export async function add_company(client: PoolClient, new_company: Company): Pro
 
 // DEVICES
 
+export async function get_device(client: PoolClient, device_id: number): Promise<DeviceAll | null> {
+  try {
+    return (await client.query(`SELECT de.*, dv.*, dm.*, se.*
+      FROM Device de 
+      LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
+      LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id
+      LEFT JOIN Site se ON de.site_id = se.site_id
+      WHERE de.device_id = $1;`, [device_id.toString()])).rows[0] as DeviceAll || null;
+  } catch (err) {
+    console.log(`[get_device] ${err}`);
+    return null;
+  }
+}
+
 export async function get_devices(client: PoolClient, columns: string[], values: string[], types: string[], sorting: SortState): Promise<DeviceAll[]> {
   try {
     const query_filters = gen_filter_string(columns, values, types, sorting);
@@ -183,6 +197,29 @@ export async function get_devices_by_site_id(client: PoolClient, site_id: number
   } catch (err) {
     console.log(err);
     return [];
+  }
+}
+
+export async function delete_device_av(client: PoolClient, device_id: number, cookies: Cookies): Promise<Boolean> {
+  try {
+    const device = await get_device(client, device_id);
+    if (!device || !device.av_id) return false;
+
+    const site = await get_site(client, device.site_id);
+    if (!site) return false;
+
+    const av_status = await av.delete_device_av(device.av_id, site.av_id, site.av_url, cookies);
+    if (av_status.meta.status !== 200 && av_status.meta.error.error !== "resourceNotFound") {
+      console.log(`[delete_device_av] Failed to delete AV device ${device.av_id}: ${av_status.meta.error.error}`);
+      return false;
+    }
+
+    await client.query("DELETE FROM DeviceAV WHERE device_id = $1;", [device.device_id]);
+
+    return true;
+  } catch (err) {
+    console.log(`[delete_device_av] ${err}`);
+    return false;
   }
 }
 

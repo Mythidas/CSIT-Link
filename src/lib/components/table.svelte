@@ -5,6 +5,8 @@
   import LoadingSpinner from "./loading_spinner.svelte";
   import axios from "axios";
   import { PUBLIC_LOCAL_URL } from "$env/static/public";
+    import Checkbox from "./checkbox.svelte";
+    import Select from "./select.svelte";
 
   export let page: number;
   export let total_items: number;
@@ -14,6 +16,8 @@
   export let sort_state = { key: "", group: "", asc: true, type: "" };
   export let loading = false;
   export let sticky_first = false;
+  export let options: string[] = [];
+  export let filtered_data: any[] = [];
   
   let active_filters: Filter[] = [];
   let filters: FilterGroup[] = [];
@@ -24,7 +28,6 @@
     fetch_data(page, count);
   });
     
-  $: filtered_data = [];
   $: if (page > Math.ceil(total_items / count) || page <= 0) {
     page = Math.min(Math.max(page, 1), Math.ceil(total_items / count));
     fetch_data(page, count);
@@ -117,6 +120,18 @@
     }
   }
 
+  function on_top_check(e: any) {
+    for (let row of filtered_data) {
+      row.checked = !e.detail;
+    }
+
+    filtered_data = [...filtered_data];
+  }
+
+  function on_option_select(e: any) {
+    dispatch('option', e.target.value);
+  }
+
   function calculate_time_since(date_string: string): string {
     // Parse the ISO string into a Date object
     const then: Date = new Date(date_string);
@@ -156,6 +171,16 @@
       <table class="table-auto text-left w-full h-fit bg-base-100">
         <thead>
           <tr>
+            {#if options.length > 0}
+            <th class={`px-2 py-1 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)]`}>
+              <Checkbox checked={false} label="" id="" on:input={on_top_check}/>
+              <select on:change={on_option_select} class="w-4 bg-base-100 border-none outline-none" value="">
+                {#each options as opt}
+                <option value={opt}>{opt}</option>
+                {/each}
+              </select>
+            </th>
+            {/if}
             {#each columns as column}
             <th class="sticky top-0 first:left-0 first:z-50 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer" on:click={() => set_sort_key(column.key, column.group, column.type)}>
               <div class="flex w-full justify-between">
@@ -173,6 +198,11 @@
         <tbody class="hover:cursor-pointer">
           {#each filtered_data as row}
           <tr class="even:bg-base-100 odd:bg-base-150 hover:bg-base-300" on:click={() => on_select_row(row)}>
+            {#if options.length > 0}
+            <td class={`px-2 py-1 whitespace-nowrap`}>
+              <Checkbox bind:checked={row.checked} label="" id=""/>
+            </td>
+            {/if}
             {#each columns as column}
               {#if !column.type || column?.type === "Text" || column?.type === "Number"}
               <td class={`px-2 py-1 whitespace-nowrap ${sticky_first && first_child_sticky}`}>{row[column.key] || column.default}</td>

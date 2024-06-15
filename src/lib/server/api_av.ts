@@ -154,3 +154,29 @@ export async function get_devices(av_site_id: string, av_site_url: string, cooki
     return { meta: { error: err, status: 501 }};
   }
 }
+
+export async function delete_device_av(device_id: string, av_site_id: string, av_site_url: string, cookies: Cookies): Promise<APIResponse> {
+  try {
+    const token = await get_token(cookies);
+    if (token.meta.status !== 200) {
+      return { meta: { error: "Failed to get tokens", status: 500 }};
+    }
+
+    const device_api = await fetch(`${av_site_url}/endpoint/v1/endpoints/${device_id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token.data[0]}`,
+        "X-Tenant-ID": av_site_id
+      }
+    });
+    const device_data = await device_api.json();
+    
+    if (!device_api.ok) {
+      return { meta: { error: device_data, status: 500 }};
+    }
+    
+    return { meta: { status: 200 }};
+  } catch (err) {
+    return { meta: { error: err, status: 501 }};
+  }
+}
