@@ -5,6 +5,12 @@
   let total_items = 0;
   let page = 1;
   let count = 25;
+  let filtered_data: any[];
+  let selected_row: number;
+
+  $: if (selected_row > -1) {
+    goto(`/sites/${filtered_data[selected_row].site_id}`);
+  }
 </script>
 
 <h3 class="flex text-2xl p-2 bg-base-200">
@@ -21,6 +27,8 @@
     bind:total_items
     bind:page
     bind:count
+    bind:filtered_data
+    bind:selected_row
     on:select_row={(data) => { goto(`/sites/${data.detail.site_id}`) }}
   />
 </div>
