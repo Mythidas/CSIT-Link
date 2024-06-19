@@ -144,7 +144,7 @@ export async function get_devices(client: PoolClient, columns: string[], values:
     const query_filters = gen_filter_string(columns, values, types, sorting);
     
     if (query_filters.query) {
-      return (await client.query(`SELECT de.*, dv.*, dm.*, se.*
+      return (await client.query(`SELECT de.*, dv.*, dm.*, se.*, cy.company_title
       FROM Device de 
       LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
       LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id 
