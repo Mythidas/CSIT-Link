@@ -53,7 +53,7 @@ export interface DeviceBU {
 }
 
 export interface DeviceAll extends Device, DeviceRMM, DeviceAV {
-  
+  company_title?: string;
 }
 
 export interface Patch {

@@ -148,14 +148,16 @@ export async function get_devices(client: PoolClient, columns: string[], values:
       FROM Device de 
       LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
       LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id 
-      LEFT JOIN Site se ON de.site_id = se.site_id ${query_filters.query};`, query_filters.values)).rows as DeviceAll[];
+      LEFT JOIN Site se ON de.site_id = se.site_id 
+      LEFT JOIN Company cy ON se.company_id = cy.company_id ${query_filters.query};`, query_filters.values)).rows as DeviceAll[];
     }
 
-    return (await client.query(`SELECT de.*, dv.*, dm.*, se.*
+    return (await client.query(`SELECT de.*, dv.*, dm.*, se.*, cy.company_title
     FROM Device de 
     LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
     LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id
-    LEFT JOIN Site se ON de.site_id = se.site_id;`)).rows as DeviceAll[];
+    LEFT JOIN Site se ON de.site_id = se.site_id
+    LEFT JOIN Company cy ON se.company_id = cy.company_id;`)).rows as DeviceAll[];
   } catch (err) {
     console.log(err);
     return [];

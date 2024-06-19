@@ -1,8 +1,5 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
   import Table from "$lib/components/table.svelte";
-  import axios from "axios";
 
   export let data;
 
@@ -30,6 +27,7 @@
     columns={[
       { key: "hostname", name: "Name", group: "Device", default: "-", type: "Text" },
       { key: "title", name: "Site", group: "Site", default: "-", type: "Text" },
+      { key: "company_title", name: "Company", group: "Company", default: "-", type: "Text" },
       { key: "os", name: "OS", group: "Device", default: "-", type: "Text" },
       { key: "ipv4", name: "LAN", group: "Device", default: "-", type: "Text" },
       { key: "wan", name: "WAN", group: "Device", default: "-", type: "Text" },
