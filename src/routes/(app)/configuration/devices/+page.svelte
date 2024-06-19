@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import Button from "$lib/components/button.svelte";
   import Input from "$lib/components/input.svelte";
   import Modal from "$lib/components/modal.svelte";
@@ -7,9 +8,12 @@
 
   let modal_state: boolean[] = [];
 
-  function on_purge_av_devices() {
+  async function on_purge_av_devices() {
+    const res = await axios.delete("/api/v2/devices/purge/av/submit");
     modal_state[0] = false;
-    axios.delete("/api/v2/devices/purge/av/submit");
+    if (res.status === 200) {
+      goto("/devices");
+    }
   }
 </script>
 
