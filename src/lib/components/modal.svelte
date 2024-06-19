@@ -18,15 +18,17 @@
     </div>
     <div class="content h-full space-y-2 p-2 overflow-hidden">
       <slot />
-      <hr />
     </div>
-    <div class="footer flex p-2 justify-center space-x-1">
-      <Button width="w-20" color="Success" on:click={() => dispatch('accept')}>
-        Accept
-      </Button>
-      <Button width="w-20" color="Error" on:click={() => { dispatch('close'); open = false; }}>
-        Close
-      </Button>
+    <div class="footer flex flex-col p-2 justify-center space-x-1">
+      <hr />
+      <div>
+        <Button width="w-20" color="Success" on:click={() => dispatch('accept')}>
+          Accept
+        </Button>
+        <Button width="w-20" color="Error" on:click={() => { dispatch('close'); open = false; }}>
+          Close
+        </Button>
+      </div>
     </div>
   </div>
 </div>
