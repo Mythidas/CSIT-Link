@@ -155,15 +155,15 @@ export async function get_devices(av_site_id: string, av_site_url: string, cooki
   }
 }
 
-export async function delete_device_av(device_id: string, av_site_id: string, av_site_url: string, cookies: Cookies): Promise<APIResponse> {
+export async function get_tamper_status(device_id: string, av_site_id: string, av_site_url: string, cookies: Cookies): Promise<APIResponse> {
   try {
     const token = await get_token(cookies);
     if (token.meta.status !== 200) {
       return { meta: { error: "Failed to get tokens", status: 500 }};
     }
 
-    const device_api = await fetch(`${av_site_url}/endpoint/v1/endpoints/${device_id}`, {
-      method: "DELETE",
+    const device_api = await fetch(`${av_site_url}/endpoint/v1/endpoints/${device_id}/tamper-protection`, {
+      method: "GET",
       headers: {
         "Authorization": `Bearer ${token.data[0]}`,
         "X-Tenant-ID": av_site_id
@@ -175,7 +175,7 @@ export async function delete_device_av(device_id: string, av_site_id: string, av
       return { meta: { error: device_data, status: 500 }};
     }
     
-    return { meta: { status: 200 }};
+    return { data: { enabled: device_data.enabled, password: device_data.password, old_passwords: device_data.previousPasswords }, meta: { status: 200 }};
   } catch (err) {
     return { meta: { error: err, status: 501 }};
   }

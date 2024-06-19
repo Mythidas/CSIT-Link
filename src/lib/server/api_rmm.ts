@@ -59,6 +59,20 @@ export async function get_devices(rmm_site_id: string): Promise<APIResponse> {
 
     const device_data = asset_data.Data;
     for (let i = 0; i < device_data.length; i++) {
+      const custom_fields_api = await fetch(`${RMM_URL}/devices/${device_data[i].Identifier}/customfields`, {
+        method: "GET",
+        headers: {
+          "authorization": `Basic ${rmm_auth}`,
+          "content-type": "application/json"
+        }
+      });
+
+      const custom_fields_data = await custom_fields_api.json();
+
+      if (!custom_fields_api.ok) {
+        return { meta: { error: custom_fields_data.Meta, status: 500 }};
+      }
+
       device_list.push({ 
         device_id: -1,
         site_id: -1,
@@ -77,7 +91,8 @@ export async function get_devices(rmm_site_id: string): Promise<APIResponse> {
         heartbeat_rmm: device_data[i].LastSeenOnline,
         firewall: device_data[i].FirewallEnabled,
         uac: device_data[i].UacEnabled,
-        memory: convert_bytes_to_gbytes(device_data[i].MemoryTotal)
+        memory: convert_bytes_to_gbytes(device_data[i].MemoryTotal),
+        custom_fields: custom_fields_data.Data
       });
     }
 
@@ -121,27 +136,47 @@ export async function get_devices_all(): Promise<APIResponse> {
           if (ipv4) break;
         }
 
-        device_list.push({ 
-          device_id: -1,
-          site_id: -1,
-          rmm_id: device_data[i].SiteId || "",
-          hostname: device_data[i].Name || "",
-          os: device_data[i].Description || "",
-          ipv4,
-          mac: "",
-          wan: device_data[i].PublicIpAddress || ""
-        });
+        try {
+          const custom_fields_api = await fetch(`${RMM_URL}/devices/${device_data[i].Identifier}/customfields`, {
+            method: "GET",
+            headers: {
+              "authorization": `Basic ${rmm_auth}`,
+              "content-type": "application/json"
+            }
+          });
+    
+          const custom_fields_data = await custom_fields_api.json();
+    
+          if (!custom_fields_api.ok) {
+            return { meta: { error: custom_fields_data.Meta, status: 500 }};
+          }
 
-        rmm_list.push({
-          id: -1,
-          device_id: -1,
-          site_id: -1,
-          rmm_id: device_data[i].Identifier || "",
-          heartbeat_rmm: device_data[i].LastSeenOnline || "",
-          firewall: device_data[i].FirewallEnabled || false,
-          uac: device_data[i].UacEnabled || false,
-          memory: convert_bytes_to_gbytes(device_data[i].MemoryTotal || 0)
-        });
+          device_list.push({ 
+            device_id: -1,
+            site_id: -1,
+            rmm_id: device_data[i].SiteId || "",
+            hostname: device_data[i].Name || "",
+            os: device_data[i].Description || "",
+            ipv4,
+            mac: "",
+            wan: device_data[i].PublicIpAddress || ""
+          });
+  
+          rmm_list.push({
+            id: -1,
+            device_id: -1,
+            site_id: -1,
+            rmm_id: device_data[i].Identifier || "",
+            heartbeat_rmm: device_data[i].LastSeenOnline || "",
+            firewall: device_data[i].FirewallEnabled || false,
+            uac: device_data[i].UacEnabled || false,
+            memory: convert_bytes_to_gbytes(device_data[i].MemoryTotal || 0),
+            custom_fields: custom_fields_data.Data
+          });
+        } catch (err) {
+          console.log(`[get_devices_all] ${err}`);
+          return { meta: { error: err, status: 501 }};
+        }
       }
         
       total = asset_data.Meta.TotalCount;

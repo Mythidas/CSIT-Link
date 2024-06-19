@@ -200,29 +200,6 @@ export async function get_devices_by_site_id(client: PoolClient, site_id: number
   }
 }
 
-export async function delete_device_av(client: PoolClient, device_id: number, cookies: Cookies): Promise<Boolean> {
-  try {
-    const device = await get_device(client, device_id);
-    if (!device || !device.av_id) return false;
-
-    const site = await get_site(client, device.site_id);
-    if (!site) return false;
-
-    const av_status = await av.delete_device_av(device.av_id, site.av_id, site.av_url, cookies);
-    if (av_status.meta.status !== 200 && av_status.meta.error.error !== "resourceNotFound") {
-      console.log(`[delete_device_av] Failed to delete AV device ${device.av_id}: ${av_status.meta.error.error}`);
-      return false;
-    }
-
-    await client.query("DELETE FROM DeviceAV WHERE device_id = $1;", [device.device_id]);
-
-    return true;
-  } catch (err) {
-    console.log(`[delete_device_av] ${err}`);
-    return false;
-  }
-}
-
 export async function load_devices_by_site_id(client: PoolClient, site_id: number, cookies: Cookies) {
   const site = await get_site(client, site_id);
   if (!site) return;
@@ -302,7 +279,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
 
     if (new_device_res.length > 0) {
       // Insert RMM relations for new devices
-      let rmm_device_query = "INSERT INTO DeviceRMM (device_id,site_id,rmm_id,heartbeat_rmm,firewall,uac,memory) VALUES "
+      let rmm_device_query = "INSERT INTO DeviceRMM (device_id,site_id,rmm_id,heartbeat_rmm,firewall,uac,memory,custom_fields) VALUES "
       let rmm_device_values:string [] = [];
       paramter_counter = 1;
       for (let i = 0; i < new_device_res.length; i++) {
@@ -312,7 +289,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
         const _device = rmm_device_res.rmm_list[_device_index] as DeviceRMM;
         if (!_device) continue;
 
-        rmm_device_query += `($${paramter_counter++},$${paramter_counter++},$${paramter_counter++},$${paramter_counter++},$${paramter_counter++},$${paramter_counter++},$${paramter_counter++}),`;
+        rmm_device_query += `($${paramter_counter++},$${paramter_counter++},$${paramter_counter++},$${paramter_counter++},$${paramter_counter++},$${paramter_counter++},$${paramter_counter++},$${paramter_counter++}),`;
         rmm_device_values.push(new_device_res[i].device_id.toString());
         rmm_device_values.push(new_device_res[i].site_id.toString());
         rmm_device_values.push(_device.rmm_id);
@@ -320,6 +297,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
         rmm_device_values.push(String(_device.firewall));
         rmm_device_values.push(String(_device.uac));
         rmm_device_values.push(String(_device.memory || 0));
+        rmm_device_values.push(JSON.stringify(_device.custom_fields || {}));
       }
       rmm_device_query = rmm_device_query.slice(0, -1) + ";";
 
@@ -357,7 +335,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
       if (pre_devices[i].device_id < 0) continue;
 
       let update_query = "UPDATE Device SET ipv4 = $1, wan = $2 WHERE device_id = $3;";
-      let update_rmm_query = "UPDATE DeviceRMM SET heartbeat_rmm = $1, firewall = $2, uac = $3, memory = $4 WHERE device_id = $5;";
+      let update_rmm_query = "UPDATE DeviceRMM SET heartbeat_rmm = $1, firewall = $2, uac = $3, memory = $4, custom_fields = $5 WHERE device_id = $6;";
       let update_av_query = "UPDATE DeviceAV SET heartbeat_av = $1, tamper = $2, health = $3 WHERE device_id = $4;";
 
       try {
@@ -395,6 +373,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
               String(_device_rmm.firewall),
               String(_device_rmm.uac),
               String(_device_rmm.memory || 0),
+              JSON.stringify(_device_rmm.custom_fields || {}),
               String(pre_devices[i].device_id)
             ]);
           }

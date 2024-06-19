@@ -34,6 +34,7 @@ export interface DeviceRMM {
   firewall: boolean;
   uac: boolean;
   memory: number;
+  custom_fields: any;
 }
 
 export interface DeviceAV {

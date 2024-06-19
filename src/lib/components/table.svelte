@@ -5,8 +5,7 @@
   import LoadingSpinner from "./loading_spinner.svelte";
   import axios from "axios";
   import { PUBLIC_LOCAL_URL } from "$env/static/public";
-    import Checkbox from "./checkbox.svelte";
-    import Select from "./select.svelte";
+  import Checkbox from "./checkbox.svelte";
 
   export let page: number;
   export let total_items: number;
@@ -18,6 +17,7 @@
   export let sticky_first = false;
   export let options: string[] = [];
   export let filtered_data: any[] = [];
+  export let selected_row: number = -1;
   
   let active_filters: Filter[] = [];
   let filters: FilterGroup[] = [];
@@ -56,6 +56,7 @@
     if (loading) return;
 
     loading = true;
+    selected_row = -1;
     try {
       const response = await axios.post(`${PUBLIC_LOCAL_URL}${data}`, {
         page,
@@ -102,8 +103,8 @@
     fetch_data(page, count);
   }
 
-  function on_select_row(data: any) {
-    dispatch('select_row', data);
+  function on_select_row(index: number) {
+    selected_row = index;
   }
 
   function on_page_up() {
@@ -196,8 +197,8 @@
           </tr>
         </thead>
         <tbody class="hover:cursor-pointer">
-          {#each filtered_data as row}
-          <tr class="even:bg-base-100 odd:bg-base-150 hover:bg-base-300" on:click={() => on_select_row(row)}>
+          {#each filtered_data as row, index}
+          <tr class="even:bg-base-100 odd:bg-base-150 hover:bg-base-300" on:click={() => on_select_row(index)}>
             {#if options.length > 0}
             <td class={`px-2 py-1 whitespace-nowrap`}>
               <Checkbox bind:checked={row.checked} label="" id=""/>
