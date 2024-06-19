@@ -2,9 +2,15 @@
   import Button from "$lib/components/button.svelte";
   import Input from "$lib/components/input.svelte";
   import Modal from "$lib/components/modal.svelte";
-    import Table from "$lib/components/table.svelte";
+  import Table from "$lib/components/table.svelte";
+  import axios from "axios";
 
   let modal_state: boolean[] = [];
+
+  function on_purge_av_devices() {
+    modal_state[0] = false;
+    axios.delete("/api/v2/devices/purge/av/submit");
+  }
 </script>
 
 <div class="flex flex-col p-3 w-full h-full space-y-2 bg-base-200 rounded-sm overflow-hidden">
@@ -16,7 +22,7 @@
   </div>
 </div>
 
-<Modal bind:open={modal_state[0]} title="AV Devices to Purge">
+<Modal bind:open={modal_state[0]} title="AV Devices to Purge" on:accept={on_purge_av_devices}>
   <Table
     columns={[
       { key: "hostname", name: "Name", group: "Device", default: "-", type: "Text" },
