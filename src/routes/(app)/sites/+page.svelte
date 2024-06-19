@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
   import Table from "$lib/components/table.svelte";
   
-  let total_items = 1;
+  let total_items = 0;
   let page = 1;
   let count = 25;
 </script>
@@ -14,7 +14,8 @@
   <Table
     columns={[
       { key: "title", name: "Name", group: "Site", type: "Text" },
-      { key: "company_title", name: "Name", group: "Company", type: "Text", default: "-" }
+      { key: "company_title", name: "Company", group: "Company", type: "Text", default: "-" },
+      { key: "device_tally", name: "Devices", group: "", type: "Number", default: "-"}
     ]}
     data="/api/v2/sites"
     bind:total_items

@@ -46,12 +46,16 @@ export async function get_sites(client: PoolClient, columns: string[], values: s
     const query_filters = gen_filter_string(columns, values, types, sorting);
     
     if (query_filters.query) {
-      return (await client.query(`SELECT se.*, cy.title AS company_title 
+      return (await client.query(`SELECT se.*, 
+      (SELECT COUNT(*) FROM device de WHERE de.site_id = se.site_id) AS device_tally,
+      cy.company_title 
       FROM Site se 
       LEFT JOIN company cy ON se.company_id = cy.company_id ${query_filters.query};`, query_filters.values)).rows as Site[];
     }
       
-    return (await client.query(`SELECT se.*, cy.title AS company_title 
+    return (await client.query(`SELECT se.*, 
+    (SELECT COUNT(*) FROM device de WHERE de.site_id = se.site_id) AS device_tally,
+    cy.company_title 
     FROM Site se 
     LEFT JOIN company cy ON se.company_id = cy.company_id;`)).rows as Site[];
   } catch (err) {
@@ -406,6 +410,11 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
 
 // HELPERS
 
+function get_filter_column(group: string, key: string) {
+  if (!group) return key;
+  return `${group[0] + group[group.length - 1]}.${key}`;
+}
+
 function gen_filter_string(columns: string[], values: string[], types: string[], sorting: SortState): { query: string, values: string[] } {
   let query_filters = "";
   let value_index = 1;
@@ -413,9 +422,9 @@ function gen_filter_string(columns: string[], values: string[], types: string[],
   let sorting_query = "";
   if (sorting.key) {
     switch (sorting.type) {
-      case "Text": sorting_query = ` ORDER BY LOWER(${sorting.group[0] + sorting.group[sorting.group.length - 1]}.${sorting.key}) ${sorting.asc ? "ASC" : "DESC"}`; break;
-      case "Select": sorting_query = ` ORDER BY LOWER(${sorting.group[0] + sorting.group[sorting.group.length - 1]}.${sorting.key}) ${sorting.asc ? "ASC" : "DESC"}`; break;
-      default: sorting_query = ` ORDER BY ${sorting.group[0] + sorting.group[sorting.group.length - 1]}.${sorting.key} ${sorting.asc ? "ASC" : "DESC"}`;
+      case "Text": sorting_query = ` ORDER BY LOWER(${get_filter_column(sorting.group, sorting.key)}) ${sorting.asc ? "ASC" : "DESC"}`; break;
+      case "Select": sorting_query = ` ORDER BY LOWER(${get_filter_column(sorting.group, sorting.key)}) ${sorting.asc ? "ASC" : "DESC"}`; break;
+      default: sorting_query = ` ORDER BY ${get_filter_column(sorting.group, sorting.key)} ${sorting.asc ? "ASC" : "DESC"}`;
     }
   }
 
