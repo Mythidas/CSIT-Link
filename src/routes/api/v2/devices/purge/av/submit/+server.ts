@@ -1,4 +1,5 @@
 import * as db from "$lib/server/database_v2.js";
+import * as av from "$lib/server/api_av.js";
 
 export async function DELETE({ request, locals, cookies }) {
   try {
@@ -10,7 +11,8 @@ export async function DELETE({ request, locals, cookies }) {
       const db_site = await db.get_site(locals.db_conn, device.site_id);
       if (!db_site) continue;
 
-      await db.delete_device_av(locals.db_conn, device.device_id, db_site.av_id, db_site.av_url, cookies);
+      await av.toggle_tamper_status(false, device.device_id.toString(), db_site.av_id, db_site.av_url, cookies)
+      // await db.delete_device_av(locals.db_conn, device.device_id, db_site.av_id, db_site.av_url, cookies);
     }
 
     return Response.json({
