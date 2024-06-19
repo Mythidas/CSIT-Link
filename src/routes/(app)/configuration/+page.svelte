@@ -21,4 +21,12 @@
       <p>Sites</p>
     </div>
   </Button>
+  <Button href="/configuration/devices">
+    <div class="w-48 py-2 stroke-font">
+      <div class="mx-auto w-fit">
+        <Icon icon="Monitor" size={48}/>
+      </div>
+      <p>Devices</p>
+    </div>
+  </Button>
 </div>

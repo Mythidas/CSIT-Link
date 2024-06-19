@@ -206,6 +206,29 @@ export async function get_devices_by_site_id(client: PoolClient, site_id: number
   }
 }
 
+export async function delete_device_av(client: PoolClient, device_id: number, av_site_id: string, av_site_url: string, cookies: Cookies) {
+  try {
+    const device = await get_device(client, device_id);
+    if (!device || !device.av_id) return false;
+
+    const site = await get_site(client, device.site_id);
+    if (!site) return false;
+
+    const av_status = await av.delete_device_av(device.av_id, site.av_id, site.av_url, cookies);
+    if (av_status.meta.status !== 200 && av_status.meta.error.error !== "resourceNotFound") {
+      console.log(`[delete_device_av] Failed to delete AV device ${device.av_id}: ${av_status.meta.error.error}`);
+      return false;
+    }
+
+    await client.query("DELETE FROM DeviceAV WHERE device_id = $1;", [device.device_id]);
+
+    return av_status.data;
+  } catch (err) {
+    console.log(`[delete_device_av] ${err}`);
+    return false;
+  }
+}
+
 export async function load_devices_by_site_id(client: PoolClient, site_id: number, cookies: Cookies) {
   const site = await get_site(client, site_id);
   if (!site) return;

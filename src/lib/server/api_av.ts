@@ -180,3 +180,67 @@ export async function get_tamper_status(device_id: string, av_site_id: string, a
     return { meta: { error: err, status: 501 }};
   }
 }
+
+export async function toggle_tamper_status(tamper_state: boolean, device_id: string, av_site_id: string, av_site_url: string, cookies: Cookies) {
+  try {
+    const token = await get_token(cookies);
+    if (token.meta.status !== 200) {
+      return { meta: { error: "Failed to get tokens", status: 500 }};
+    }
+
+    const device_api = await fetch(`${av_site_url}/endpoint/v1/endpoints/${device_id}/tamper-protection`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token.data[0]}`,
+        "X-Tenant-ID": av_site_id,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        enabled: tamper_state
+      })
+    });
+    const device_data = await device_api.json();
+    
+    if (!device_api.ok) {
+      return { meta: { error: device_data, status: 500 }};
+    }
+    
+    return { data: { enabled: device_data.enabled, password: device_data.password, old_passwords: device_data.previousPasswords }, meta: { status: 200 }};
+  } catch (err) {
+    return { meta: { error: err, status: 501 }};
+  }
+}
+
+export async function delete_device_av(device_id: string, av_site_id: string, av_site_url: string, cookies: Cookies): Promise<APIResponse> {
+  try {
+    const token = await get_token(cookies);
+    if (token.meta.status !== 200) {
+      return { meta: { error: "Failed to get tokens", status: 500 }};
+    }
+
+    const tamper_state = await toggle_tamper_status(false, device_id, av_site_id, av_site_url, cookies);
+
+    if (tamper_state.meta.status !== 200) {
+      return { meta: { error: tamper_state.meta.error, status: 500 }};
+    } else if (tamper_state.data?.enabled) {
+      return { meta: { error: "[delete_device_av] Failed to disabled Tamper Protection", status: 500 }};
+    }
+
+    const device_api = await fetch(`${av_site_url}/endpoint/v1/endpoints/${device_id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token.data[0]}`,
+        "X-Tenant-ID": av_site_id
+      }
+    });
+    const device_data = await device_api.json();
+    
+    if (!device_api.ok) {
+      return { meta: { error: device_data, status: 500 }};
+    }
+    
+    return { data: tamper_state.data, meta: { status: 200 }};
+  } catch (err) {
+    return { meta: { error: err, status: 501 }};
+  }
+}
