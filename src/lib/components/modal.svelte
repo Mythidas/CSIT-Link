@@ -19,9 +19,9 @@
     <div class="content h-full space-y-2 p-2 overflow-hidden">
       <slot />
     </div>
-    <div class="footer flex flex-col p-2 justify-center space-x-1">
+    <div class="footer flex flex-col p-2 justify-center space-y-2">
       <hr />
-      <div>
+      <div class="justify-center space-x-1">
         <Button width="w-20" color="Success" on:click={() => dispatch('accept')}>
           Accept
         </Button>
