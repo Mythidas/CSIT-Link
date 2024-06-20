@@ -11,12 +11,7 @@ export async function DELETE({ request, locals, cookies }) {
       if (!db_site) continue;
 
       if (!(await db.delete_device_av(locals.db_conn, device.device_id, cookies))) {
-        return Response.json({
-          meta: {
-            error: `[API/V2/Devices/Purge/AV/Submit] Failed deletion on ${device.hostname}`,
-            status: 500,
-          }
-        }, { status: 500 });
+        console.log(`[API/V2/Devices/Purge/AV/Submit] Failed deletion on ${device.hostname}`);
       }
     }
 
