@@ -216,7 +216,7 @@ export async function delete_device_av(client: PoolClient, device_id: number, co
 
     const av_status = await av.delete_device_av(device.av_id, site.av_id, site.av_url, cookies);
     if (av_status.meta.status !== 200) {
-      console.log(`[delete_device_av] Failed to delete AV device ${device.av_id}: ${av_status.meta.error.error}`);
+      console.log(`[delete_device_av] Failed to delete AV device ${device.hostname}: ${av_status.meta.error.error}`);
       return false;
     }
 

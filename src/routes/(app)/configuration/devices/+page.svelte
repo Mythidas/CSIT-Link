@@ -13,6 +13,7 @@
     loading = true;
     const res = await axios.delete("/api/v2/devices/purge/av/submit");
     modal_state[1] = false;
+    loading = false;
     if (res.status === 200) {
       goto("/devices");
     }
@@ -22,6 +23,7 @@
     loading = true;
     const res = await axios.get("/api/v2/devices/sync");
     modal_state[0] = false;
+    loading = false;
     if (res.status === 200) {
       goto("/devices");
     }
