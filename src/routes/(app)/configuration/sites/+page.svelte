@@ -18,21 +18,12 @@
     site_name = "";
     show_modal = false;
   }
-
-  async function sync_devices() {
-    await axios.get("/api/v2/devices/sync");
-  }
 </script>
 
 <div class="flex flex-col p-3 w-full h-fit bg-base-200 rounded-sm">
   <div class="w-fit">
     <Button on:click={() => show_modal = true}>
       New Site
-    </Button>
-  </div>
-  <div class="w-fit">
-    <Button on:click={sync_devices}>
-      Sync Devices
     </Button>
   </div>
 </div>

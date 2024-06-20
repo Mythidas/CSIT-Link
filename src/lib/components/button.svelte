@@ -5,13 +5,16 @@
   export let selected = false;
   export let width = "h-fit";
   export let color: "Base" | "Success" | "Error" = "Base";
+  export let disabled = false;
 
   const dispatch = createEventDispatcher();
   
   $: _color = color === "Base" ? "bg-base-300" : color === "Success" ? "bg-success" : "bg-error";
-  $: _class = `${selected ? "stroke-accent-100 border-accent-100" : "border-base-200"} ${width} p-2 transition ${_color} shadow-md border-b-2 hover:stroke-accent-100 hover:border-accent-100`;
+  $: _class = `${selected ? "stroke-accent-100 border-accent-100" : "border-base-200"} 
+  ${width} p-2 transition ${!disabled ? _color : "bg-base-200"} shadow-md border-b-2 hover:stroke-accent-100 hover:border-accent-100`;
   
   function handle_on_click() {
+    if (disabled) return;
     dispatch('click', null);
   }
 

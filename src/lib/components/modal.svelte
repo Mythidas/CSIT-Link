@@ -4,6 +4,7 @@
   
   export let open = false;
   export let title = "";
+  export let loading = false;
 
   const dispatch = createEventDispatcher();
 </script>
@@ -22,10 +23,10 @@
     <div class="footer flex flex-col p-2 justify-center space-y-2">
       <hr />
       <div class="justify-center space-x-1">
-        <Button width="w-20" color="Success" on:click={() => dispatch('accept')}>
+        <Button bind:disabled={loading} width="w-20" color="Success" on:click={() => dispatch('accept')}>
           Accept
         </Button>
-        <Button width="w-20" color="Error" on:click={() => { dispatch('close'); open = false; }}>
+        <Button bind:disabled={loading} width="w-20" color="Error" on:click={() => { dispatch('close'); open = false; }}>
           Close
         </Button>
       </div>

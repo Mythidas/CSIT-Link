@@ -7,9 +7,20 @@
   import axios from "axios";
 
   let modal_state: boolean[] = [];
+  let loading: boolean = true;
 
   async function on_purge_av_devices() {
+    loading = true;
     const res = await axios.delete("/api/v2/devices/purge/av/submit");
+    modal_state[1] = false;
+    if (res.status === 200) {
+      goto("/devices");
+    }
+  }
+
+  async function on_sync_devices() {
+    loading = true;
+    const res = await axios.get("/api/v2/devices/sync");
     modal_state[0] = false;
     if (res.status === 200) {
       goto("/devices");
@@ -21,12 +32,17 @@
   <div class="w-full h-fit text-2xl">
     <Input value="" placeholder="Search Actions..."/>
   </div>
-  <div class="flex flex-col w-full h-fit">
-    <Button on:click={() => modal_state[0] = true}>Purge AV Devices</Button>
+  <div class="flex flex-col w-full h-fit space-y-2">
+    <Button on:click={() => modal_state[0] = true}>Sync Devices</Button>
+    <Button on:click={() => modal_state[1] = true}>Purge AV Devices</Button>
   </div>
 </div>
 
-<Modal bind:open={modal_state[0]} title="AV Devices to Purge" on:accept={on_purge_av_devices}>
+<Modal bind:open={modal_state[0]} title="Sync Devices" on:accept={on_sync_devices} bind:loading>
+
+</Modal>
+
+<Modal bind:open={modal_state[1]} title="AV Devices to Purge" on:accept={on_purge_av_devices} bind:loading>
   <Table
     columns={[
       { key: "hostname", name: "Name", group: "Device", default: "-", type: "Text" },
