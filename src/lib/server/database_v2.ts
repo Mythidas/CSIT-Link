@@ -428,10 +428,14 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
         return dev.hostname.toLowerCase() === devices[i].hostname.toLowerCase();
       })
 
+      if (!_device_rmm) {
+        await client.query(`DELETE FROM DeviceRMM WHERE device_id = $1;`, [devices[i].device_id.toString()]);
+      }
+      if (!_device_av) {
+        await client.query(`DELETE FROM DeviceAV WHERE device_id = $1;`, [devices[i].device_id.toString()]);
+      }
       if (!_device || (!_device_rmm && !_device_av)) {
         console.log(`[load_devices] Deleting ${devices[i].hostname}`);
-        await client.query(`DELETE FROM DeviceRMM WHERE device_id = $1;`, [devices[i].device_id.toString()]);
-        await client.query(`DELETE FROM DeviceAV WHERE device_id = $1;`, [devices[i].device_id.toString()]);
         await client.query(`DELETE FROM Device WHERE device_id = $1;`, [devices[i].device_id.toString()]);
       }
     }

@@ -30,13 +30,14 @@
   async function on_sync_devices() {
     loading = true;
     try {
-      const res = await axios.get("/api/v2/devices/sync");
+      await axios.get("/api/v2/devices/sync");
+      modal_state[0] = false;
+      loading = false;
     } catch (err) {
+      modal_state[0] = false;
+      loading = false;
       console.log(err);
     }
-
-    modal_state[0] = false;
-    loading = false;
   }
 </script>
 
