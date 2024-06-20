@@ -7,7 +7,7 @@
   import axios from "axios";
 
   let modal_state: boolean[] = [];
-  let loading: boolean = true;
+  let loading: boolean = false;
 
   async function on_purge_av_devices() {
     loading = true;
