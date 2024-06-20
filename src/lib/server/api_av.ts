@@ -141,7 +141,7 @@ export async function get_devices(av_site_id: string, av_site_url: string, cooki
           id: -1,
           device_id: -1,
           site_id: -1,
-          av_id: device_data.items[0].id,
+          av_id: device_data.items[i].id,
           heartbeat_av: device_data.items[i].lastSeenAt,
           tamper: device_data.items[i].tamperProtectionEnabled,
           health: device_data.items[i].health.overall
@@ -196,7 +196,7 @@ export async function toggle_tamper_status(tamper_state: boolean, device_id: str
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        enabled: tamper_state
+        "enabled": tamper_state
       })
     });
     const device_data = await device_api.json();

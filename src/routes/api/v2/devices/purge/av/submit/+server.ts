@@ -1,5 +1,4 @@
 import * as db from "$lib/server/database_v2.js";
-import * as av from "$lib/server/api_av.js";
 
 export async function DELETE({ request, locals, cookies }) {
   try {
@@ -9,17 +8,22 @@ export async function DELETE({ request, locals, cookies }) {
 
     for await (const device of devices) {
       const db_site = await db.get_site(locals.db_conn, device.site_id);
-      if (!db_site) continue;
+      if (!db_site || db_site.title !== "Cosmic kids Dental") continue;
 
-      await av.toggle_tamper_status(false, device.device_id.toString(), db_site.av_id, db_site.av_url, cookies)
-      // await db.delete_device_av(locals.db_conn, device.device_id, db_site.av_id, db_site.av_url, cookies);
+      if (!(await db.delete_device_av(locals.db_conn, device.device_id, cookies))) {
+        return Response.json({
+          meta: {
+            error: `[API/V2/Devices/Purge/AV/Submit] Failed deletion on ${device.hostname}`,
+            status: 500,
+          }
+        }, { status: 500 });
+      }
     }
 
     return Response.json({
       data: "Success",
       meta: {
         status: 200,
-        total: devices.length
       }
     }, { status: 200 });
   } catch (err) {

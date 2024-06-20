@@ -127,7 +127,7 @@ export async function add_company(client: PoolClient, new_company: Company): Pro
 
 export async function get_device(client: PoolClient, device_id: number): Promise<DeviceAll | null> {
   try {
-    return (await client.query(`SELECT de.*, dv.*, dm.*, se.*
+    return (await client.query(`SELECT de.*, dv.*, dm.*, se.title
       FROM Device de 
       LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
       LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id
@@ -144,7 +144,7 @@ export async function get_devices(client: PoolClient, columns: string[], values:
     const query_filters = gen_filter_string(columns, values, types, sorting);
     
     if (query_filters.query) {
-      return (await client.query(`SELECT de.*, dv.*, dm.*, se.*, cy.company_title
+      return (await client.query(`SELECT de.*, dv.*, dm.*, se.title, cy.company_title
       FROM Device de 
       LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
       LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id 
@@ -152,7 +152,7 @@ export async function get_devices(client: PoolClient, columns: string[], values:
       LEFT JOIN Company cy ON se.company_id = cy.company_id ${query_filters.query};`, query_filters.values)).rows as DeviceAll[];
     }
 
-    return (await client.query(`SELECT de.*, dv.*, dm.*, se.*, cy.company_title
+    return (await client.query(`SELECT de.*, dv.*, dm.*, se.title, cy.company_title
     FROM Device de 
     LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
     LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id
@@ -206,7 +206,7 @@ export async function get_devices_by_site_id(client: PoolClient, site_id: number
   }
 }
 
-export async function delete_device_av(client: PoolClient, device_id: number, av_site_id: string, av_site_url: string, cookies: Cookies) {
+export async function delete_device_av(client: PoolClient, device_id: number, cookies: Cookies) {
   try {
     const device = await get_device(client, device_id);
     if (!device || !device.av_id) return false;
@@ -215,17 +215,20 @@ export async function delete_device_av(client: PoolClient, device_id: number, av
     if (!site) return false;
 
     const av_status = await av.delete_device_av(device.av_id, site.av_id, site.av_url, cookies);
-    if (av_status.meta.status !== 200 && av_status.meta.error.error !== "resourceNotFound") {
+    if (av_status.meta.status !== 200) {
       console.log(`[delete_device_av] Failed to delete AV device ${device.av_id}: ${av_status.meta.error.error}`);
       return false;
     }
 
     await client.query("DELETE FROM DeviceAV WHERE device_id = $1;", [device.device_id]);
+    if (!device.rmm_id) {
+      await client.query("DELETE FROM Device WHERE device_id = $1;", [device.device_id]);
+    }
 
     return av_status.data;
   } catch (err) {
     console.log(`[delete_device_av] ${err}`);
-    return false;
+    return undefined;
   }
 }
 
@@ -418,11 +421,18 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
       const _device = pre_devices.find(dev => {
         return dev.hostname.toLowerCase() === devices[i].hostname.toLowerCase();
       })
+      const _device_rmm = rmm_device_res.device_list.find(dev => {
+        return dev.hostname.toLowerCase() === devices[i].hostname.toLowerCase();
+      })
+      const _device_av = av_device_res.device_list.find(dev => {
+        return dev.hostname.toLowerCase() === devices[i].hostname.toLowerCase();
+      })
 
-      if (!_device) {
+      if (!_device || (!_device_rmm && !_device_av)) {
+        console.log(`[load_devices] Deleting ${devices[i].hostname}`);
         await client.query(`DELETE FROM DeviceRMM WHERE device_id = $1;
-        DELETE FROM DeviceAV WHERE device_id = $1;
-        DELETE FROM Device WHERE device_id = $1;`, [devices[i].device_id.toString()]);
+        DELETE FROM DeviceAV WHERE device_id = $2;
+        DELETE FROM Device WHERE device_id = $3;`, [devices[i].device_id.toString(),devices[i].device_id.toString(),devices[i].device_id.toString()]);
       }
     }
 
