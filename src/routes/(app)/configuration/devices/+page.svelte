@@ -11,22 +11,32 @@
 
   async function on_purge_av_devices() {
     loading = true;
-    const res = await axios.delete("/api/v2/devices/purge/av/submit");
-    modal_state[1] = false;
-    loading = false;
-    if (res.status === 200) {
-      goto("/devices");
+    try {
+      const res = await axios.delete("/api/v2/devices/purge/av/submit");
+      modal_state[1] = false;
+      loading = false;
+
+      if (res.status === 200) {
+        goto("/devices");
+      }
+
+    } catch (err) {
+      modal_state[1] = false;
+      loading = false;
+      console.log(err);
     }
   }
 
   async function on_sync_devices() {
     loading = true;
-    const res = await axios.get("/api/v2/devices/sync");
+    try {
+      const res = await axios.get("/api/v2/devices/sync");
+    } catch (err) {
+      console.log(err);
+    }
+
     modal_state[0] = false;
     loading = false;
-    if (res.status === 200) {
-      goto("/devices");
-    }
   }
 </script>
 
