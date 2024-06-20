@@ -8,7 +8,7 @@ export async function DELETE({ request, locals, cookies }) {
 
     for await (const device of devices) {
       const db_site = await db.get_site(locals.db_conn, device.site_id);
-      if (!db_site || db_site.title !== "Cosmic kids Dental") continue;
+      if (!db_site) continue;
 
       if (!(await db.delete_device_av(locals.db_conn, device.device_id, cookies))) {
         return Response.json({
