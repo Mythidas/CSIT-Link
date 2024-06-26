@@ -55,18 +55,3 @@ export interface DeviceBU {
 export interface DeviceAll extends Device, DeviceRMM, DeviceAV {
   company_title?: string;
 }
-
-export interface Patch {
-  id: number,
-  major: number,
-  minor: number,
-  build: number,
-  description: string
-}
-
-export interface Auth {
-  id: number,
-  jwt_token: string,
-  expiration: string,
-  username: string,
-}

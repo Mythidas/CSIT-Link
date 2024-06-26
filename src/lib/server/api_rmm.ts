@@ -39,6 +39,29 @@ export async function get_sites(): Promise<APIResponse> {
   return { data: site_list, meta: { status: 200 }};
 }
 
+export async function get_groups(rmm_site_id: string) {
+  try {
+    const asset_api = await fetch(`${RMM_URL}/groups?$filter=ParentSiteId eq ${rmm_site_id}`, {
+      method: "GET",
+      headers: {
+        "authorization": `Basic ${rmm_auth}`,
+        "content-type": "application/json"
+      }
+    });
+    const asset_data = await asset_api.json();
+    
+    if (!asset_api.ok) {
+      console.log(`[get_groups] ${asset_data.ExceptionMessage}`);
+      return { meta: { error: asset_data.ExceptionMessage, status: 500 }};
+    }
+    
+    return { data: asset_data.Data, meta: { status: 200 }};
+  } catch (err) {
+    console.log(`[get_groups] ${err}`);
+    return { meta: { error: err, status: 500 }};
+  }
+}
+
 export async function get_devices(rmm_site_id: string): Promise<APIResponse> {
   try {
     let device_list: Device[] = [];

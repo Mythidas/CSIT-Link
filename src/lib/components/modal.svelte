@@ -17,7 +17,7 @@
       <p>{title}</p>
       <hr />
     </div>
-    <div class="content h-full space-y-2 p-2 overflow-hidden">
+    <div class="content h-full space-y-2 px-2 overflow-hidden">
       <slot />
     </div>
     <div class="footer flex flex-col p-2 justify-center space-y-2">

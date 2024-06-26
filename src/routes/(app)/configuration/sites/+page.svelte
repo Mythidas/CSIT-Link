@@ -1,13 +1,13 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-    import { goto } from "$app/navigation";
+  import { goto } from "$app/navigation";
   import Button from "$lib/components/button.svelte";
   import Input from "$lib/components/input.svelte";
   import Modal from "$lib/components/modal.svelte";
   import Select from "$lib/components/select.svelte";
   import Table from "$lib/components/table.svelte";
   import type { Company, Site } from "$lib/interfaces/i_db";
-    import axios from "axios";
+  import axios from "axios";
 
   export let data: { sites: Site[], companies: Company[], rmm_sites: any[], av_sites: any[], psa_sites: any[] };
 

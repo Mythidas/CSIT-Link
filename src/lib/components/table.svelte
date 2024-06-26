@@ -173,7 +173,7 @@
         <thead>
           <tr>
             {#if options.length > 0}
-            <th class={`px-2 py-1 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)]`}>
+            <th class={`sticky top-0 first:left-0 first:z-50 pl-2 w-10 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100`}>
               <Checkbox checked={false} label="" id="" on:input={on_top_check}/>
               <select on:change={on_option_select} class="w-4 bg-base-100 border-none outline-none" value="">
                 {#each options as opt}
