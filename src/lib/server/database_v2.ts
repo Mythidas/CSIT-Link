@@ -91,6 +91,24 @@ export async function add_site(client: PoolClient, new_site: Site): Promise<Site
   }
 }
 
+export async function delete_site(client: PoolClient, site_id: number): Promise<boolean> {
+  try {
+    const site = await get_site(client, site_id);
+    if (!site) {
+      console.log(`[delete_site] Failed to find site ${site_id}`);
+      return false;
+    }
+
+    await delete_devices_by_site(client, site_id);
+    await client.query("DELETE FROM Site WHERE site_id = $1;", [site.site_id.toString()]);
+
+    return true;
+  } catch (err) {
+    console.log(`[delete_site] ${err}`);
+    return false;
+  }
+}
+
 export async function is_site_updated(client: PoolClient, site_id: number): Promise<boolean> {
   try {
     const site = await get_site(client, site_id);
@@ -172,16 +190,12 @@ export async function get_devices(client: PoolClient, columns: string[], values:
 
 export async function get_devices_all(client: PoolClient): Promise<Device[]> {
   try {
-    const sites = await get_sites(client, [], [], [], { key: "", group: "", asc: true, type: "" });
-
-    const sort_devices = (a: Device, b: Device) => {
-      const site_a = sites.find((site) => { return site.site_id === a.site_id; });
-      const site_b = sites.find((site) => { return site.site_id === b.site_id; });
-      return site_a?.title.toLowerCase().localeCompare(site_b?.title.toLowerCase() || "") || -1;
-    }
-
-    const devices = (await client.query("SELECT * FROM Device"))?.rows as Device[] || [] as Device[];
-    return devices.sort(sort_devices);
+    return (await client.query(`SELECT de.*, dv.*, dm.*, se.title, cy.company_title
+      FROM Device de 
+      LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
+      LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id
+      LEFT JOIN Site se ON de.site_id = se.site_id
+      LEFT JOIN Company cy ON se.company_id = cy.company_id ORDER BY se.title ASC;`)).rows as DeviceAll[];
   } catch (err) {
     console.log(err);
     return [];
@@ -190,25 +204,40 @@ export async function get_devices_all(client: PoolClient): Promise<Device[]> {
 
 export async function get_devices_by_site_id(client: PoolClient, site_id: number): Promise<DeviceAll[]> {
   try {
-    if (isNaN(site_id) || site_id < 0) {
+    const site = await get_site(client, site_id);
+    if (!site) {
+      console.log(`[get_devices_by_site_id] Failed to get site ${site_id}`);
       return [];
     }
 
-    const devices = (await client.query("SELECT * FROM Device WHERE site_id = $1;", [site_id]))?.rows as Device[] || [];
-    const rmm_devices = (await client.query("SELECT * FROM DeviceRMM WHERE site_id = $1;", [site_id]))?.rows as DeviceRMM[] || [];
-    const av_devices = (await client.query("SELECT * FROM DeviceAV WHERE site_id = $1;", [site_id]))?.rows as DeviceAV[] || [];
-    
-    let devices_joined: DeviceAll[] = [];
-    for (let i = 0; i < devices.length; i++) {
-      const _device_rmm = rmm_devices.find(dev => { return dev.device_id === devices[i].device_id }) as DeviceRMM;
-      const _device_av = av_devices.find(dev => { return dev.device_id === devices[i].device_id }) as DeviceAV;
-      devices_joined.push({ ...devices[i], ..._device_rmm, ..._device_av });
+    return (await client.query(`SELECT de.*, dv.*, dm.*, se.title, cy.company_title
+      FROM Device de 
+      LEFT JOIN DeviceAV dv ON de.device_id = dv.device_id
+      LEFT JOIN DeviceRMM dm ON de.device_id = dm.device_id
+      LEFT JOIN Site se ON de.site_id = se.site_id
+      LEFT JOIN Company cy ON se.company_id = cy.company_id WHERE de.site_id = $1 ORDER BY se.title ASC;`, [site_id])).rows as DeviceAll[];
+  } catch (err) {
+    console.log(`[get_devices_by_site_id] ${err}`);
+    return [];
+  }
+}
+
+export async function delete_devices_by_site(client: PoolClient, site_id: number): Promise<boolean> {
+  try {
+    const site = await get_site(client, site_id);
+    if (!site) {
+      console.log(`[delete_devices_by_site] Failed to get site ${site_id}`);
+      return false;
     }
 
-    return devices_joined;
+    await client.query("DELETE FROM DeviceRMM WHERE site_id = $1", [site.site_id.toString()]);
+    await client.query("DELETE FROM DeviceAV WHERE site_id = $1", [site.site_id.toString()]);
+    await client.query("DELETE FROM Device WHERE site_id = $1", [site.site_id.toString()]);
+
+    return true;
   } catch (err) {
-    console.log(err);
-    return [];
+    console.log(`[delete_devices_by_site] ${err}`);
+    return false;
   }
 }
 

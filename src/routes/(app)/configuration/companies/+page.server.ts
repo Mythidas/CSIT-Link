@@ -4,7 +4,7 @@ import type { Company } from "$lib/interfaces/i_db.js";
 
 export async function load({ locals }) {
   try {
-    const db_companies = await db.get_companies(locals.db_conn);
+    const db_companies = await db.get_companies(locals.db_conn, [], [], [], { type: "", group: "", asc: true, key: ""});
 
     return {
       companies: db_companies,
@@ -20,10 +20,10 @@ export const actions = {
 
     const company_data: Company = {
       company_id: -1,
-      title: form_data.get("title")?.toString() || "",
+      company_title: form_data.get("title")?.toString() || "",
     }
 
-    if (!company_data.title) {
+    if (!company_data.company_title) {
       return "Invalid Data";
     }
 

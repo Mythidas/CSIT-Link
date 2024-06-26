@@ -1,21 +1,41 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+    import { goto } from "$app/navigation";
   import Button from "$lib/components/button.svelte";
   import Input from "$lib/components/input.svelte";
   import Modal from "$lib/components/modal.svelte";
   import Select from "$lib/components/select.svelte";
   import Table from "$lib/components/table.svelte";
   import type { Company, Site } from "$lib/interfaces/i_db";
+    import axios from "axios";
 
   export let data: { sites: Site[], companies: Company[], rmm_sites: any[], av_sites: any[], psa_sites: any[] };
 
   let show_modal = false;
   let form: HTMLFormElement;
   let site_name = "";
+  let filtered_data: any[];
 
   function on_submit() {
     site_name = "";
     show_modal = false;
+  }
+
+  async function on_option(e: CustomEvent<any>) {
+    const _option = e.detail;
+    if (_option === "Delete Site") {
+      for await (const row of filtered_data) {
+        if (!row.checked) continue;
+
+        try {
+          await axios.delete(`/api/v2/sites/${row.site_id}/delete`);
+        } catch (err) {
+          console.log(`[on_option] Failed to delete site ${row.site_id}`);
+        }
+      }
+
+      goto("/configuration/sites");
+    } 
   }
 </script>
 
@@ -36,6 +56,11 @@
     data="/api/v2/sites"
     total_items={data.sites.length}
     page={1}
+    bind:filtered_data
+    options={[
+      "Delete Site"
+    ]}
+    on:option={on_option}
   />
 </div>
 
