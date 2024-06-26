@@ -16,17 +16,12 @@ export async function load({ locals, cookies }) {
     const av_sites = await av.get_sites(cookies);
     if (av_sites.meta.status !== 200) return "Error fetching AV Sites";
 
-    let sites_merge = [];
     const db_sites = await db.get_sites(locals.db_conn, [], [], [], { key: "", group: "", asc: true, type: "" });
-    const db_companies = await db.get_companies(locals.db_conn);
-
-    for (let i = 0; i < db_sites.length; i++) {
-      const company = db_companies.find(comp => { return comp.company_id === db_sites[i].company_id });
-      sites_merge.push({ company: company?.title || "(None)", ...db_sites[i] });
-    }
+    const db_companies = await db.get_companies(locals.db_conn, [], [], [], { key: "", group: "", asc: true, type: "" });
 
     return {
-      sites: sites_merge,
+      sites: db_sites,
+      companies: db_companies,
       rmm_sites: rmm_sites.data,
       av_sites: av_sites.data,
       psa_sites: psa_sites.data

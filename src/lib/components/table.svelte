@@ -206,11 +206,11 @@
             {/if}
             {#each columns as column}
               {#if !column.type || column?.type === "Text" || column?.type === "Number"}
-              <td class={`px-2 py-1 whitespace-nowrap ${sticky_first && first_child_sticky}`}>{row[column.key] || column.default}</td>
+              <td class={`px-2 py-1 whitespace-nowrap ${sticky_first && first_child_sticky}`}>{row[column.key] || column.default || "-"}</td>
               {:else if column.type === "Date"}
-              <td class={`px-2 py-1 whitespace-nowrap ${sticky_first && first_child_sticky}`}>{row[column.key] ? calculate_time_since(row[column.key]) : column.default}</td>
+              <td class={`px-2 py-1 whitespace-nowrap ${sticky_first && first_child_sticky}`}>{row[column.key] ? calculate_time_since(row[column.key]) : column.default || "-"}</td>
               {:else if column.type === "Bool"}
-              <td class={`px-2 py-1 whitespace-nowrap ${sticky_first && first_child_sticky}`}>{row[column.key] === null ? column.default : (row[column.key] ? "Yes" : "No")}</td>
+              <td class={`px-2 py-1 whitespace-nowrap ${sticky_first && first_child_sticky}`}>{row[column.key] === null ? column.default || "-" : (row[column.key] ? "Yes" : "No")}</td>
               {/if}
             {/each}
           </tr>

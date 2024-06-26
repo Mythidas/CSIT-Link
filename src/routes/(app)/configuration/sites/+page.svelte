@@ -5,10 +5,9 @@
   import Modal from "$lib/components/modal.svelte";
   import Select from "$lib/components/select.svelte";
   import Table from "$lib/components/table.svelte";
-  import type { Site } from "$lib/interfaces/i_db";
-  import axios from "axios";
+  import type { Company, Site } from "$lib/interfaces/i_db";
 
-  export let data: { sites: Site[], rmm_sites: any[], av_sites: any[], psa_sites: any[] };
+  export let data: { sites: Site[], companies: Company[], rmm_sites: any[], av_sites: any[], psa_sites: any[] };
 
   let show_modal = false;
   let form: HTMLFormElement;
@@ -32,7 +31,7 @@
   <Table
     columns={[
       { key: "title", name: "Name", group: "Site", type: "Text" },
-      { key: "company", name: "Company", group: "Company", type: "Text" }
+      { key: "company_title", name: "Company", group: "Company", type: "Text" }
     ]}
     data="/api/v2/sites"
     total_items={data.sites.length}
@@ -46,6 +45,10 @@
       <div>
         <label for="title" class="text-xl">Name*</label>
         <Input bind:value={site_name} required name="title" placeholder="Site name..."/>
+      </div>
+      <div>
+        <label for="company_id" class="text-xl">Company</label>
+        <Select value="" name="company_id" placeholder="(None)" options={[{ key: "-1", label: "(None)" }, ...data.companies.map(comp => {return { key: comp.company_id.toString(), label: comp.company_title }})]}/>
       </div>
       <div>
         <label for="psa" class="text-xl">PSA Site*</label>

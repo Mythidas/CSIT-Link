@@ -105,9 +105,15 @@ export async function is_site_updated(client: PoolClient, site_id: number): Prom
 
 // COMPANIES
 
-export async function get_companies(client: PoolClient): Promise<Company[]> {
+export async function get_companies(client: PoolClient, columns: string[], values: string[], types: string[], sorting: SortState): Promise<Site[]> {
   try {
-    return (await client.query("SELECT * FROM Company")).rows;
+    const query_filters = gen_filter_string(columns, values, types, sorting);
+    
+    if (query_filters.query) {
+      return (await client.query(`SELECT cy.* from Company cy ${query_filters.query};`, query_filters.values)).rows as Site[];
+    }
+      
+    return (await client.query(`SELECT * from Company;`, query_filters.values)).rows as Site[];
   } catch (err) {
     console.log(err);
     return [];
@@ -116,7 +122,7 @@ export async function get_companies(client: PoolClient): Promise<Company[]> {
 
 export async function add_company(client: PoolClient, new_company: Company): Promise<Company | null> {
   try {
-    return (await client.query("INSERT INTO Company(title) VALUES ($1)", [new_company.title])).rows[0] || null;
+    return (await client.query("INSERT INTO Company(company_title) VALUES ($1)", [new_company.company_title])).rows[0] || null;
   } catch (err) {
     console.log(err);
     return null;

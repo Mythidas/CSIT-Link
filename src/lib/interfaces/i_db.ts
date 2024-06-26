@@ -1,6 +1,6 @@
 export interface Company {
   company_id: number,
-  title: string
+  company_title: string
 }
 
 export interface Site {
