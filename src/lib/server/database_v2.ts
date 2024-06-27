@@ -360,7 +360,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
         rmm_device_values.push(new_device_res[i].device_id.toString());
         rmm_device_values.push(new_device_res[i].site_id.toString());
         rmm_device_values.push(_device.rmm_id);
-        rmm_device_values.push(_device.heartbeat_rmm || "");
+        rmm_device_values.push(_device.heartbeat_rmm || new Date().toISOString());
         rmm_device_values.push(String(_device.firewall));
         rmm_device_values.push(String(_device.uac));
         rmm_device_values.push(String(_device.memory || 0));
@@ -368,8 +368,12 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
       }
       rmm_device_query = rmm_device_query.slice(0, -1) + ";";
 
-      console.log(`[load_devices] Inserted new DeviceRMM: ${site.title}`)
-      const new_device_rmm_res = (await client.query(rmm_device_query, rmm_device_values))?.rows as DeviceRMM[] || [];
+      try {
+        console.log(`[load_devices] Inserted new DeviceRMM: ${site.title}`)
+        const new_device_rmm_res = (await client.query(rmm_device_query, rmm_device_values))?.rows as DeviceRMM[] || [];
+      } catch (err) {
+        console.log(`[load_devices] Failed to insert RMM relations: ${err}`);
+      }
 
       // Insert AV relations for new devices
       let av_device_query = "INSERT INTO DeviceAV (device_id,site_id,av_id,heartbeat_av,tamper,health) VALUES "
@@ -386,14 +390,18 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
         av_device_values.push(new_device_res[i].device_id.toString());
         av_device_values.push(new_device_res[i].site_id.toString());
         av_device_values.push(_device.av_id);
-        av_device_values.push(_device.heartbeat_av || "");
+        av_device_values.push(_device.heartbeat_av || new Date().toISOString());
         av_device_values.push(String(_device.tamper));
         av_device_values.push(_device.health);
       }
       av_device_query = av_device_query.slice(0, -1) + ";";
 
-      console.log(`[load_devices] Inserted new DeviceAV: ${site.title}`)
-      const new_device_av_res = (await client.query(av_device_query, av_device_values))?.rows as DeviceRMM[] || [];
+      try {
+        console.log(`[load_devices] Inserted new DeviceAV: ${site.title}`)
+        const new_device_av_res = (await client.query(av_device_query, av_device_values))?.rows as DeviceRMM[] || [];
+      } catch (err) {
+        console.log(`[load_devices] Failed to insert AV relations: ${err}`);
+      }
     }
 
     // Update existing devices
