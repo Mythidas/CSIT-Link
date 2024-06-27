@@ -446,7 +446,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
           }
         }
       } catch (err) {
-        console.log(`[load_devices] Failed to Update Devices: ${site.title}`)
+        console.log(`[load_devices] Failed to Update Devices: ${site.title}: ${err}`);
       }
     }
 
