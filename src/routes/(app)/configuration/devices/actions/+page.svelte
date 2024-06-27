@@ -64,7 +64,7 @@
   async function on_migrate_devices() {
     loading = true;
     try {
-      await axios.post("/api/v2/devices/migrate", {});
+      await axios.post("/api/v2/devices/migrate", m2_filtered_data.filter(row => { return row.checked }).map(row => { return { id: row.rmm_id, group: m2_to_group }}));
       modal_state[2] = false;
       loading = false;
       goto("/configuration/devices");
