@@ -28,6 +28,7 @@
   $: if (modal_state[2] && m2_from_site && m2_to_site && m2_from_site !== m2_to_site) {
     m2_get_groups();
   }
+  
 
   async function on_purge_av_devices() {
     loading = true;
