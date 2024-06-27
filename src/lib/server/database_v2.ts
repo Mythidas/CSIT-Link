@@ -420,7 +420,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
 
           if (_device_av) {
             await client.query(update_av_query, [
-              _device_av.heartbeat_av,
+              _device_av.heartbeat_av || new Date().toISOString(),
               String(_device_av.tamper),
               _device_av.health,
               String(pre_devices[i].device_id)
@@ -436,7 +436,7 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
 
           if (_device_rmm) {
             await client.query(update_rmm_query, [
-              _device_rmm.heartbeat_rmm,
+              _device_rmm.heartbeat_rmm || new Date().toISOString(),
               String(_device_rmm.firewall),
               String(_device_rmm.uac),
               String(_device_rmm.memory || 0),
