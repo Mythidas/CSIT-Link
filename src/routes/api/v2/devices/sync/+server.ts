@@ -55,6 +55,11 @@ export async function GET({ locals, cookies }) {
       try {
         const devices = await db.get_devices_by_site_id(locals.db_conn, site.site_id);
         const av_devices_res = await av.get_devices(site.av_id, site.av_url, cookies);
+        if (av_devices_res.meta.status !== 200 && site.av_id) {
+          console.log(`[API/V2/Devices/Sync] Failed to load AV devices: ${site.title}`);
+          continue;
+        }
+
         let device_list: Device[] = [];
         let rmm_list: DeviceRMM[] = [];
 
