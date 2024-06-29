@@ -411,7 +411,6 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
 
       let update_query = "UPDATE Device SET ipv4 = $1, wan = $2 WHERE device_id = $3;";
       let update_rmm_query = "UPDATE DeviceRMM SET heartbeat_rmm = $1, firewall = $2, uac = $3, memory = $4, custom_fields = $5 WHERE device_id = $6;";
-      let update_av_query = "UPDATE DeviceAV SET heartbeat_av = $1, tamper = $2, health = $3 WHERE device_id = $4;";
 
       try {
         await client.query(update_query, [
@@ -426,10 +425,10 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
           })
           const _device_av = av_device_res.av_list[_device_av_index] as DeviceAV;
 
+          let update_av_query = `UPDATE DeviceAV SET heartbeat_av = $1, tamper = ${_device_av?.tamper || null}, health = $2 WHERE device_id = $3;`;
           if (_device_av) {
             await client.query(update_av_query, [
               _device_av.heartbeat_av || new Date().toISOString(),
-              _device_av.tamper === undefined ? "" : String(_device_av.tamper),
               _device_av.health,
               String(pre_devices[i].device_id)
             ]);
@@ -442,11 +441,10 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
           })
           const _device_rmm = rmm_device_res.rmm_list[_device_rmm_index] as DeviceRMM;
 
+          let update_rmm_query = `UPDATE DeviceRMM SET heartbeat_rmm = $1, firewall = ${_device_rmm?.firewall || null}, uac = ${_device_rmm?.uac || null}, memory = $2, custom_fields = $3 WHERE device_id = $4;`;
           if (_device_rmm) {
             await client.query(update_rmm_query, [
               _device_rmm.heartbeat_rmm || new Date().toISOString(),
-              _device_rmm.firewall === undefined ? "" : String(_device_rmm.firewall),
-              _device_rmm.uac === undefined ? "" : String(_device_rmm.uac),
               String(_device_rmm.memory || 0),
               JSON.stringify(_device_rmm.custom_fields || {}),
               String(pre_devices[i].device_id)

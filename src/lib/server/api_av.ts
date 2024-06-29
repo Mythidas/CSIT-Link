@@ -107,6 +107,7 @@ export async function get_devices(av_site_id: string, av_site_url: string, cooki
   try {
     const token = await get_token(cookies);
     if (token.meta.status !== 200) {
+      console.log(`[get_devices] Failed to get tokens`);
       return { meta: { error: "Failed to get tokens", status: 500 }};
     }
 
@@ -120,6 +121,7 @@ export async function get_devices(av_site_id: string, av_site_url: string, cooki
     const device_data = await device_api.json();
     
     if (!device_api.ok) {
+      console.log(`[get_devices] ${device_data.error}`);
       return { meta: { error: device_data, status: 500 }};
     }
     
@@ -151,6 +153,7 @@ export async function get_devices(av_site_id: string, av_site_url: string, cooki
     
     return { data: { device_list, av_list }, meta: { status: 200 }};
   } catch (err) {
+    console.log(`[get_devices] ${err}`);
     return { meta: { error: err, status: 501 }};
   }
 }
