@@ -82,20 +82,6 @@ export async function get_devices(rmm_site_id: string): Promise<APIResponse> {
 
     const device_data = asset_data.Data;
     for (let i = 0; i < device_data.length; i++) {
-      const custom_fields_api = await fetch(`${RMM_URL}/devices/${device_data[i].Identifier}/customfields`, {
-        method: "GET",
-        headers: {
-          "authorization": `Basic ${rmm_auth}`,
-          "content-type": "application/json"
-        }
-      });
-
-      const custom_fields_data = await custom_fields_api.json();
-
-      if (!custom_fields_api.ok) {
-        return { meta: { error: custom_fields_data.Meta, status: 500 }};
-      }
-
       device_list.push({ 
         device_id: -1,
         site_id: -1,
@@ -115,7 +101,7 @@ export async function get_devices(rmm_site_id: string): Promise<APIResponse> {
         firewall: device_data[i].FirewallEnabled,
         uac: device_data[i].UacEnabled,
         memory: convert_bytes_to_gbytes(device_data[i].MemoryTotal),
-        custom_fields: custom_fields_data.Data
+        custom_fields: []
       });
     }
 
@@ -160,20 +146,6 @@ export async function get_devices_all(): Promise<APIResponse> {
         }
 
         try {
-          const custom_fields_api = await fetch(`${RMM_URL}/devices/${device_data[i].Identifier}/customfields`, {
-            method: "GET",
-            headers: {
-              "authorization": `Basic ${rmm_auth}`,
-              "content-type": "application/json"
-            }
-          });
-    
-          const custom_fields_data = await custom_fields_api.json();
-    
-          if (!custom_fields_api.ok) {
-            return { meta: { error: custom_fields_data.Meta, status: 500 }};
-          }
-
           device_list.push({ 
             device_id: -1,
             site_id: -1,
@@ -194,7 +166,7 @@ export async function get_devices_all(): Promise<APIResponse> {
             firewall: device_data[i].FirewallEnabled || false,
             uac: device_data[i].UacEnabled || false,
             memory: convert_bytes_to_gbytes(device_data[i].MemoryTotal || 0),
-            custom_fields: custom_fields_data.Data
+            custom_fields: []
           });
         } catch (err) {
           console.log(`[get_devices_all] ${err}`);
@@ -208,7 +180,7 @@ export async function get_devices_all(): Promise<APIResponse> {
 
     return { data: { device_list, rmm_list }, meta: { status: 200 }};
   } catch (err) {
-    console.log(err);
+    console.log(`[get_devices_all] ${err}`);
     return { meta: { error: err, status: 501 }};
   }
 }

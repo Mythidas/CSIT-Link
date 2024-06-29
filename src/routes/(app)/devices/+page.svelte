@@ -1,24 +1,25 @@
 <script lang="ts">
   import Table from "$lib/components/table.svelte";
 
-  export let data;
-
   let total_items = 1;
   let filtered_data: any[];
   let selected_row: number;
 
-  async function on_option_select(e: any) {
-    const _target = e.detail;
-    // if (_target === "Delete Sophos Agent") {
-    //   for await (const device of filtered_data) {
-    //     if (device.checked) {
-    //       const res = await axios.delete(`/api/v2/devices/host/${device.device_id}/delete`);
-    //       console.log(res.data);
-    //     }
-    //   }
+  $: if (filtered_data) {
+    for (let i = 0; i < filtered_data.length; i++) {
+      filtered_data[i].error = [];
+      filtered_data[i].warn = [];
 
-    //   goto($page.url.href);
-    // }
+      if (!filtered_data[i]["heartbeat_av"]) {
+        filtered_data[i].error = ["heartbeat_av", ...filtered_data[i].error];
+      } else if (!filtered_data[i]["heartbeat_rmm"]) {
+        filtered_data[i].error = ["heartbeat_rmm", ...filtered_data[i].error];
+      } else if (new Date(filtered_data[i]["heartbeat_av"]).getTime() <= new Date(Date.now()).getTime() - 1000 * 3600 * 24 * 20) {
+        filtered_data[i].warn = ["heartbeat_av", ...filtered_data[i].warn];
+      } else if (new Date(filtered_data[i]["heartbeat_rmm"]).getTime() <= new Date(Date.now()).getTime() - 1000 * 3600 * 24 * 20) {
+        filtered_data[i].warn = ["heartbeat_rmm", ...filtered_data[i].warn];
+      }
+    }
   }
 </script>
 
@@ -29,10 +30,10 @@
       { key: "title", name: "Site", group: "Site", default: "-", type: "Text" },
       { key: "company_title", name: "Company", group: "Company", default: "-", type: "Text" },
       { key: "os", name: "OS", group: "Device", default: "-", type: "Text" },
-      { key: "ipv4", name: "LAN", group: "Device", default: "-", type: "Text" },
-      { key: "wan", name: "WAN", group: "Device", default: "-", type: "Text" },
       { key: "heartbeat_rmm", name: "VSA Heartbeat", group: "DeviceRMM", default: "-", type: "Date" },
       { key: "heartbeat_av", name: "Sophos Heartbeat", group: "DeviceAV", default: "-", type: "Date" },
+      { key: "ipv4", name: "LAN", group: "Device", default: "-", type: "Text" },
+      { key: "wan", name: "WAN", group: "Device", default: "-", type: "Text" },
       { key: "tamper", name: "Tamper Protection", group: "DeviceAV", default: "-", type: "Bool" },
       { key: "health", name: "Sophos Health", group: "DeviceAV", default: "-", type: "Text" },
       { key: "memory", name: "Memory Total", group: "DeviceRMM", default: "-", type: "Number" },
@@ -46,9 +47,5 @@
     bind:filtered_data
     bind:selected_row
     sticky_first
-    options={data.is_admin ? [
-      "Enable Tamper Protection",
-    ] : []}
-    on:option={on_option_select}
   />
 </div>

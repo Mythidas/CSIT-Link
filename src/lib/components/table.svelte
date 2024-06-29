@@ -162,6 +162,18 @@
 
     return output ? `${output} ago` : "Just now";
   }
+
+  function get_cell_color(row: any, key: string) {
+    if (!row || !row.error || !row.warn) return "";
+
+    if (row.error.includes(key)) {
+      return "bg-error";
+    } else if (row.warn.includes(key)) {
+      return "bg-warn";
+    } else {
+      return "";
+    }
+  }
 </script>
 
 <div class="flex w-full h-full">
@@ -206,11 +218,11 @@
             {/if}
             {#each columns as column}
               {#if !column.type || column?.type === "Text" || column?.type === "Number"}
-              <td class={`px-2 py-1 whitespace-nowrap ${sticky_first && first_child_sticky}`}>{row[column.key] || column.default || "-"}</td>
+              <td class={`px-2 py-1 whitespace-nowrap ${get_cell_color(row, column.key)} ${sticky_first && first_child_sticky}`}>{row[column.key] || column.default || "-"}</td>
               {:else if column.type === "Date"}
-              <td class={`px-2 py-1 whitespace-nowrap ${sticky_first && first_child_sticky}`}>{row[column.key] ? calculate_time_since(row[column.key]) : column.default || "-"}</td>
+              <td class={`px-2 py-1 whitespace-nowrap ${get_cell_color(row, column.key)} ${sticky_first && first_child_sticky}`}>{row[column.key] ? calculate_time_since(row[column.key]) : column.default || "-"}</td>
               {:else if column.type === "Bool"}
-              <td class={`px-2 py-1 whitespace-nowrap ${sticky_first && first_child_sticky}`}>{row[column.key] === null ? column.default || "-" : (row[column.key] ? "Yes" : "No")}</td>
+              <td class={`px-2 py-1 whitespace-nowrap ${get_cell_color(row, column.key)} ${sticky_first && first_child_sticky}`}>{row[column.key] === null ? column.default || "-" : (row[column.key] ? "Yes" : "No")}</td>
               {/if}
             {/each}
           </tr>

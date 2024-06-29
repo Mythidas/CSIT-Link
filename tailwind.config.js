@@ -26,6 +26,7 @@ export default {
       "base-300": "#595959",
       "accent-100": "#7F85F5",
       "error": "#CC1B3E",
+      "warn": "#B88E1D",
       "success": "#3C8C88",
       "font": "#FFFFFF"
     }

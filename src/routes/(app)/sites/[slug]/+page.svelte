@@ -15,7 +15,22 @@
   $: if (selected_row > -1) {
     goto(`/sites/${site_id}/${filtered_data[selected_row].device_id}`);
   }
+  $: if (filtered_data) {
+    for (let i = 0; i < filtered_data.length; i++) {
+      filtered_data[i].error = [];
+      filtered_data[i].warn = [];
 
+      if (!filtered_data[i]["heartbeat_av"]) {
+        filtered_data[i].error = ["heartbeat_av", ...filtered_data[i].error];
+      } else if (!filtered_data[i]["heartbeat_rmm"]) {
+        filtered_data[i].error = ["heartbeat_rmm", ...filtered_data[i].error];
+      } else if (new Date(filtered_data[i]["heartbeat_av"]).getTime() <= new Date(Date.now()).getTime() - 1000 * 3600 * 24 * 20) {
+        filtered_data[i].warn = ["heartbeat_av", ...filtered_data[i].warn];
+      } else if (new Date(filtered_data[i]["heartbeat_rmm"]).getTime() <= new Date(Date.now()).getTime() - 1000 * 3600 * 24 * 20) {
+        filtered_data[i].warn = ["heartbeat_rmm", ...filtered_data[i].warn];
+      }
+    }
+  }
 </script>
 
 <h3 class="flex space-x-2 text-2xl p-2 bg-base-200">
@@ -28,13 +43,13 @@
     columns={[
       { key: "hostname", name: "Name", group: "Device", default: "-", type: "Text" },
       { key: "os", name: "OS", group: "Device", default: "-", type: "Text" },
+      { key: "heartbeat_rmm", name: "VSA Heartbeat", group: "DeviceRMM", default: "-", type: "Date" },
+      { key: "heartbeat_av", name: "Sophos Heartbeat", group: "DeviceAV", default: "-", type: "Date" },
       { key: "ipv4", name: "LAN", group: "Device", default: "-", type: "Text" },
       { key: "wan", name: "WAN", group: "Device", default: "-", type: "Text" },
-      { key: "heartbeat_rmm", name: "VSA Heartbeat", group: "DeviceRMM", default: "-", type: "Date" },
       { key: "firewall", name: "Windows Firewall", group: "DeviceRMM", default: "-", type: "Bool" },
       { key: "uac", name: "UAC Enabled", group: "DeviceRMM", default: "-", type: "Bool" },
       { key: "memory", name: "Memory Total", group: "DeviceRMM", default: "-", type: "Text" },
-      { key: "heartbeat_av", name: "Sophos Heartbeat", group: "DeviceAV", default: "-", type: "Date" },
       { key: "tamper", name: "Tamper Protection", group: "DeviceAV", default: "-", type: "Bool" },
       { key: "health", name: "Sophos Health", group: "DeviceAV", default: "-", type: "Text" },
     ]}
