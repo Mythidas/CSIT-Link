@@ -11,13 +11,16 @@
       filtered_data[i].warn = [];
 
       if (!filtered_data[i]["heartbeat_av"]) {
-        filtered_data[i].error = ["heartbeat_av", ...filtered_data[i].error];
+        filtered_data[i].error.push("heartbeat_av");
+
       } else if (!filtered_data[i]["heartbeat_rmm"]) {
-        filtered_data[i].error = ["heartbeat_rmm", ...filtered_data[i].error];
-      } else if (new Date(filtered_data[i]["heartbeat_av"]).getTime() <= new Date(Date.now()).getTime() - 1000 * 3600 * 24 * 20) {
-        filtered_data[i].warn = ["heartbeat_av", ...filtered_data[i].warn];
-      } else if (new Date(filtered_data[i]["heartbeat_rmm"]).getTime() <= new Date(Date.now()).getTime() - 1000 * 3600 * 24 * 20) {
-        filtered_data[i].warn = ["heartbeat_rmm", ...filtered_data[i].warn];
+        filtered_data[i].error.push("heartbeat_rmm")
+
+      } else if (new Date(filtered_data[i]["heartbeat_av"]).getTime() <= new Date(Date.now()).getTime() - (1000 * 3600 * 24 * 30)) {
+        filtered_data[i].warn.push("heartbeat_av")
+
+      } else if (new Date(filtered_data[i]["heartbeat_rmm"]).getTime() <= new Date(Date.now()).getTime() - (1000 * 3600 * 24 * 30)) {
+        filtered_data[i].warn.push("heartbeat_rmm");
       }
     }
   }
