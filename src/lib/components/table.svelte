@@ -35,6 +35,8 @@
   $: {
     let _filters: FilterGroup[] = [];
     for (let i = 0; i < columns.length; i++) {
+      if (columns[i].hidden) continue;
+
       const _group = _filters.find((_filter: FilterGroup) => {
         return _filter.name === columns[i].group;
       });
@@ -195,7 +197,7 @@
             </th>
             {/if}
             {#each columns as column}
-            <th class="sticky top-0 first:left-0 first:z-50 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer" on:click={() => set_sort_key(column.key, column.group, column.type)}>
+            <th class="sticky top-0 first:left-0 first:z-50 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer" on:click={() => { set_sort_key(column.key, column.group, column.type) }}>
               <div class="flex w-full justify-between">
                 <p class="my-auto p-2 select-none">{column.name}</p>
                 {#if column.key === sort_state.key}

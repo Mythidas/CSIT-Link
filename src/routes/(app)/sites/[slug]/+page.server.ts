@@ -8,8 +8,13 @@ export async function load({ locals, params }) {
       redirect(301, "/sites");
     }
 
+    const device_counts = await db.get_device_counts_by_site_id(locals.db_conn, db_site.site_id);
+
     return {
       site: db_site,
+      total_devices: device_counts?.total,
+      av_devices: device_counts?.av,
+      rmm_devices: device_counts?.rmm
     }
   } catch (err) {
     console.log(err);

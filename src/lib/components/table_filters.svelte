@@ -12,6 +12,7 @@
     value?: string | boolean; // Current filter value
     active?: boolean; // Whether the filter is currently applied,
     default?: string;
+    hidden?: boolean;
   }
 
   export interface FilterGroup {

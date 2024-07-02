@@ -11,6 +11,22 @@
   $: if (selected_row > -1) {
     goto(`/sites/${filtered_data[selected_row].site_id}`);
   }
+  $: if (filtered_data) {
+    for (let i = 0; i < filtered_data.length; i++) {
+      filtered_data[i].error = [];
+      filtered_data[i].warn = [];
+
+      if (new Set([filtered_data[i]["device_tally"], filtered_data[i]["device_av_tally"], filtered_data[i]["device_rmm_tally"]]).size > 1) {
+        if (filtered_data[i]["device_av_tally"] < filtered_data[i]["device_tally"]) {
+          filtered_data[i].error.push("device_av_tally");
+        }
+
+        if (filtered_data[i]["device_rmm_tally"] < filtered_data[i]["device_tally"]) {
+          filtered_data[i].error.push("device_rmm_tally");
+        }
+      }
+    }
+  }
 </script>
 
 <h3 class="flex text-2xl p-2 bg-base-200">
@@ -21,7 +37,9 @@
     columns={[
       { key: "title", name: "Name", group: "Site", type: "Text" },
       { key: "company_title", name: "Company", group: "Company", type: "Text", default: "-" },
-      { key: "device_tally", name: "Devices", group: "", type: "Number", default: "-"}
+      { key: "device_tally", name: "Devices", group: "", type: "Number", default: "-", hidden: true },
+      { key: "device_av_tally", name: "Sophos Devices", group: "", type: "Number", default: "-", hidden: true },
+      { key: "device_rmm_tally", name: "VSA Devices", group: "", type: "Number", default: "-", hidden: true }
     ]}
     data="/api/v2/sites"
     bind:total_items

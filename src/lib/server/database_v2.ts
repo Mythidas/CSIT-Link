@@ -48,6 +48,8 @@ export async function get_sites(client: PoolClient, columns: string[], values: s
     if (query_filters.query) {
       return (await client.query(`SELECT se.*, 
       (SELECT COUNT(*) FROM device de WHERE de.site_id = se.site_id) AS device_tally,
+      (SELECT COUNT(*) FROM deviceav de WHERE de.site_id = se.site_id) AS device_av_tally,
+      (SELECT COUNT(*) FROM devicermm de WHERE de.site_id = se.site_id) AS device_rmm_tally,
       cy.company_title 
       FROM Site se 
       LEFT JOIN company cy ON se.company_id = cy.company_id ${query_filters.query};`, query_filters.values)).rows as Site[];
@@ -55,6 +57,8 @@ export async function get_sites(client: PoolClient, columns: string[], values: s
       
     return (await client.query(`SELECT se.*, 
     (SELECT COUNT(*) FROM device de WHERE de.site_id = se.site_id) AS device_tally,
+    (SELECT COUNT(*) FROM deviceav de WHERE de.site_id = se.site_id) AS device_av_tally,
+    (SELECT COUNT(*) FROM devicermm de WHERE de.site_id = se.site_id) AS device_rmm_tally,
     cy.company_title 
     FROM Site se 
     LEFT JOIN company cy ON se.company_id = cy.company_id;`)).rows as Site[];
@@ -220,6 +224,27 @@ export async function get_devices_by_site_id(client: PoolClient, site_id: number
     console.log(`[get_devices_by_site_id] ${err}`);
     return [];
   }
+}
+
+export async function get_device_counts_by_site_id(client: PoolClient, site_id: number): Promise<{ total: number, av: number, rmm: number } | null> {
+  try {
+    const site = await get_site(client, site_id);
+    if (!site) {
+      console.log(`[get_device_counts] Failed to find site`);
+      return null;
+    }
+
+    const devices = (await client.query("SELECT * FROM device WHERE site_id = $1;", [site_id])).rows;
+    const devices_av = (await client.query("SELECT * FROM deviceav WHERE site_id = $1;", [site_id])).rows;
+    const devices_rmm = (await client.query("SELECT * FROM devicermm WHERE site_id = $1;", [site_id])).rows;
+
+    return { total: devices.length, av: devices_av.length, rmm: devices_rmm.length };
+  } catch (err) {
+    console.log(`[get_device_counts] ${err}`);
+    return null;
+  }
+
+  return null;
 }
 
 export async function delete_devices_by_site(client: PoolClient, site_id: number): Promise<boolean> {
