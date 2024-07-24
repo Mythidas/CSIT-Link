@@ -89,7 +89,8 @@ export async function get_devices(rmm_site_id: string): Promise<APIResponse> {
         os: device_data[i].Description,
         ipv4: device_data[i].IpAddresses[0]?.ips[0]?.ip || "",
         mac: device_data[i].IpAddresses[0]?.mac || "",
-        wan: device_data[i].PublicIpAddress
+        wan: device_data[i].PublicIpAddress,
+        heartbeat: device_data[i].LastSeenOnline
       });
 
       rmm_list.push({

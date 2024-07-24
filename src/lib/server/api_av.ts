@@ -136,7 +136,8 @@ export async function get_devices(av_site_id: string, av_site_url: string, cooki
           os: device_data.items[i].os.name, 
           mac: device_data.items[i].macAddresses[0] || "",
           ipv4: device_data.items[i].ipv4Addresses[0] || "",
-          wan: ""
+          wan: "",
+          heartbeat: device_data.items[i].lastSeenAt
         });
 
         av_list.push({

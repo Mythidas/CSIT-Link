@@ -2,13 +2,43 @@
   import type { Device, Site } from "$lib/interfaces/i_db";
 
   export let data: { site: Site, av_devices: Device[], rmm_devices: Device[] };
+
+  function calculate_time_since(date_string: string): string {
+    // Parse the ISO string into a Date object
+    const then: Date = new Date(date_string);
+
+    // Get the current time
+    const now: Date = new Date();
+
+    // Calculate the difference in milliseconds
+    const difference: number = now.getTime() - then.getTime();
+
+    // Calculate days, hours, and minutes
+    const days: number = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const hours: number = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes: number = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+
+    // Build the output string
+    let output: string = "";
+    if (days > 0) {
+      output += `${days}d, `;
+    }
+    if (hours > 0) {
+      output += `${hours}h, `;
+    }
+    if (minutes > 0) {
+      output += `${minutes}m`;
+    }
+
+    return output ? `${output} ago` : "Just now";
+  }
 </script>
 
 <div class="bg-base-200">
   <h3 class="flex space-x-2 text-2xl p-2 bg-base-200">
     <a href="/sites" class="hover:underline">Sites</a>
     <p>{">"}</p>
-    <p>{data.site.title}</p>
+    <p>{data.site.title || "Failed to load"}</p>
   </h3>
 </div>
 <div class="flex w-full h-full p-2 space-x-2 bg-base-200 overflow-auto">
@@ -19,12 +49,16 @@
           <th class="sticky top-0 first:left-0 p-2 first:z-50 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer">
             VSA Devices ({data.rmm_devices.length})
           </th>
+          <th class="sticky top-0 first:left-0 p-2 first:z-50 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer">
+            Last Online
+          </th>
         </tr>
       </thead>
       <tbody>
         {#each data.rmm_devices as device}
         <tr class="even:bg-base-100 odd:bg-base-150 hover:bg-base-300">
           <td class={`px-2 py-1 whitespace-nowrap`}>{device.hostname}</td>
+          <td class={`px-2 py-1 whitespace-nowrap`}>{calculate_time_since(device.heartbeat || "")}</td>
         </tr>
         {/each}
       </tbody>
@@ -37,12 +71,16 @@
           <th class="sticky top-0 first:left-0 p-2 first:z-50 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer">
             Sophos Devices ({data.av_devices.length})
           </th>
+          <th class="sticky top-0 first:left-0 p-2 first:z-50 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer">
+            Last Online
+          </th>
         </tr>
       </thead>
       <tbody>
         {#each data.av_devices as device}
         <tr class="even:bg-base-100 odd:bg-base-150 hover:bg-base-300">
           <td class={`px-2 py-1 whitespace-nowrap`}>{device.hostname}</td>
+          <td class={`px-2 py-1 whitespace-nowrap`}>{calculate_time_since(device.heartbeat || "")}</td>
         </tr>
         {/each}
       </tbody>

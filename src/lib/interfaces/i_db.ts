@@ -23,6 +23,7 @@ export interface Device {
   mac: string;
   ipv4: string;
   wan: string;
+  heartbeat?: string;
 }
 
 export interface DeviceRMM {
