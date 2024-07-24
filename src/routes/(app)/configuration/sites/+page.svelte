@@ -81,11 +81,11 @@
       </div>
       <div>
         <label for="rmm" class="text-xl">RMM Site</label>
-        <Select value="" name="rmm" required placeholder="Select site..." options={data.rmm_sites.map(site => {return { key: site.id, label: site.name }})}/>
+        <Select value="" name="rmm" placeholder="Select site..." options={data.rmm_sites.map(site => {return { key: site.id, label: site.name }})}/>
       </div>
       <div>
         <label for="av" class="text-xl">AV Site</label>
-        <Select value="" name="av" required placeholder="Select site..." options={data.av_sites.map(site => {return { key: `${site.id}|${site.api_url}`, label: site.name }})}/>
+        <Select value="" name="av" placeholder="Select site..." options={data.av_sites.map(site => {return { key: `${site.id}|${site.api_url}`, label: site.name }})}/>
       </div>
     </div>
   </form>
