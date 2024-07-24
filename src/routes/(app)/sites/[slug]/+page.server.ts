@@ -16,8 +16,8 @@ export async function load({ locals, params, cookies }) {
 
     return {
       site: db_site,
-      av_devices: av_devices.data.device_list.sort((a: Device, b: Device) => { return a.hostname.toLowerCase().localeCompare(b.hostname.toLowerCase())}),
-      rmm_devices: rmm_devices.data.device_list.sort((a: Device, b: Device) => { return a.hostname.toLowerCase().localeCompare(b.hostname.toLowerCase())})
+      av_devices: av_devices.data ? av_devices.data.device_list.sort((a: Device, b: Device) => { return a.hostname.toLowerCase().localeCompare(b.hostname.toLowerCase())}) : [],
+      rmm_devices: rmm_devices.data ? rmm_devices.data.device_list.sort((a: Device, b: Device) => { return a.hostname.toLowerCase().localeCompare(b.hostname.toLowerCase())}): []
     }
   } catch (err) {
     console.log(err);
