@@ -129,26 +129,30 @@ export async function get_devices(av_site_id: string, av_site_url: string, cooki
     let av_list: DeviceAV[] = [];
     if (device_data.items) {
       for (let i = 0; i < device_data.items.length; i++) {
-        device_list.push({ 
-          device_id: -1,
-          site_id: -1,
-          hostname: device_data.items[i].hostname,
-          os: device_data.items[i].os.name, 
-          mac: device_data.items[i].macAddresses[0] || "",
-          ipv4: device_data.items[i].ipv4Addresses[0] || "",
-          wan: "",
-          heartbeat: device_data.items[i].lastSeenAt
-        });
-
-        av_list.push({
-          id: -1,
-          device_id: -1,
-          site_id: -1,
-          av_id: device_data.items[i].id,
-          heartbeat_av: device_data.items[i].lastSeenAt,
-          tamper: device_data.items[i].tamperProtectionEnabled,
-          health: device_data.items[i]?.health?.overall || ""
-        });
+        try {
+          device_list.push({ 
+            device_id: -1,
+            site_id: -1,
+            hostname: device_data.items[i].hostname,
+            os: device_data.items[i].os.name, 
+            mac: device_data.items[i].macAddresses[0] || "",
+            ipv4: device_data.items[i].ipv4Addresses[0] || "",
+            wan: "",
+            heartbeat: device_data.items[i].lastSeenAt
+          });
+  
+          av_list.push({
+            id: -1,
+            device_id: -1,
+            site_id: -1,
+            av_id: device_data.items[i].id,
+            heartbeat_av: device_data.items[i].lastSeenAt,
+            tamper: device_data.items[i].tamperProtectionEnabled,
+            health: device_data.items[i]?.health?.overall || ""
+          });
+        } catch (err) {
+          console.log(`[get_devices] ${err}`);
+        }
       }
     }
     
