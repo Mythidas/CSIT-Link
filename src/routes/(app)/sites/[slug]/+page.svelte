@@ -38,7 +38,7 @@
   <h3 class="flex space-x-2 text-2xl p-2 bg-base-200">
     <a href="/sites" class="hover:underline">Sites</a>
     <p>{">"}</p>
-    <p>{data.site.title || "Failed to load"}</p>
+    <p>{data.site && data.site.title || "Failed to load"}</p>
   </h3>
 </div>
 <div class="flex w-full h-full p-2 space-x-2 bg-base-200 overflow-auto">
