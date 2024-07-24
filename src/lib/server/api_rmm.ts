@@ -82,33 +82,37 @@ export async function get_devices(rmm_site_id: string): Promise<APIResponse> {
 
     const device_data = asset_data.Data;
     for (let i = 0; i < device_data.length; i++) {
-      device_list.push({ 
-        device_id: -1,
-        site_id: -1,
-        hostname: device_data[i].Name,
-        os: device_data[i].Description,
-        ipv4: device_data[i].IpAddresses[0]?.ips[0]?.ip || "",
-        mac: device_data[i].IpAddresses[0]?.mac || "",
-        wan: device_data[i].PublicIpAddress,
-        heartbeat: device_data[i].LastSeenOnline
-      });
-
-      rmm_list.push({
-        id: -1,
-        device_id: -1,
-        site_id: -1,
-        rmm_id: device_data[i].Identifier,
-        heartbeat_rmm: device_data[i].LastSeenOnline,
-        firewall: device_data[i].FirewallEnabled,
-        uac: device_data[i].UacEnabled,
-        memory: convert_bytes_to_gbytes(device_data[i].MemoryTotal),
-        custom_fields: []
-      });
+      try {
+        device_list.push({ 
+          device_id: -1,
+          site_id: -1,
+          hostname: device_data[i].Name,
+          os: device_data[i].Description,
+          ipv4: device_data[i].IpAddresses[0]?.ips[0]?.ip || "",
+          mac: device_data[i].IpAddresses[0]?.mac || "",
+          wan: device_data[i].PublicIpAddress,
+          heartbeat: device_data[i].LastSeenOnline
+        });
+  
+        rmm_list.push({
+          id: -1,
+          device_id: -1,
+          site_id: -1,
+          rmm_id: device_data[i].Identifier,
+          heartbeat_rmm: device_data[i].LastSeenOnline,
+          firewall: device_data[i].FirewallEnabled,
+          uac: device_data[i].UacEnabled,
+          memory: convert_bytes_to_gbytes(device_data[i].MemoryTotal),
+          custom_fields: []
+        });
+      } catch (err) {
+        console.log(`[get_devices] ${err}`);
+      }
     }
 
     return { data: { device_list, rmm_list }, meta: { status: 200 }};
   } catch (err) {
-    console.log(err);
+    console.log(`[get_devices] ${err}`);
     return { meta: { error: err, status: 501 }};
   }
 }
