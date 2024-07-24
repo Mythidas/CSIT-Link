@@ -1,29 +1,51 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import type { Site } from "$lib/interfaces/i_db";
-  import DeviceTable from "$lib/prefabs/device_table.svelte";
+  import type { Device, Site } from "$lib/interfaces/i_db";
 
-  export let data: { site: Site, total_devices: number, av_devices: number, rmm_devices: number };
-
-  let filtered_data: any[];
-  let selected_row: number;
-
-  $: site_id = data.site.site_id;
-  $: if (selected_row > -1) {
-    goto(`/sites/${site_id}/${filtered_data[selected_row].device_id}`);
-  }
+  export let data: { site: Site, av_devices: Device[], rmm_devices: Device[] };
 </script>
 
-<h3 class="flex space-x-2 text-2xl p-2 bg-base-200">
-  <a href="/sites" class="hover:underline">Sites</a>
-  <p>{">"}</p>
-  <p>{data.site.title}</p>
-</h3>
-<div class="flex space-x-2 w-full h-fit p-2 text-xl bg-base-200">
-  <p class="border-b-2 border-accent-100 p-1">Total Devices: {data.total_devices}</p>
-  <p class="border-b-2 border-accent-100 p-1">Sophos Devices: {data.av_devices}</p>
-  <p class="border-b-2 border-accent-100 p-1">VSA Devices: {data.rmm_devices}</p>
+<div class="bg-base-200">
+  <h3 class="flex space-x-2 text-2xl p-2 bg-base-200">
+    <a href="/sites" class="hover:underline">Sites</a>
+    <p>{">"}</p>
+    <p>{data.site.title}</p>
+  </h3>
 </div>
-<div class="flex flex-col w-full h-full p-2 bg-base-200 overflow-hidden">
-  <DeviceTable bind:selected_row site_id={site_id} bind:filtered_data/>
+<div class="flex w-full h-full p-2 space-x-2 bg-base-200 overflow-auto">
+  <div class="w-full h-full overflow-auto">
+    <table class="table-auto text-left w-full h-fit bg-base-100">
+      <thead>
+        <tr>
+          <th class="sticky top-0 first:left-0 p-2 first:z-50 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer">
+            VSA Devices ({data.rmm_devices.length})
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each data.rmm_devices as device}
+        <tr class="even:bg-base-100 odd:bg-base-150 hover:bg-base-300">
+          <td class={`px-2 py-1 whitespace-nowrap`}>{device.hostname}</td>
+        </tr>
+        {/each}
+      </tbody>
+    </table>
+  </div>
+  <div class="w-full h-full overflow-auto">
+    <table class="table-auto text-left w-full h-fit bg-base-100">
+      <thead>
+        <tr>
+          <th class="sticky top-0 first:left-0 p-2 first:z-50 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer">
+            Sophos Devices ({data.av_devices.length})
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each data.av_devices as device}
+        <tr class="even:bg-base-100 odd:bg-base-150 hover:bg-base-300">
+          <td class={`px-2 py-1 whitespace-nowrap`}>{device.hostname}</td>
+        </tr>
+        {/each}
+      </tbody>
+    </table>
+  </div>
 </div>

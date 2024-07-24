@@ -37,9 +37,6 @@
     columns={[
       { key: "title", name: "Name", group: "Site", type: "Text" },
       { key: "company_title", name: "Company", group: "Company", type: "Text", default: "-" },
-      { key: "device_tally", name: "Devices", group: "", type: "Number", default: "-", hidden: true },
-      { key: "device_av_tally", name: "Sophos Devices", group: "", type: "Number", default: "-", hidden: true },
-      { key: "device_rmm_tally", name: "VSA Devices", group: "", type: "Number", default: "-", hidden: true }
     ]}
     data="/api/v2/sites"
     bind:total_items
