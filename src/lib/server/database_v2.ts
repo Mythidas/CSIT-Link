@@ -7,6 +7,7 @@ import * as psa from "./api_psa";
 import * as rmm from "./api_rmm";
 import * as av from "./api_av";
 import type { Cookies } from "@sveltejs/kit";
+import type { _PSAContractInfo } from "$lib/interfaces/i_ext_info";
 
 const pool = new pg.Pool({
   user: PG_USER,
@@ -510,6 +511,36 @@ export async function load_devices(client: PoolClient, site: Site, devices: Devi
   } catch (err) {
     console.log(`[load_devices] ${err}: ${site.title}`);
     return;
+  }
+}
+
+// AB History
+
+export async function post_ab_history_adjustment(client: PoolClient, site_id: number, adjustment: _PSAContractInfo): Promise<number | null> {
+  try {
+    const site = await get_site(client, site_id);
+    if (!site) return null;
+    if (!adjustment.change) return null;
+
+    // const adjustment_api = await psa.post_contract_unit_adjustment(site, adjustment);
+    // if (adjustment_api.meta.status !== 200) {
+    //   console.log(`[post_ab_history_adjustment] ${adjustment_api.meta.error}`);
+    //   return null;
+    // }
+    
+    // const db_history = (await client.query("INSERT INTO ab_history (site_id,prev_count,new_count,psa_contract_id,psa_service_id,psa_service_type) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id;", [
+    //   site_id.toString(),
+    //   adjustment.units.toString(),
+    //   adjustment_api.data.toString(),
+    //   adjustment.psa_contract_id.toString(),
+    //   adjustment.psa_service_id.toString(),
+    //   adjustment.psa_service_type
+    // ])).rows[0] || null;
+
+    return null;
+  } catch (err) {
+    console.log(`[create_ab_history] ${err}`);
+    return null;
   }
 }
 
