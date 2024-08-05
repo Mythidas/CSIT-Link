@@ -12,14 +12,16 @@ export async function GET({ request, locals }) {
     for await (const site of db_sites) {
       try {
         const unit_info = await psa.get_contract_unit_info(site);
+        if (!unit_info.data) failures.push({ site_id: site.site_id, error: unit_info.meta.error });
+        if (!unit_info.data) continue;
+
         const rmm_devices = (await rmm.get_devices(site.rmm_id)).data.device_list;
         const server_count = rmm_devices.filter((_comp: any) => {
           return _comp.os.includes("Server");
         }).length;
         const desktop_count = rmm_devices.length - server_count;
         
-        if (!unit_info.data) failures.push({ site_id: site.site_id, error: unit_info.meta.error });
-        if (!unit_info.data || (desktop_count <= 0 && server_count <= 0)) continue;
+        if ((desktop_count <= 0 && server_count <= 0)) continue;
 
         for (const _adj of unit_info.data) {
           if (_adj.psa_service_desc === "CSAB_DESK") {
