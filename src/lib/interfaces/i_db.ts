@@ -15,48 +15,6 @@ export interface Site {
   last_update: string;
 }
 
-export interface Device {
-  device_id: number;
-  site_id: number;
-  hostname: string;
-  os: string;
-  mac: string;
-  ipv4: string;
-  wan: string;
-  heartbeat?: string;
-}
-
-export interface DeviceRMM {
-  id: number;
-  device_id: number;
-  site_id: number;
-  rmm_id: string;
-  heartbeat_rmm: string;
-  firewall: boolean;
-  uac: boolean;
-  memory: number;
-  custom_fields: any;
-}
-
-export interface DeviceAV {
-  id: number;
-  device_id: number;
-  site_id: number;
-  av_id: string;
-  heartbeat_av: string;
-  tamper: boolean;
-  health: string;
-}
-
-export interface DeviceBU {
-  id: number;
-  device_id: number;
-}
-
-export interface DeviceAll extends Device, DeviceRMM, DeviceAV {
-  company_title?: string;
-}
-
 export interface ABHistory {
   id: number;
   site_id: number;

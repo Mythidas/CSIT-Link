@@ -4,6 +4,7 @@
   import LoadingSpinner from "$lib/components/loading_spinner.svelte";
   import Icon from "$lib/components/icon.svelte";
   import NavLink from "$lib/components/nav_link.svelte";
+    import Button from "$lib/components/button.svelte";
 
 </script>
 
