@@ -10,6 +10,25 @@ export interface _GroupRMM {
   ParentSiteId: number
 }
 
+export interface _VSAxDevice {
+  Identifier: string;
+  Name: string;
+  Description: string; // os
+  LastSeenOnline: string;
+  FirewallEnabled: boolean;
+  UacEnabled: boolean;
+  MemoryTotal: number;
+}
+
+export interface _SophosDevice {
+  id: string;
+  hostname: string;
+  os: { hostname: string };
+  lastSeenAt: string;
+  tamperProtectionEnabled: boolean;
+  health: { overall: string };
+}
+
 export interface _PSAContractInfo {
   units: number;
   psa_contract_id: number;

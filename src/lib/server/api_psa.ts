@@ -2,7 +2,6 @@ import { PSA_ID, PSA_SC, PSA_TR, PSA_URL } from "$env/static/private";
 import type { APIResponse } from "$lib/interfaces/i_api_response";
 import type { Site } from "$lib/interfaces/i_db";
 import type { _PSAContractInfo } from "$lib/interfaces/i_ext_info";
-import * as db from "$lib/server/database_v2";
 
 export async function get_sites(): Promise<APIResponse> {
   let site_list: any[] = [];

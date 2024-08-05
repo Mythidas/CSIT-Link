@@ -2,6 +2,7 @@ import type { ABHistory, Site } from "$lib/interfaces/i_db.js";
 import * as db from "$lib/server/database_v2.js";
 import * as psa from "$lib/server/api_psa.js";
 import * as rmm from "$lib/server/api_rmm.js";
+import type { _VSAxDevice } from "$lib/interfaces/i_ext_info.js";
 
 export async function GET({ request, locals }) {
   try {
@@ -15,13 +16,21 @@ export async function GET({ request, locals }) {
         if (!unit_info.data) failures.push({ site_id: site.site_id, error: unit_info.meta.error });
         if (!unit_info.data) continue;
 
-        const rmm_devices = (await rmm.get_devices(site.rmm_id)).data.device_list;
-        const server_count = rmm_devices.filter((_comp: any) => {
-          return _comp.os.includes("Server");
+        const rmm_devices = await rmm.get_devices(site.rmm_id);
+        if (!rmm_devices) {
+          console.log(`[API/V2/Autobill/Sync/GET] Failed to get RMM Devices`);
+          continue;
+        }
+
+        const server_count = rmm_devices.filter((_comp: _VSAxDevice) => {
+          return _comp.Description.includes("Server");
         }).length;
         const desktop_count = rmm_devices.length - server_count;
         
-        if ((desktop_count <= 0 && server_count <= 0)) continue;
+        if ((desktop_count <= 0 && server_count <= 0)) {
+          console.log(`[API/V2/Autobill/Sync/GET] Failed to get Desktop & Server Devices`);
+          continue;
+        }
 
         for (const _adj of unit_info.data) {
           if (_adj.psa_service_desc === "CSAB_DESK") {

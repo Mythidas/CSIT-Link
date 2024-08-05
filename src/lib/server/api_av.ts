@@ -1,7 +1,7 @@
 import { dev } from '$app/environment';
 import { AV_ID, AV_SC, AV_URL } from '$env/static/private';
 import type { APIResponse } from '$lib/interfaces/i_api_response';
-import type { Device, DeviceAV } from '$lib/interfaces/i_db';
+import type { _SophosDevice } from '$lib/interfaces/i_ext_info';
 import type { Cookies } from '@sveltejs/kit';
 
 export async function get_sites(cookies: Cookies): Promise<APIResponse> {
@@ -103,12 +103,12 @@ async function get_token(cookies: Cookies): Promise<APIResponse> {
   return { data: [ token_data.access_token, pt_data.id ], meta: { status: 200 }};
 }
 
-export async function get_devices(av_site_id: string, av_site_url: string, cookies: Cookies): Promise<APIResponse> {
+export async function get_devices(av_site_id: string, av_site_url: string, cookies: Cookies): Promise<_SophosDevice[] | null> {
   try {
     const token = await get_token(cookies);
     if (token.meta.status !== 200) {
       console.log(`[get_devices] Failed to get tokens`);
-      return { meta: { error: "Failed to get tokens", status: 500 }};
+      null;
     }
 
     const device_api = await fetch(`${av_site_url}/endpoint/v1/endpoints`, {
@@ -122,44 +122,13 @@ export async function get_devices(av_site_id: string, av_site_url: string, cooki
     
     if (!device_api.ok) {
       console.log(`[get_devices] ${device_data.error}`);
-      return { meta: { error: device_data, status: 500 }};
+      return null;
     }
     
-    let device_list: Device[] = [];
-    let av_list: DeviceAV[] = [];
-    if (device_data.items) {
-      for (let i = 0; i < device_data.items.length; i++) {
-        try {
-          device_list.push({ 
-            device_id: -1,
-            site_id: -1,
-            hostname: device_data.items[i].hostname,
-            os: device_data.items[i].os.name, 
-            mac: device_data.items[i].macAddresses[0] || "",
-            ipv4: device_data.items[i].ipv4Addresses[0] || "",
-            wan: "",
-            heartbeat: device_data.items[i].lastSeenAt
-          });
-  
-          av_list.push({
-            id: -1,
-            device_id: -1,
-            site_id: -1,
-            av_id: device_data.items[i].id,
-            heartbeat_av: device_data.items[i].lastSeenAt,
-            tamper: device_data.items[i].tamperProtectionEnabled,
-            health: device_data.items[i]?.health?.overall || ""
-          });
-        } catch (err) {
-          console.log(`[get_devices] ${err}`);
-        }
-      }
-    }
-    
-    return { data: { device_list, av_list }, meta: { status: 200 }};
+    return device_data.items as _SophosDevice[];
   } catch (err) {
     console.log(`[get_devices] ${err}`);
-    return { meta: { error: err, status: 501 }};
+    return null;
   }
 }
 

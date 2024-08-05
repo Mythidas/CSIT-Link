@@ -1,6 +1,6 @@
 import { RMM_ID, RMM_SC, RMM_URL } from "$env/static/private";
 import type { APIResponse } from "$lib/interfaces/i_api_response";
-import type { Device, DeviceRMM } from "$lib/interfaces/i_db";
+import type { _VSAxDevice } from "$lib/interfaces/i_ext_info";
 
 const rmm_auth = btoa(`${RMM_ID}:${RMM_SC}`);
 
@@ -62,11 +62,8 @@ export async function get_groups(rmm_site_id: string) {
   }
 }
 
-export async function get_devices(rmm_site_id: string): Promise<APIResponse> {
+export async function get_devices(rmm_site_id: string): Promise<_VSAxDevice[] | null> {
   try {
-    let device_list: Device[] = [];
-    let rmm_list: DeviceRMM[] = [];
-
     const asset_api = await fetch(`${RMM_URL}/assets?$filter=SiteId eq ${rmm_site_id}`, {
       method: "GET",
       headers: {
@@ -77,116 +74,14 @@ export async function get_devices(rmm_site_id: string): Promise<APIResponse> {
     const asset_data = await asset_api.json();
 
     if (!asset_api.ok) {
-      return { meta: { error: asset_data.Meta, status: 500 }};
+      console.log(`[get_devices] ${asset_data.Meta}`);
+      return null;
     }
 
-    const device_data = asset_data.Data;
-    for (let i = 0; i < device_data.length; i++) {
-      try {
-        device_list.push({ 
-          device_id: -1,
-          site_id: -1,
-          hostname: device_data[i].Name,
-          os: device_data[i].Description,
-          ipv4: "",
-          mac: "",
-          wan: device_data[i].PublicIpAddress,
-          heartbeat: device_data[i].LastSeenOnline
-        });
-  
-        rmm_list.push({
-          id: -1,
-          device_id: -1,
-          site_id: -1,
-          rmm_id: device_data[i].Identifier,
-          heartbeat_rmm: device_data[i].LastSeenOnline,
-          firewall: device_data[i].FirewallEnabled,
-          uac: device_data[i].UacEnabled,
-          memory: convert_bytes_to_gbytes(device_data[i].MemoryTotal),
-          custom_fields: []
-        });
-      } catch (err) {
-        console.log(`[get_devices] ${err}`);
-      }
-    }
-
-    return { data: { device_list, rmm_list }, meta: { status: 200 }};
+    return asset_data.Data as _VSAxDevice[];
   } catch (err) {
     console.log(`[get_devices] ${err}`);
-    return { meta: { error: err, status: 501 }};
-  }
-}
-
-export async function get_devices_all(): Promise<APIResponse> {
-  try {
-    let device_list: any[] = [];
-    let rmm_list: DeviceRMM[] = [];
-    let total = 200;
-
-    while (rmm_list.length < total) {
-      const asset_api = await fetch(`${RMM_URL}/assets?$skip=${rmm_list.length}`, {
-        method: "GET",
-        headers: {
-          "authorization": `Basic ${rmm_auth}`,
-          "content-type": "application/json"
-        }
-      });
-      const asset_data = await asset_api.json();
-
-      if (!asset_api.ok) {
-        return { meta: { error: asset_data.Meta, status: 500 }};
-      }
-
-      const device_data = asset_data.Data;
-      for (let i = 0; i < device_data.length; i++) {
-        let ipv4;
-        for (let j = 0; j < device_data[i].IpAddresses.length; j++) {
-          for (let k = 0; k < device_data[i]?.IpAddresses[j].length; k++) {
-            if (device_data[i]?.IpAddresses[j].ip) {
-              ipv4 = device_data[i]?.IpAddresses[j].ip;
-            }
-          }
-
-          if (ipv4) break;
-        }
-
-        try {
-          device_list.push({ 
-            device_id: -1,
-            site_id: -1,
-            rmm_id: device_data[i].SiteId || "",
-            hostname: device_data[i].Name || "",
-            os: device_data[i].Description || "",
-            ipv4,
-            mac: "",
-            wan: device_data[i].PublicIpAddress || ""
-          });
-  
-          rmm_list.push({
-            id: -1,
-            device_id: -1,
-            site_id: -1,
-            rmm_id: device_data[i].Identifier || "",
-            heartbeat_rmm: device_data[i].LastSeenOnline || "",
-            firewall: device_data[i].FirewallEnabled || false,
-            uac: device_data[i].UacEnabled || false,
-            memory: convert_bytes_to_gbytes(device_data[i].MemoryTotal || 0),
-            custom_fields: []
-          });
-        } catch (err) {
-          console.log(`[get_devices_all] ${err}`);
-          return { meta: { error: err, status: 501 }};
-        }
-      }
-        
-      total = asset_data.Meta.TotalCount;
-      console.log(`Obtained ${device_list.length} rmm devices...`);
-    }
-
-    return { data: { device_list, rmm_list }, meta: { status: 200 }};
-  } catch (err) {
-    console.log(`[get_devices_all] ${err}`);
-    return { meta: { error: err, status: 501 }};
+    return null;
   }
 }
 

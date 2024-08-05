@@ -1,7 +1,8 @@
 <script lang="ts">
-  import type { Device, Site } from "$lib/interfaces/i_db";
+  import type { Site } from "$lib/interfaces/i_db";
+    import type { _SophosDevice, _VSAxDevice } from "$lib/interfaces/i_ext_info";
 
-  export let data: { site: Site, av_devices: Device[], rmm_devices: Device[] };
+  export let data: { site: Site, av_devices: _SophosDevice[], rmm_devices: _VSAxDevice[] };
 
   function calculate_time_since(date_string: string): string {
     // Parse the ISO string into a Date object
@@ -57,8 +58,8 @@
       <tbody>
         {#each data.rmm_devices as device}
         <tr class="even:bg-base-100 odd:bg-base-150 hover:bg-base-300">
-          <td class={`px-2 py-1 whitespace-nowrap`}>{device.hostname}</td>
-          <td class={`px-2 py-1 whitespace-nowrap`}>{calculate_time_since(device.heartbeat || "")}</td>
+          <td class={`px-2 py-1 whitespace-nowrap`}>{device.Name}</td>
+          <td class={`px-2 py-1 whitespace-nowrap`}>{calculate_time_since(device.LastSeenOnline || "")}</td>
         </tr>
         {/each}
       </tbody>
@@ -80,7 +81,7 @@
         {#each data.av_devices as device}
         <tr class="even:bg-base-100 odd:bg-base-150 hover:bg-base-300">
           <td class={`px-2 py-1 whitespace-nowrap`}>{device.hostname}</td>
-          <td class={`px-2 py-1 whitespace-nowrap`}>{calculate_time_since(device.heartbeat || "")}</td>
+          <td class={`px-2 py-1 whitespace-nowrap`}>{calculate_time_since(device.lastSeenAt || "")}</td>
         </tr>
         {/each}
       </tbody>

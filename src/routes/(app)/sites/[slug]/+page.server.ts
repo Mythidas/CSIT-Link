@@ -2,7 +2,7 @@ import * as db from "$lib/server/database_v2";
 import * as av from "$lib/server/api_av.js";
 import * as rmm from "$lib/server/api_rmm.js";
 import { redirect } from "@sveltejs/kit";
-import type { Device } from "$lib/interfaces/i_db.js";
+import type { _SophosDevice, _VSAxDevice } from "$lib/interfaces/i_ext_info.js";
 
 export async function load({ locals, params, cookies }) {
   try {
@@ -16,8 +16,8 @@ export async function load({ locals, params, cookies }) {
 
     return {
       site: db_site,
-      av_devices: av_devices.data ? av_devices.data.device_list.sort((a: Device, b: Device) => { return a.hostname.toLowerCase().localeCompare(b.hostname.toLowerCase())}) : [],
-      rmm_devices: rmm_devices.data ? rmm_devices.data.device_list.sort((a: Device, b: Device) => { return a.hostname.toLowerCase().localeCompare(b.hostname.toLowerCase())}): []
+      av_devices: av_devices ? av_devices.sort((a: _SophosDevice, b: _SophosDevice) => { return a.hostname.toLowerCase().localeCompare(b.hostname.toLowerCase())}) : [],
+      rmm_devices: rmm_devices ? rmm_devices.sort((a: _VSAxDevice, b: _VSAxDevice) => { return a.Name.toLowerCase().localeCompare(b.Name.toLowerCase())}): []
     }
   } catch (err) {
     console.log(err);
