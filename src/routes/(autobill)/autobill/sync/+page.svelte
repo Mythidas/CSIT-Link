@@ -6,16 +6,7 @@
   export let data: { sites: Site[] };
 
   let loading = false;
-  let adjustments: ABHistory[] = [{
-    id: -1,
-    new_count: 2,
-    prev_count: 1,
-    psa_contract_id: 29684082,
-    psa_service_desc: "CSAB_SERV",
-    psa_service_id: 18,
-    psa_service_type: "BUNDLE",
-    site_id: 8
-  }];
+  let adjustments: ABHistory[] = [];
 
   async function on_sync_click() {
     const _start = Date.now();
