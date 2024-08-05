@@ -1,9 +1,11 @@
 import { PSA_ID, PSA_SC, PSA_TR, PSA_URL } from "$env/static/private";
-import type { APIResponse } from "$lib/interfaces/i_api_response";
 import type { Site } from "$lib/interfaces/i_db";
-import type { _PSAContractInfo } from "$lib/interfaces/i_ext_info";
+import type { _ExtSite, _PSAContractInfo } from "$lib/interfaces/i_ext_info";
+import { Debug } from '$lib/tools/debug';
 
-export async function get_sites(): Promise<APIResponse> {
+const debug = new Debug("api_psa");
+
+export async function get_sites(): Promise<_ExtSite[] | null> {
   let site_list: any[] = [];
 
   try {
@@ -19,21 +21,22 @@ export async function get_sites(): Promise<APIResponse> {
     const site_data = await site_api.json();
 
     if (!site_api.ok) {
-      return { meta: { error: site_data, status: 500 }};
+      debug.log("get_sites", "Failed to get companies");
+      return null;
     }
 
     for (let i = 0; i < site_data.items.length; i++) {
       site_list.push({ name: site_data.items[i].companyName, id: site_data.items[i].id });
     }
   } catch (err) {
-    console.log(err);
-    return { meta: { error: err, status: 500 } };
+    debug.log("get_sites", err as string);
+    return null;
   }
 
-  return { data: site_list, meta: { status: 200 }};
+  return site_list;
 }
 
-export async function get_contract_unit_info(site: Site): Promise<APIResponse> {
+export async function get_contract_unit_info(site: Site): Promise<_PSAContractInfo[] | null> {
   try {
     const contracts_api = await fetch(`${PSA_URL}/Contracts/query?search={"Filter":[{"field":"companyID","op":"eq","value":${site.psa_id}},{"field":"endDate","op":"gt","value":"${new Date().toDateString()}"}]}`, {
       method: "GET",
@@ -47,8 +50,8 @@ export async function get_contract_unit_info(site: Site): Promise<APIResponse> {
     const contracts_data = await contracts_api.json();
 
     if (!contracts_api.ok) {
-      console.log(`[get_contract_unit_info] Failed to get contracts`);
-      return { meta: { error: contracts_data, status: 500 } };
+      debug.log("get_contract_unit_info", "Failed to get contracts");
+      return null;
     }
 
     const contract_ref = contracts_data.items.find((_con: any) => {
@@ -56,8 +59,8 @@ export async function get_contract_unit_info(site: Site): Promise<APIResponse> {
     });
 
     if (!contract_ref) {
-      console.log(`[get_contract_unit_info] No valid contracts found: ${site.title}`);
-      return { meta: { error: "No valid contracts found", status: 500 } };
+      debug.log("get_contract_unit_info", `No valid contracts found: ${site.title}`);
+      return null;
     }
 
     // Get Services
@@ -74,8 +77,8 @@ export async function get_contract_unit_info(site: Site): Promise<APIResponse> {
     const service_data = await service_api.json();
 
     if (!service_api.ok) {
-      console.log(`[get_contract_unit_info] Failed to get services from contract: ${site.title}`);
-      return { meta: { error: service_data.errors[0], status: 500 } };
+      debug.log("get_contract_unit_info", `Failed to get services from contract: ${site.title}`);
+      return null;
     }
 
     const service_desk_ref = service_data.items.find((_service: any) => {
@@ -102,8 +105,8 @@ export async function get_contract_unit_info(site: Site): Promise<APIResponse> {
     const service_bundle_data = await service_bundle_api.json();
 
     if (!service_bundle_api.ok) {
-      console.log(`[get_contract_unit_info] Failed to get bundles from contract: ${site.title}`);
-      return { meta: { error: service_bundle_data.errors[0], status: 500 } };
+      debug.log("get_contract_unit_info", `Failed to get bundles from contract: ${site.title}`);
+      return null;
     }
 
     const service_bundle_desk_ref = service_bundle_data.items.find((_bundle: any) => {
@@ -117,8 +120,8 @@ export async function get_contract_unit_info(site: Site): Promise<APIResponse> {
     let has_bundles = !(!service_bundle_desk_ref && !service_bundle_serv_ref);
 
     if (!has_services && !has_bundles) {
-      console.log(`[get_contract_unit_info] No valid services or bundles found: ${site.title}`);
-      return { meta: { error: `No valid services or bundles found: ${site.title}`, status: 500 } };
+      debug.log("get_contract_unit_info", `No valid services or bundles found: ${site.title}`);
+      return null;
     }
 
     if (has_services) {
@@ -137,8 +140,8 @@ export async function get_contract_unit_info(site: Site): Promise<APIResponse> {
         const desk_service_units_data = await desk_service_units_api.json();
     
         if (!desk_service_units_api.ok || desk_service_units_data.items.length <= 0) {
-          console.log(`[get_contract_unit_info] Failed to get desk service units: ${site.title}`);
-          return { meta: { error: desk_service_units_data, status: 500 } };
+          debug.log("get_contract_unit_info", `Failed to get desk service units: ${site.title}`);
+          return null;
         }
 
         const desk_service: _PSAContractInfo = {
@@ -165,8 +168,8 @@ export async function get_contract_unit_info(site: Site): Promise<APIResponse> {
         const serv_service_units_data = await serv_service_units_api.json();
     
         if (!serv_service_units_api.ok || serv_service_units_data.items.length <= 0) {
-          console.log(`[get_contract_unit_info] Failed to get serv service units: ${site.title}`);
-          return { meta: { error: serv_service_units_data, status: 500 } };
+          debug.log("get_contract_unit_info", `Failed to get serv service units: ${site.title}`);
+          return null;
         }
 
         const serv_service: _PSAContractInfo = {
@@ -179,12 +182,7 @@ export async function get_contract_unit_info(site: Site): Promise<APIResponse> {
         services.push(serv_service);
       }
   
-      return {
-        data: services,
-        meta: {
-          status: 200
-        }
-      }
+      return services;
     }
     
     if (has_bundles) {
@@ -204,8 +202,8 @@ export async function get_contract_unit_info(site: Site): Promise<APIResponse> {
         const desk_bundle_units_data = await desk_bundle_units_api.json();
     
         if (!desk_bundle_units_api.ok || desk_bundle_units_data.items.length <= 0) {
-          console.log(`[get_contract_unit_info] Failed to get service bundle units: ${site.title}`);
-          return { meta: { error: desk_bundle_units_data, status: 500 } };
+          debug.log("get_contract_unit_info", `Failed to get desk service bundle units: ${site.title}`);
+          return null;
         }
 
         const desk_bundle: _PSAContractInfo = {
@@ -232,8 +230,8 @@ export async function get_contract_unit_info(site: Site): Promise<APIResponse> {
         const serv_bundle_units_data = await serv_bundle_units_api.json();
     
         if (!serv_bundle_units_api.ok || serv_bundle_units_data.items.length <= 0) {
-          console.log(`[get_contract_unit_info] Failed to get service bundle units: ${site.title}`);
-          return { meta: { error: serv_bundle_units_data, status: 500 } };
+          debug.log("get_contract_unit_info", `Failed to get serv service bundle units: ${site.title}`);
+          return null;
         }
 
         const serv_bundle: _PSAContractInfo = {
@@ -246,26 +244,21 @@ export async function get_contract_unit_info(site: Site): Promise<APIResponse> {
         bundles.push(serv_bundle);
       }
   
-      return {
-        data: bundles,
-        meta: {
-          status: 200
-        }
-      }
+      return bundles;
     }
 
-    return { meta: { error: `Failed to get services or bundles: ${site.title}`, status: 500 } };
+    return null;
   } catch (err) {
-    console.log(`[get_contract_unit_info] ${err}: ${site.title}`);
-    return { meta: { error: `${err}`, status: 500 } };
+    debug.log("get_contract_unit_info", `${err}: ${site.title}`);
+    return null;
   }
 }
 
-export async function post_contract_unit_adjustment(site: Site, adjustment: _PSAContractInfo): Promise<APIResponse> {
+export async function post_contract_unit_adjustment(site: Site, adjustment: _PSAContractInfo): Promise<number | null> {
   try {
     if (!adjustment.change) {
-      console.log(`[post_contract_unit_adjustment] No unit change amount`);
-      return { meta: { error: `No unit change amount`, status: 500 } };
+      debug.log("post_contract_unit_adjustment", `No unit change amount`);
+      return null;
     }
 
     const unit_adjust_api = await fetch(`${PSA_URL}/ContractServiceBundleAdjustments`, {
@@ -285,13 +278,13 @@ export async function post_contract_unit_adjustment(site: Site, adjustment: _PSA
     const unit_adjust_data = await unit_adjust_api.json();
 
     if (!unit_adjust_api.ok) {
-      console.log(`[post_contract_unit_adjustment] Failed to adjust service bundle`);
-      return { meta: { error: unit_adjust_data.errors[0], status: 500 } };
+      debug.log("post_contract_unit_adjustment", `Failed to adjust service bundle`);
+      return null;
     }
     
-    return { data: adjustment.units + adjustment.change, meta: { status: 200 } };
+    return adjustment.units + adjustment.change;
   } catch (err) {
     console.log(`[post_contract_unit_adjustment] ${err}`);
-    return { meta: { error: `${err}`, status: 500 } };
+    return null;
   }
 }

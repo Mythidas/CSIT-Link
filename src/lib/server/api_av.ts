@@ -1,14 +1,17 @@
 import { dev } from '$app/environment';
 import { AV_ID, AV_SC, AV_URL } from '$env/static/private';
-import type { APIResponse } from '$lib/interfaces/i_api_response';
-import type { _SophosDevice } from '$lib/interfaces/i_ext_info';
+import type { _ExtSite, _SophosDevice } from '$lib/interfaces/i_ext_info';
+import { Debug } from '$lib/tools/debug';
 import type { Cookies } from '@sveltejs/kit';
 
-export async function get_sites(cookies: Cookies): Promise<APIResponse> {
+const debug = new Debug("api_av");
+
+export async function get_sites(cookies: Cookies): Promise<_ExtSite[] | null> {
   try {
     const token = await get_token(cookies);
-    if (token.meta.status !== 200) {
-      return { meta: { error: "Failed to get tokens", status: 500 }};
+    if (!token) {
+      debug.log("get_sites", "Failed to get tokens");
+      return null;
     }
 
     let page_index = 1;
@@ -18,14 +21,15 @@ export async function get_sites(cookies: Cookies): Promise<APIResponse> {
       const site_api = await fetch(`https://api.central.sophos.com/partner/v1/tenants?pageTotal=true&page=${page_index}`, {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${token.data[0]}`,
-          "X-Partner-ID": token.data[1]
+          "Authorization": `Bearer ${token[0]}`,
+          "X-Partner-ID": token[1]
         }
       })
       const site_data = await site_api.json();
 
       if (!site_api.ok) {
-        return { meta: { error: site_data, status: 500 }};
+        debug.log("get_sites", site_data.error);
+        return null;
       }
 
       for (let i = 0; i < site_data.items.length; i++) {
@@ -39,17 +43,18 @@ export async function get_sites(cookies: Cookies): Promise<APIResponse> {
       page_index++;
     }
 
-    return { data: site_list.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())), meta: { status: 200 }};
-  } catch {
-    return { meta: { error: "Failed to get sites", status: 500 }};
+    return site_list.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+  } catch (err) {
+    debug.log("get_sites", "Failed to get tokens");
+    return null;
   }
 }
 
-async function get_token(cookies: Cookies): Promise<APIResponse> {
+async function get_token(cookies: Cookies): Promise<string[] | null> {
   const jwt = cookies.get("av_jwt");
   const pwt = cookies.get("av_pwt");
   if (jwt && pwt) {
-    return { data: [ jwt, pwt ], meta: { status: 200 }};
+    return [ jwt, pwt ];
   }
 
   const params = new URLSearchParams({
@@ -69,7 +74,8 @@ async function get_token(cookies: Cookies): Promise<APIResponse> {
   const token_data = await token_api.json();
   
   if (!token_api.ok) {
-    return { meta: { error: token_data, status: 500 }};
+    debug.log("get_token", "Failed to get sophos token");
+    return null;
   }
 
   const pt_api = await fetch("https://api.central.sophos.com/whoami/v1", {
@@ -81,7 +87,8 @@ async function get_token(cookies: Cookies): Promise<APIResponse> {
   const pt_data = await pt_api.json();
 
   if (!pt_api.ok) {
-    return { meta: { error: pt_data, status: 500 }};
+    debug.log("get_token", "Failed to get sophos partner");
+    return null;
   }
 
   cookies.set("av_pwt", pt_data.id, {
@@ -100,21 +107,21 @@ async function get_token(cookies: Cookies): Promise<APIResponse> {
     sameSite: "strict"
   });
 
-  return { data: [ token_data.access_token, pt_data.id ], meta: { status: 200 }};
+  return [token_data.access_token, pt_data.id];
 }
 
 export async function get_devices(av_site_id: string, av_site_url: string, cookies: Cookies): Promise<_SophosDevice[] | null> {
   try {
     const token = await get_token(cookies);
-    if (token.meta.status !== 200) {
-      console.log(`[get_devices] Failed to get tokens`);
-      null;
+    if (!token) {
+      debug.log("get_devices", "Failed to get tokens");
+      return null;
     }
 
     const device_api = await fetch(`${av_site_url}/endpoint/v1/endpoints`, {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${token.data[0]}`,
+        "Authorization": `Bearer ${token[0]}`,
         "X-Tenant-ID": av_site_id
       }
     });
@@ -132,43 +139,47 @@ export async function get_devices(av_site_id: string, av_site_url: string, cooki
   }
 }
 
-export async function get_tamper_status(device_id: string, av_site_id: string, av_site_url: string, cookies: Cookies): Promise<APIResponse> {
+export async function get_tamper_status(device_id: string, av_site_id: string, av_site_url: string, cookies: Cookies): Promise<{ enabled: boolean, tp_pass: string } | null> {
   try {
     const token = await get_token(cookies);
-    if (token.meta.status !== 200) {
-      return { meta: { error: "Failed to get tokens", status: 500 }};
+    if (!token) {
+      debug.log("get_tamper_status", "Failed to get tokens");
+      return null;
     }
 
     const device_api = await fetch(`${av_site_url}/endpoint/v1/endpoints/${device_id}/tamper-protection`, {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${token.data[0]}`,
+        "Authorization": `Bearer ${token[0]}`,
         "X-Tenant-ID": av_site_id
       }
     });
     const device_data = await device_api.json();
     
     if (!device_api.ok) {
-      return { meta: { error: device_data, status: 500 }};
+      debug.log("get_tamper_status", "Failed to get device info");
+      return null;
     }
     
-    return { data: { enabled: device_data.enabled, password: device_data.password, old_passwords: device_data.previousPasswords }, meta: { status: 200 }};
+    return { enabled: device_data.enabled, tp_pass: device_data.password };
   } catch (err) {
-    return { meta: { error: err, status: 501 }};
+    debug.log("get_tamper_status", err as string);
+    return null;
   }
 }
 
-export async function toggle_tamper_status(tamper_state: boolean, device_id: string, av_site_id: string, av_site_url: string, cookies: Cookies) {
+export async function toggle_tamper_status(tamper_state: boolean, device_id: string, av_site_id: string, av_site_url: string, cookies: Cookies): Promise<{ enabled: boolean, tp_pass: string } | null> {
   try {
     const token = await get_token(cookies);
-    if (token.meta.status !== 200) {
-      return { meta: { error: "Failed to get tokens", status: 500 }};
+    if (!token) {
+      debug.log("toggle_tamper_status", "Failed to get tokens");
+      return null;
     }
 
     const device_api = await fetch(`${av_site_url}/endpoint/v1/endpoints/${device_id}/tamper-protection`, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${token.data[0]}`,
+        "Authorization": `Bearer ${token[0]}`,
         "X-Tenant-ID": av_site_id,
         "Content-Type": "application/json"
       },
@@ -179,45 +190,51 @@ export async function toggle_tamper_status(tamper_state: boolean, device_id: str
     const device_data = await device_api.json();
     
     if (!device_api.ok) {
-      return { meta: { error: device_data, status: 500 }};
+      debug.log("toggle_tamper_status", "Failed to get device info");
+      return null;
     }
     
-    return { data: { enabled: device_data.enabled, password: device_data.password, old_passwords: device_data.previousPasswords }, meta: { status: 200 }};
+    return { enabled: device_data.enabled, tp_pass: device_data.password };
   } catch (err) {
-    return { meta: { error: err, status: 501 }};
+    debug.log("toggle_tamper_status", err as string);
+    return null;
   }
 }
 
-export async function delete_device_av(device_id: string, av_site_id: string, av_site_url: string, cookies: Cookies): Promise<APIResponse> {
+export async function delete_device_av(device_id: string, av_site_id: string, av_site_url: string, cookies: Cookies): Promise<boolean> {
   try {
     const token = await get_token(cookies);
-    if (token.meta.status !== 200) {
-      return { meta: { error: "Failed to get tokens", status: 500 }};
+    if (!token) {
+      debug.log("delete_device_av", "Failed to get tokens");
+      return false;
     }
 
     const tamper_state = await toggle_tamper_status(false, device_id, av_site_id, av_site_url, cookies);
 
-    if (tamper_state.meta.status !== 200) {
-      return { meta: { error: tamper_state.meta.error, status: 500 }};
-    } else if (tamper_state.data?.enabled) {
-      return { meta: { error: "[delete_device_av] Failed to disabled Tamper Protection", status: 500 }};
+    if (!tamper_state) {
+      debug.log("delete_device_av", "Failed to get tamper state");
+      return false;
+    } else if (tamper_state.enabled) {
+      debug.log("delete_device_av", "Failed to get disable tamper protection");
+      return false;
     }
 
     const device_api = await fetch(`${av_site_url}/endpoint/v1/endpoints/${device_id}`, {
       method: "DELETE",
       headers: {
-        "Authorization": `Bearer ${token.data[0]}`,
+        "Authorization": `Bearer ${token[0]}`,
         "X-Tenant-ID": av_site_id
       }
     });
-    const device_data = await device_api.json();
     
     if (!device_api.ok) {
-      return { meta: { error: device_data, status: 500 }};
+      debug.log("delete_device_av", "Failed to delete device");
+      return false;
     }
     
-    return { data: tamper_state.data, meta: { status: 200 }};
+    return true;
   } catch (err) {
-    return { meta: { error: err, status: 501 }};
+    debug.log("delete_device_av", err as string);
+    return false;
   }
 }

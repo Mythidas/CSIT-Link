@@ -9,12 +9,10 @@ export async function GET({ request, locals }) {
     const db_sites = await db.get_sites(locals.db_conn, [], [], [], { key: "", group: "", asc: true, type: "" });
 
     let adjustment_list: ABHistory[] = [];
-    let failures: { site_id: number, error: string }[] = [];
     for await (const site of db_sites) {
       try {
         const unit_info = await psa.get_contract_unit_info(site);
-        if (!unit_info.data) failures.push({ site_id: site.site_id, error: unit_info.meta.error });
-        if (!unit_info.data) continue;
+        if (!unit_info) continue;
 
         const rmm_devices = await rmm.get_devices(site.rmm_id);
         if (!rmm_devices) {
@@ -32,7 +30,7 @@ export async function GET({ request, locals }) {
           continue;
         }
 
-        for (const _adj of unit_info.data) {
+        for (const _adj of unit_info) {
           if (_adj.psa_service_desc === "CSAB_DESK") {
             if (_adj.units !== desktop_count) {
               adjustment_list.push({
@@ -67,7 +65,7 @@ export async function GET({ request, locals }) {
       }
     }
 
-    return Response.json({ data: { adjustments: adjustment_list, failures }, meta: { status: 200 } }, { status: 200 });
+    return Response.json({ data: { adjustments: adjustment_list }, meta: { status: 200 } }, { status: 200 });
   } catch (err) {
     console.log(`[API/V2/Autobill/Sync/GET] ${err}`);
     return Response.json({

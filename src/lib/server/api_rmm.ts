@@ -1,10 +1,11 @@
 import { RMM_ID, RMM_SC, RMM_URL } from "$env/static/private";
-import type { APIResponse } from "$lib/interfaces/i_api_response";
-import type { _VSAxDevice } from "$lib/interfaces/i_ext_info";
+import type { _ExtSite, _VSAxDevice } from "$lib/interfaces/i_ext_info";
+import { Debug } from '$lib/tools/debug';
 
 const rmm_auth = btoa(`${RMM_ID}:${RMM_SC}`);
+const debug = new Debug("api_rmm");
 
-export async function get_sites(): Promise<APIResponse> {
+export async function get_sites(): Promise<_ExtSite[] | null> {
   let site_list: any[] = [];
 
   try {
@@ -19,7 +20,8 @@ export async function get_sites(): Promise<APIResponse> {
       const site_data = await site_api.json();
 
       if (!site_api.ok) {
-        return { meta: { error: site_data, status: 500 }};
+        debug.log("get_sites", "Failed to get sites");
+        null;
       }
 
       for (let i = 0; i < site_data.Data.length; i++) {
@@ -32,35 +34,35 @@ export async function get_sites(): Promise<APIResponse> {
       }
     }
   } catch (err) {
-    console.log(err);
-    return { meta: { error: err, status: 500 }}
+    debug.log("get_sites", err as string);
+    return null;
   }
 
-  return { data: site_list, meta: { status: 200 }};
+  return site_list;
 }
 
-export async function get_groups(rmm_site_id: string) {
-  try {
-    const asset_api = await fetch(`${RMM_URL}/groups?$filter=ParentSiteId eq ${rmm_site_id}`, {
-      method: "GET",
-      headers: {
-        "authorization": `Basic ${rmm_auth}`,
-        "content-type": "application/json"
-      }
-    });
-    const asset_data = await asset_api.json();
+// export async function get_groups(rmm_site_id: string) {
+//   try {
+//     const asset_api = await fetch(`${RMM_URL}/groups?$filter=ParentSiteId eq ${rmm_site_id}`, {
+//       method: "GET",
+//       headers: {
+//         "authorization": `Basic ${rmm_auth}`,
+//         "content-type": "application/json"
+//       }
+//     });
+//     const asset_data = await asset_api.json();
     
-    if (!asset_api.ok) {
-      console.log(`[get_groups] ${asset_data.ExceptionMessage}`);
-      return { meta: { error: asset_data.ExceptionMessage, status: 500 }};
-    }
+//     if (!asset_api.ok) {
+//       console.log(`[get_groups] ${asset_data.ExceptionMessage}`);
+//       return { meta: { error: asset_data.ExceptionMessage, status: 500 }};
+//     }
     
-    return { data: asset_data.Data, meta: { status: 200 }};
-  } catch (err) {
-    console.log(`[get_groups] ${err}`);
-    return { meta: { error: err, status: 500 }};
-  }
-}
+//     return { data: asset_data.Data, meta: { status: 200 }};
+//   } catch (err) {
+//     console.log(`[get_groups] ${err}`);
+//     return { meta: { error: err, status: 500 }};
+//   }
+// }
 
 export async function get_devices(rmm_site_id: string): Promise<_VSAxDevice[] | null> {
   try {
