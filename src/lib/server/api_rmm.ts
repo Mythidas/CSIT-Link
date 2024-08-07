@@ -1,6 +1,6 @@
 import { RMM_ID, RMM_SC, RMM_URL } from "$env/static/private";
 import type { _ExtSite, _VSAxDevice } from "$lib/interfaces/i_ext_info";
-import { Debug } from '$lib/tools/debug';
+import Debug from '$lib/tools/debug';
 
 const rmm_auth = btoa(`${RMM_ID}:${RMM_SC}`);
 const debug = new Debug("api_rmm");

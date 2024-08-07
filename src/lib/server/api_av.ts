@@ -1,7 +1,7 @@
 import { dev } from '$app/environment';
 import { AV_ID, AV_SC, AV_URL } from '$env/static/private';
 import type { _ExtSite, _SophosDevice } from '$lib/interfaces/i_ext_info';
-import { Debug } from '$lib/tools/debug';
+import Debug from '$lib/tools/debug';
 import type { Cookies } from '@sveltejs/kit';
 
 const debug = new Debug("api_av");

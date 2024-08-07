@@ -29,6 +29,11 @@ export interface _SophosDevice {
   health: { overall: string };
 }
 
+export interface _SophosDeviceEXT extends _SophosDevice {
+  title: string;
+  site_id: number;
+}
+
 export interface _PSAContractInfo {
   units: number;
   psa_contract_id: number;

@@ -6,7 +6,6 @@ import pg, { type PoolClient } from "pg";
 import * as psa from "./api_psa";
 import * as rmm from "./api_rmm";
 import * as av from "./api_av";
-import type { Cookies } from "@sveltejs/kit";
 import type { _PSAContractInfo } from "$lib/interfaces/i_ext_info";
 
 const pool = new pg.Pool({

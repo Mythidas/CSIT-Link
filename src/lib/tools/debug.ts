@@ -1,4 +1,4 @@
-export class Debug {
+export default class Debug {
   file_name: string;
 
   constructor(file_name: string) {

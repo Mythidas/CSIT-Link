@@ -1,7 +1,7 @@
 import { PSA_ID, PSA_SC, PSA_TR, PSA_URL } from "$env/static/private";
 import type { Site } from "$lib/interfaces/i_db";
 import type { _ExtSite, _PSAContractInfo } from "$lib/interfaces/i_ext_info";
-import { Debug } from '$lib/tools/debug';
+import Debug from '$lib/tools/debug';
 
 const debug = new Debug("api_psa");
 
