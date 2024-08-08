@@ -4,8 +4,8 @@
   import LoadingSpinner from "$lib/components/loading_spinner.svelte";
   import Icon from "$lib/components/icon.svelte";
   import NavLink from "$lib/components/nav_link.svelte";
-    import Button from "$lib/components/button.svelte";
 
+  export let data: { is_admin: boolean };
 </script>
 
 <main class="relative flex flex-col w-screen h-screen overflow-hidden bg-base-100 text-font">
@@ -22,6 +22,11 @@
       <NavLink href="/sites" label="Sites">
         <Icon size={32} icon="Home"/>
       </NavLink>
+      {#if data.is_admin}
+      <NavLink href="/reports" label="Reports">
+        <Icon size={32} icon="Menu"/>
+      </NavLink>
+      {/if}
     </nav>
     <!-- Contents -->
     <div class="flex flex-col p-2 space-y-2 w-full h-full overflow-hidden">
