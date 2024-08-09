@@ -1,7 +1,7 @@
 import * as db from "$lib/server/database_v2.js";
 import * as av from "$lib/server/api_av.js"
 import type { _SophosDevice, _SophosDeviceEXT } from "$lib/interfaces/i_ext_info.js";
-import Time from "$lib/tools/time.js";
+import Time from "$lib/tools/time";
 
 export async function load({ locals, cookies }) {
   try {

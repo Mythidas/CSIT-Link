@@ -1,15 +1,18 @@
 <script lang="ts">
+  import { invalidateAll } from "$app/navigation";
   import Button from "$lib/components/button.svelte";
   import type { _SophosDeviceEXT } from "$lib/interfaces/i_ext_info";
   import Time from "$lib/tools/time";
-    import axios from "axios";
+  import axios from "axios";
 
   export let data: { sophos_devices: _SophosDeviceEXT[] };
 
   async function on_enable_all() {
     for await (const _device of data.sophos_devices) {
-      await axios.post(`/api/v2/sophos/${_device.site_id}/${_device.id}/tamper`);
+      const result = await axios.post(`/api/v2/sophos/${_device.site_id}/${_device.id}/tamper`);
     }
+
+    await invalidateAll();
   }
 </script>
 
@@ -20,7 +23,7 @@
     <p>Sophos: Tamper Protection Report</p>
   </h3>
   <div class="flex h-fit my-auto">
-    <Button on:click={on_enable_all}>
+    <Button on:click={() => { on_enable_all() }}>
       Enable All
     </Button>
   </div>
