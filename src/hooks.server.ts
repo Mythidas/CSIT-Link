@@ -28,11 +28,10 @@ export const first: Handle = async({ event, resolve }) => {
 
 export const handle = sequence(first, second);
 
-// Scheduler
-// const resync_devices = new schedule.RecurrenceRule();
-// resync_devices.minute = 59;
-// resync_devices.hour = 23;
-// const resync_devices_job = schedule.scheduleJob(resync_devices, async function () {
+//Scheduler
+// const resync_site_devices = new schedule.RecurrenceRule();
+// resync_site_devices.minute = 59;
+// const resync_devices_job = schedule.scheduleJob(resync_site_devices, async function () {
 //   try {
 //     console.log("[job_resync] Syncing Devices");
 //     await axios.get(`${PUBLIC_LOCAL_URL}/api/v2/devices/sync`);

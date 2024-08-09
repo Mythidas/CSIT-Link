@@ -13,8 +13,8 @@ export interface Site {
   company_id: number;
   company_title: string;
   last_update: string;
-  rmm_device_count: number;
-  av_device_count: number;
+  rmm_count: number;
+  av_count: number;
 }
 
 export interface ABHistory {

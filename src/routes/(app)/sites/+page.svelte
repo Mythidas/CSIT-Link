@@ -1,49 +1,42 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import Table from "$lib/components/table.svelte";
-  
-  let total_items = 0;
-  let page = 1;
-  let count = 25;
-  let filtered_data: any[];
-  let selected_row: number;
+  import type { Site } from "$lib/interfaces/i_db";
 
-  $: if (selected_row > -1) {
-    goto(`/sites/${filtered_data[selected_row].site_id}`);
-  }
-  $: if (filtered_data) {
-    for (let i = 0; i < filtered_data.length; i++) {
-      filtered_data[i].error = [];
-      filtered_data[i].warn = [];
-
-      if (new Set([filtered_data[i]["device_tally"], filtered_data[i]["device_av_tally"], filtered_data[i]["device_rmm_tally"]]).size > 1) {
-        if (filtered_data[i]["device_av_tally"] < filtered_data[i]["device_tally"]) {
-          filtered_data[i].error.push("device_av_tally");
-        }
-
-        if (filtered_data[i]["device_rmm_tally"] < filtered_data[i]["device_tally"]) {
-          filtered_data[i].error.push("device_rmm_tally");
-        }
-      }
-    }
-  }
+  export let data: { sites: Site[] };
 </script>
 
 <h3 class="flex text-2xl p-2 bg-base-200">
-  All Sites <p class="px-2 ml-2 bg-accent-100 rounded-md">{total_items}</p>
+  All Sites <p class="px-2 ml-2 bg-accent-100 rounded-md">{data.sites.length}</p>
 </h3>
-<div class="flex flex-col w-full h-[99%] p-2 bg-base-200 overflow-hidden">
-  <Table
-    columns={[
-      { key: "title", name: "Name", group: "Site", type: "Text" },
-      { key: "company_title", name: "Company", group: "Company", type: "Text", default: "-" },
-    ]}
-    data="/api/v2/sites"
-    bind:total_items
-    bind:page
-    bind:count
-    bind:filtered_data
-    bind:selected_row
-    on:select_row={(data) => { goto(`/sites/${data.detail.site_id}`) }}
-  />
+<div class="flex w-full h-[99%] p-2 space-x-2 bg-base-200 overflow-auto">
+  <div class="w-full h-full overflow-auto">
+    <table class="table-auto text-left w-full h-fit bg-base-100 shadow-md">
+      <thead>
+        <tr>
+          <th class="sticky top-0 first:left-0 p-2 first:z-50 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer">
+            Site
+          </th>
+          <th class="sticky top-0 first:left-0 p-2 first:z-50 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer">
+            Company
+          </th>
+          <th class="sticky top-0 first:left-0 p-2 first:z-50 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer">
+            VSA Count
+          </th>
+          <th class="sticky top-0 first:left-0 p-2 first:z-50 whitespace-nowrap shadow-[inset_0_-2px_0_rgba(127,133,245,1)] bg-base-100 stroke-accent-100 hover:bg-base-150 hover:cursor-pointer">
+            Sophos Count
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each data.sites as _site}
+        <tr class="even:bg-base-100 odd:bg-base-150 hover:bg-base-300 hover:cursor-pointer" on:click={() => { goto(`/sites/${_site.site_id}`)}}>
+          <td class={`px-2 py-1 whitespace-nowrap`}>{_site.title}</td>
+          <td class={`px-2 py-1 whitespace-nowrap`}>{_site.company_title || "-"}</td>
+          <td class={`px-2 py-1 whitespace-nowrap ${_site.rmm_count !== _site.av_count && "bg-error"}`}>{_site.rmm_count || "-"}</td>
+          <td class={`px-2 py-1 whitespace-nowrap ${_site.rmm_count !== _site.av_count && "bg-error"}`}>{_site.av_count || "-"}</td>
+        </tr>
+        {/each}
+      </tbody>
+    </table>
+  </div>
 </div>

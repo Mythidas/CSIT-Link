@@ -7,6 +7,8 @@ import * as psa from "./api_psa";
 import * as rmm from "./api_rmm";
 import * as av from "./api_av";
 import type { _PSAContractInfo } from "$lib/interfaces/i_ext_info";
+import Debug from "$lib/tools/debug";
+import type { Cookies } from "@sveltejs/kit";
 
 const pool = new pg.Pool({
   user: PG_USER,
@@ -18,6 +20,8 @@ const pool = new pg.Pool({
 })
 
 export const connect = async () => await pool.connect();
+
+const debug = new Debug("database_v2");
 
 interface SortState {
   key: string;
@@ -41,24 +45,18 @@ export async function get_site(client: PoolClient, site_id: number): Promise<Sit
   }
 }
 
-export async function get_sites(client: PoolClient, columns: string[], values: string[], types: string[], sorting: SortState): Promise<Site[]> {
+export async function get_sites(client: PoolClient, columns: string[], values: string[], types: string[], sorting?: SortState): Promise<Site[]> {
   try {
-    const query_filters = gen_filter_string(columns, values, types, sorting);
+    const query_filters = gen_filter_string(columns, values, types, sorting || { type: "", group: "", key: "", asc: true });
     
     if (query_filters.query) {
       return (await client.query(`SELECT se.*, 
-      (SELECT COUNT(*) FROM device de WHERE de.site_id = se.site_id) AS device_tally,
-      (SELECT COUNT(*) FROM deviceav de WHERE de.site_id = se.site_id) AS device_av_tally,
-      (SELECT COUNT(*) FROM devicermm de WHERE de.site_id = se.site_id) AS device_rmm_tally,
       cy.company_title 
       FROM Site se 
       LEFT JOIN company cy ON se.company_id = cy.company_id ${query_filters.query};`, query_filters.values)).rows as Site[];
     }
       
     return (await client.query(`SELECT se.*, 
-    (SELECT COUNT(*) FROM device de WHERE de.site_id = se.site_id) AS device_tally,
-    (SELECT COUNT(*) FROM deviceav de WHERE de.site_id = se.site_id) AS device_av_tally,
-    (SELECT COUNT(*) FROM devicermm de WHERE de.site_id = se.site_id) AS device_rmm_tally,
     cy.company_title 
     FROM Site se 
     LEFT JOIN company cy ON se.company_id = cy.company_id;`)).rows as Site[];
@@ -120,6 +118,28 @@ export async function is_site_updated(client: PoolClient, site_id: number): Prom
     return new Date().getTime() - new Date(site.last_update).getTime() <= 60 * 60 * 1000;
   } catch (err)  {
     console.log(err);
+    return false;
+  }
+}
+
+export async function update_site_devices(client: PoolClient, site_id: number, cookies: Cookies) {
+  try {
+    const site = await get_site(client, site_id);
+    if (!site || !site.last_update) {
+      debug.log("update_site_devices", "Invalid site id");
+      return false;
+    };
+
+    const av_devices = await av.get_devices(site.av_id, site.av_url, cookies) || [];
+    const rmm_devices = await rmm.get_devices(site.rmm_id) || [];
+
+    await client.query("UPDATE Site SET last_update = $1, av_count = $2, rmm_count = $3 WHERE site_id = $4;", [
+      new Date().toISOString(), av_devices?.length.toString(), rmm_devices?.length.toString(), site.site_id.toString()
+    ]);
+
+    return true;
+  } catch (err) {
+    debug.log("update_site_devices", err as string);
     return false;
   }
 }
