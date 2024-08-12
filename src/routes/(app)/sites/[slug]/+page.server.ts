@@ -11,6 +11,10 @@ export async function load({ locals, params, cookies }) {
       redirect(301, "/sites");
     }
 
+    if (new Date().getTime() - new Date(db_site.last_update).getTime() >= 3600 * 1000) {
+      await db.update_site_devices(locals.db_conn, db_site.site_id, cookies);
+    }
+
     const av_devices = await av.get_devices(db_site.av_id, db_site.av_url, cookies);
     const rmm_devices = await rmm.get_devices(db_site.rmm_id);
 
