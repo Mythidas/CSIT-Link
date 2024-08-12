@@ -9,7 +9,7 @@ export async function load({ locals, cookies, parent }) {
     })
 
     return {
-      sites_mismatched
+      sites_mismatched: sites_mismatched.length
     }
   } catch (err) {
     console.log(err);

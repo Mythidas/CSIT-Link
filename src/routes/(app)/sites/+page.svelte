@@ -3,11 +3,11 @@
   import Table from "$lib/components/table.svelte";
   import type { Site } from "$lib/interfaces/i_db";
 
-  export let data: { sites: Site[], sites_mismatched: Site[] };
+  export let data: { sites: Site[], sites_mismatched: Number };
 
   let current_filter: "All" | "Mismatched" = "All";
 
-  $: filtered_data = current_filter === "All" ? data.sites : data.sites_mismatched;
+  $: filtered_data = current_filter === "All" ? data.sites : data.sites.filter((_site) => { return _site.av_count !== _site.rmm_count; });
 
   function on_select_row(_value: CustomEvent<any>) {
     goto(`/sites/${_value.detail.site_id}`);
@@ -30,7 +30,7 @@
   </div>
   <div class="flex flex-col w-52 p-3 space-y-2 bg-theme-dark-200/75 rounded-md shadow-md">
     <p class="w-full text-center text-xl font-bold">Mismatched Sites</p>
-    <p class="w-full text-center text-xl rounded-md bg-theme-dark-300">{data.sites_mismatched.length}</p>
+    <p class="w-full text-center text-xl rounded-md bg-theme-dark-300">{data.sites_mismatched}</p>
     {#if current_filter === "Mismatched"}
     <div class="text-center rounded-md bg-theme-preset-active">
       Selected
