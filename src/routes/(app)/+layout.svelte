@@ -33,9 +33,9 @@
         <NavLink label="Sites" link="/sites">
           <Icon size={32} icon="Home"/>
         </NavLink>
-        <!-- <NavLink label="Reports" link="/reports">
+        <NavLink label="Reports" link="/reports">
           <Icon size={32} icon="Monitor"/>
-        </NavLink> -->
+        </NavLink>
       </div>
       <div class="flex flex-col w-full h-fit p-3 justify-center">
         <label
