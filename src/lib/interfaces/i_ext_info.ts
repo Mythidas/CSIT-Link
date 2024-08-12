@@ -23,7 +23,7 @@ export interface _VSAxDevice {
 export interface _SophosDevice {
   id: string;
   hostname: string;
-  os: { hostname: string };
+  os: { isServer: boolean, name: string };
   lastSeenAt: string;
   tamperProtectionEnabled: boolean;
   health: { overall: string };

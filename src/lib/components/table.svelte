@@ -10,6 +10,18 @@
   const dispatch = createEventDispatcher();
 
   $: filtered_rows = rows;
+
+  function evaluate_key_relation(_data: any, _key: string) {
+    const _key_log = _key.split('.');
+    console.log(_key_log);
+
+    if (_key_log.length > 1) {
+      const _key_log_reduced = _key_log.slice(1, _key_log.length);
+      return evaluate_key_relation(_data[_key_log[0]], _key_log_reduced.join('.'));
+    }
+
+    return _data[_key];
+  }
 </script>
 
 <div class="w-full h-full overflow-auto">
@@ -40,7 +52,7 @@
           {#if _column.type === "Date"}
           <td class={`p-2 whitespace-nowrap first:rounded-l-md last:rounded-r-md`}>{new Time(_row[_column.key] || "").get_time_since()}</td>
           {:else}
-          <td class={`p-2 whitespace-nowrap first:rounded-l-md last:rounded-r-md`}>{_row[_column.key] || "-"}</td>
+          <td class={`p-2 whitespace-nowrap first:rounded-l-md last:rounded-r-md`}>{evaluate_key_relation(_row, _column.key) || "-"}</td>
           {/if}
         {/each}
       </tr>
