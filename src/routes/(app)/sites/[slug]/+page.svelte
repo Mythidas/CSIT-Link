@@ -14,7 +14,7 @@
     <p>{data.site && data.site.title || "Failed to load"}</p>
   </h3>
 </div>
-<div class="flex w-full h-full space-x-2 bg-theme-dark-200/75 rounded-md overflow-auto">
+<div class="flex w-full h-full p-2 space-x-2 bg-theme-dark-200/75 rounded-md overflow-auto">
   <Table
     columns={[
       { key: "Name", label: `VSA Devices (${data.rmm_devices.length})`, type: "String" },

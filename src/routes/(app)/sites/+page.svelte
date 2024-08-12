@@ -42,7 +42,7 @@
     {/if}
   </div>
 </div>
-<div class="flex w-full h-full bg-theme-dark-200/75 rounded-md shadow-md overflow-hidden">
+<div class="flex w-full h-full p-2 bg-theme-dark-200/75 rounded-md shadow-md overflow-hidden">
   <Table
     columns={[
       { key: "title", label: "Site", type: "String" },

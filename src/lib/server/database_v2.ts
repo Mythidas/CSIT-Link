@@ -130,8 +130,8 @@ export async function update_site_devices(client: PoolClient, site_id: number, c
       return false;
     };
 
-    const av_devices = await av.get_devices(site.av_id, site.av_url, cookies) || [];
-    const rmm_devices = await rmm.get_devices(site.rmm_id) || [];
+    const av_devices = site.av_id ? await av.get_devices(site.av_id, site.av_url, cookies) || [] : [];
+    const rmm_devices = site.rmm_id ? await rmm.get_devices(site.rmm_id) || [] : [];
 
     await client.query("UPDATE Site SET last_update = $1, av_count = $2, rmm_count = $3 WHERE site_id = $4;", [
       new Date().toISOString(), av_devices?.length.toString(), rmm_devices?.length.toString(), site.site_id.toString()
