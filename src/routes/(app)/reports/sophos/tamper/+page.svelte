@@ -1,6 +1,5 @@
 <script lang="ts">
   import { invalidateAll } from "$app/navigation";
-  import Button from "$lib/components/old/button.svelte";
   import type { _SophosDeviceEXT } from "$lib/interfaces/i_ext_info";
   import Time from "$lib/tools/time";
   import axios from "axios";
@@ -23,9 +22,9 @@
     <p>Sophos: Tamper Protection Report</p>
   </h3>
   <div class="flex h-fit my-auto">
-    <Button on:click={() => { on_enable_all() }}>
+    <!-- <Button on:click={() => { on_enable_all() }}>
       Enable All
-    </Button>
+    </Button> -->
   </div>
 </div>
 <div class="flex w-full h-full p-2 space-x-2 bg-base-200 overflow-auto">

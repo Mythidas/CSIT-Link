@@ -1,6 +1,5 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import Button from './old/button.svelte';
   
   export let open = false;
   export let title = "";
@@ -23,12 +22,12 @@
     <div class="footer flex flex-col p-2 justify-center space-y-2">
       <hr />
       <div class="justify-center space-x-1">
-        <Button bind:disabled={loading} width="w-20" color="Success" on:click={() => dispatch('accept')}>
+        <!-- <Button bind:disabled={loading} width="w-20" color="Success" on:click={() => dispatch('accept')}>
           Accept
         </Button>
         <Button bind:disabled={loading} width="w-20" color="Error" on:click={() => { dispatch('close'); open = false; }}>
           Close
-        </Button>
+        </Button> -->
       </div>
     </div>
   </div>

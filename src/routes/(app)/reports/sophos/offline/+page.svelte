@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Button from "$lib/components/old/button.svelte";
   import Modal from "$lib/components/modal.svelte";
   import type { _SophosDevice, _SophosDeviceEXT } from "$lib/interfaces/i_ext_info";
   import Time from "$lib/tools/time";
@@ -67,9 +66,9 @@
           <td class={`px-2 py-1 whitespace-nowrap`}>{new Time(_device.lastSeenAt).get_time_since()}</td>
           <td class={`px-2 py-1 whitespace-nowrap`}>{_device.tamperProtectionEnabled}</td>
           <td class={`px-2 py-1 whitespace-nowrap`}>
-            <Button width="w-full" on:click={() => on_delete_click(_device)}>
+            <!-- <Button width="w-full" on:click={() => on_delete_click(_device)}>
               Delete
-            </Button>
+            </Button> -->
           </td>
         </tr>
         {/each}
