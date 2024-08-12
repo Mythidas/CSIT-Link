@@ -15,12 +15,6 @@ export async function load({ locals, url, cookies }) {
 
   const db_sites = await db.get_sites(locals.db_conn, [], [], [], { key: "title", group: "Site", type: "", asc: true });
 
-  // for await (const site of db_sites) {
-  //   if (new Date().getTime() - new Date(site.last_update).getTime() >= 3600 * 1000) {
-  //     await db.update_site_devices(locals.db_conn, site.site_id, cookies);
-  //   }
-  // }
-
   return {
     session,
     is_admin,
