@@ -4,7 +4,7 @@ import * as psa from "$lib/server/api_psa.js";
 import * as rmm from "$lib/server/api_rmm.js";
 import type { _VSAxDevice } from "$lib/interfaces/i_ext_info.js";
 
-export async function GET({ request, locals }) {
+export async function GET({ locals }) {
   try {
     const db_sites = await db.get_sites(locals.db_conn, [], [], [], { key: "", group: "", asc: true, type: "" });
 

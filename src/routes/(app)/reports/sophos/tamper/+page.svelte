@@ -1,6 +1,6 @@
 <script lang="ts">
   import { invalidateAll } from "$app/navigation";
-  import Button from "$lib/components/button.svelte";
+  import Button from "$lib/components/old/button.svelte";
   import type { _SophosDeviceEXT } from "$lib/interfaces/i_ext_info";
   import Time from "$lib/tools/time";
   import axios from "axios";

@@ -1,17 +1,24 @@
-<script>
+<script lang="ts">
   import { page } from "$app/stores";
 
-  export let href = "";
-  export let label = "";
+  export let label: string;
+  export let link: string;
 
-  $: selected = $page.url.pathname.split("/")[1].includes(href.substring(1));
+  let is_hovered = false;
+  
+  $: is_active = $page.url.pathname.includes(link);
 </script>
 
-<a href={href} class={`${selected ? "bg-base-200 border-accent-100" : "bg-base-150 border-base-150"} flex flex-col w-full p-2 bg-base-150 stroke-font border-l-2 hover:border-accent-100 hover:bg-base-200`}>
-  <div class="mx-auto">
+<a 
+  href={link} 
+  class={`flex w-full p-2 ${is_hovered ||  is_active ? "stroke-theme-dark-font-100 text-theme-dark-font-100" : "stroke-theme-dark-font-300 text-theme-dark-font-300"}`}
+  on:mouseenter={() => { is_hovered = true; }} 
+  on:mouseleave={() => { is_hovered = false; }}
+>
+  <div class={`${is_active ? "bg-theme-preset-active" : is_hovered ? "bg-theme-dark-500" : "bg-theme-dark-200"} shadow-md p-1 rounded-md`}>
     <slot />
   </div>
-  <div class="w-full p-1 text-center">
+  <div class="flex text-2xl pl-3 w-full h-fit my-auto">
     {label}
   </div>
 </a>

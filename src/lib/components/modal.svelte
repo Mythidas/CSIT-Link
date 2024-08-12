@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import Button from './button.svelte';
+  import Button from './old/button.svelte';
   
   export let open = false;
   export let title = "";

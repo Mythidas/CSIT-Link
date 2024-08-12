@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Button from "$lib/components/button.svelte";
+  import Button from "$lib/components/old/button.svelte";
   import Modal from "$lib/components/modal.svelte";
   import type { _SophosDevice, _SophosDeviceEXT } from "$lib/interfaces/i_ext_info";
   import Time from "$lib/tools/time";

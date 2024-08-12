@@ -6,29 +6,24 @@ export default {
       animation: {
         "spin-slow": "spin 2s linear infinite",
         "ping-sm": "ping-sm 2s cubic-bezier(0, 0, 0.1, 1) infinite" 
-      }
+      },
+      backgroundImage: (theme) => ({
+        "theme-preset-active": `linear-gradient(to bottom right, ${theme('colors.theme-dark-400')}, ${theme('colors.theme-dark-600/0.5')})`
+      })
     },
     colors: {
-      "cscol-000": "#3C8C88",
-      "cscol-100": "#45A29E",
-      "cscol-200": "#66FCF1",
-      "cscol-300": "#C5C6C7",
-      "cscol-400": "#1F2833",
-      "cscol-500": "#141A21",
-      "cscol-600": "#0B0C10",
-      "cscol-font": "#FFFFFF",
-      "wrncol-100": "#B88E1D",
-      
-      "base-000": "#1A1A1A",
-      "base-100": "#1F1F1F",
-      "base-150": "#303030",
-      "base-200": "#383838",
-      "base-300": "#595959",
-      "accent-100": "#7F85F5",
-      "error": "#CC1B3E",
-      "warn": "#B88E1D",
-      "success": "#3C8C88",
-      "font": "#FFFFFF"
+      "theme-dark-100": "#15161A",
+      "theme-dark-200": "#222326",
+      "theme-dark-300": "#25423D",
+      "theme-dark-400": "#288273",
+      "theme-dark-500": "#6D3E2B",
+      "theme-dark-600": "#C23F0C",
+      "theme-dark-accent": "#0bc1a2",
+      "theme-dark-success": "#088C5C",
+      "theme-dark-error": "#C53F30",
+      "theme-dark-font-100": "#EAEAEB",
+      "theme-dark-font-200": "#A5A7A6",
+      "theme-dark-font-300": "#606061" // #7C7C7D
     }
   },
   plugins: [],

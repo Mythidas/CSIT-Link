@@ -1,7 +1,9 @@
 export default class Time {
   date: Date;
+  is_invalid: boolean = false;
 
   constructor(date: string) {
+    if (date.length === 0) this.is_invalid = true;
     this.date = new Date(date);
   }
 
@@ -13,6 +15,8 @@ export default class Time {
   }
 
   get_time_since(): string {
+    if (this.is_invalid) return "Never"
+
     // Parse the ISO string into a Date object
     const then: Date = this.date;
 

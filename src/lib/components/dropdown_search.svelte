@@ -1,55 +1,32 @@
 <script lang="ts">
-  interface _Option {
-    value: string,
-    label: string
-  }
+  import { createEventDispatcher } from "svelte";
 
-  export let options: _Option[];
-  export let default_label = "Choose Option...";
-  export let selected: any = null;
-  export let on_select: (option: _Option) => void = () => {};
-  
-  let filter = "";
-  let opened = false;
-  
-  $: filter_options = options;
-  $: {
-    filter_options = options.filter(value => {
-      return value.label.toLowerCase().includes(filter.toLowerCase());
-    });
-  }
+  export let options: { label: string, value: string }[];
 
-  function on_select_option(option: _Option) {
-    selected = option;
-    on_select(option);
-  }
+  const dispatch = createEventDispatcher();
+  let is_focused = false;
+  let search_value = "";
+
+  $: filtered_options = options.filter((_option) => { return _option.label.toLowerCase().includes(search_value.toLowerCase()); })
 </script>
 
-<svelte:window on:click={() => opened = false}/>
+<svelte:window on:click={() => is_focused = false}/>
 
-{#if options.length === 0}
-<div class="relative w-full">
-  <div class={`flex p-1 w-full h-fit justify-between bg-cscol-300 text-cscol-600`}>
-    <p>{default_label}</p>
-  </div>
-</div>
-{:else}
-<div class="relative w-full overflow-visible">
+<div class="relative flex flex-col w-full">
   <input 
-    class="w-full text-2xl p-1 outline-none border-2 focus:border-cscol-200 text-cscol-600" 
-    bind:value={filter} 
-    on:focus={() => opened = true}
+    class="p-[0.4rem] text-theme-dark-font-100 rounded-md transition-all outline-none outline-1 caret-theme-dark-font-100 bg-theme-dark-200/75 placeholder:text-theme-dark-font-300 focus:outline-theme-dark-accent hover:outline-theme-dark-500" 
+    placeholder="Search Sites"
+    bind:value={search_value}
     on:click|stopPropagation={() => {}}
-    placeholder={default_label}
+    on:focus={() => { is_focused = true; }}
   />
-  <div class={`${opened ? "h-52" : "h-0"} text-left absolute overflow-y-auto w-full z-20 shadow-lg bg-cscol-400`}>
-    {#if opened}
-    {#each filter_options as option}
-      <button class="w-full text-left p-1 hover:bg-cscol-100" on:click={() => on_select_option(option)}>
-        {option.label}
-      </button>
+  {#if is_focused}
+  <div class="absolute z-[100] flex flex-col w-full max-h-32 mt-10 rounded-md shadow-md overflow-y-auto text-theme-dark-font-100 bg-theme-dark-300">
+    {#each filtered_options as _option}
+    <button class="text-left px-2 py-1 hover:bg-theme-dark-400" on:click={() => dispatch("select", _option)}>
+      {_option.label}
+    </button>
     {/each}
-    {/if}
   </div>
+  {/if}
 </div>
-{/if}
