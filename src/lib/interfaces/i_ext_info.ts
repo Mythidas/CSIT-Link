@@ -18,6 +18,7 @@ export interface _VSAxDevice {
   FirewallEnabled: boolean;
   UacEnabled: boolean;
   MemoryTotal: number;
+  SophosID?: string; // Used to store Sophos ID Custom Field
 }
 
 export interface _SophosDevice {

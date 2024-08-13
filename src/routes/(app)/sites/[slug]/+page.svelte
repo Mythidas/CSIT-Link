@@ -4,7 +4,7 @@
   import type { _SophosDevice, _VSAxDevice } from "$lib/interfaces/i_ext_info";
   import Time from "$lib/tools/time";
 
-  export let data: { site: Site, av_devices: _SophosDevice[], rmm_devices: _VSAxDevice[], server_count: Number, workstation_count: Number, offline_count: Number };
+  export let data: { site: Site, av_devices: _SophosDevice[], rmm_devices: _VSAxDevice[], accum_devices: _VSAxDevice[], server_count: Number, workstation_count: Number, offline_count: Number };
 
   let current_filter: "All" | "Workstations" | "Servers" | "Offline" = "All";
 
@@ -96,7 +96,7 @@
     {/if}
   </div>
   <div class="flex flex-col w-52 p-3 space-y-2 bg-theme-dark-200/75 rounded-md shadow-md">
-    <p class="w-full text-center text-xl font-bold">Offline Devices</p>
+    <p class="w-full text-center text-xl font-bold">Dead Devices</p>
     <p class="w-full text-center text-xl rounded-md bg-theme-dark-300">{data.offline_count}</p>
     {#if current_filter === "Offline"}
     <div class="text-center rounded-md bg-theme-preset-active">

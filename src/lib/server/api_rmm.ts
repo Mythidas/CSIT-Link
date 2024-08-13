@@ -41,29 +41,6 @@ export async function get_sites(): Promise<_ExtSite[] | null> {
   return site_list;
 }
 
-// export async function get_groups(rmm_site_id: string) {
-//   try {
-//     const asset_api = await fetch(`${RMM_URL}/groups?$filter=ParentSiteId eq ${rmm_site_id}`, {
-//       method: "GET",
-//       headers: {
-//         "authorization": `Basic ${rmm_auth}`,
-//         "content-type": "application/json"
-//       }
-//     });
-//     const asset_data = await asset_api.json();
-    
-//     if (!asset_api.ok) {
-//       console.log(`[get_groups] ${asset_data.ExceptionMessage}`);
-//       return { meta: { error: asset_data.ExceptionMessage, status: 500 }};
-//     }
-    
-//     return { data: asset_data.Data, meta: { status: 200 }};
-//   } catch (err) {
-//     console.log(`[get_groups] ${err}`);
-//     return { meta: { error: err, status: 500 }};
-//   }
-// }
-
 export async function get_devices(rmm_site_id: string): Promise<_VSAxDevice[] | null> {
   try {
     const asset_api = await fetch(`${RMM_URL}/assets?$filter=SiteId eq ${rmm_site_id}`, {
@@ -80,15 +57,24 @@ export async function get_devices(rmm_site_id: string): Promise<_VSAxDevice[] | 
       return null;
     }
 
+    // for await (const _device of asset_data.Data as _VSAxDevice[]) {
+    //   const cf_api = await fetch(`${RMM_URL}/devices/${_device.Identifier}/customfields?$filter=contains(Name,'Software - Sophos DeviceID')`, {
+    //     method: "GET",
+    //     headers: {
+    //       "authorization": `Basic ${rmm_auth}`,
+    //       "content-type": "application/json"
+    //     }
+    //   });
+    //   const cf_data = await cf_api.json();
+
+    //   if (!cf_api.ok) continue;
+
+    //   _device.SophosID = cf_data.Data[0]?.Value || "";
+    // }
+
     return asset_data.Data as _VSAxDevice[];
   } catch (err) {
     console.log(`[get_devices] ${err}`);
     return null;
   }
-}
-
-function convert_bytes_to_gbytes(bytes: number) {
-  const GIGABYTE = Math.pow(1024, 3);
-  const gigabytes = bytes / GIGABYTE;
-  return Math.floor(gigabytes * 1024);
 }

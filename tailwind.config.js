@@ -8,7 +8,7 @@ export default {
         "ping-sm": "ping-sm 2s cubic-bezier(0, 0, 0.1, 1) infinite" 
       },
       backgroundImage: (theme) => ({
-        "theme-preset-active": `linear-gradient(to bottom right, ${theme('colors.theme-dark-400/0.8')}, ${theme('colors.theme-dark-600/0.4')})`
+        "theme-preset-active": `linear-gradient(to bottom right, ${theme('colors.theme-dark-400/0.9')}, ${theme('colors.theme-dark-600/0.5')})`
       })
     },
     colors: {
