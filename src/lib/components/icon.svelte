@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let icon: "None" | "Home" | "Up" | "Down" | "Filter" | "Menu" | "Minus" | "Minimize" | "Maximize" | "Spinner" | "Monitor";
+  export let icon: "None" | "Home" | "Up" | "Down" | "Filter" | "Menu" | "Minus" | "Minimize" | "Maximize" | "Spinner" | "Monitor" | "Edit";
   export let size: number = 24;
 </script>
 
@@ -52,5 +52,10 @@
   <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
   <line x1="8" y1="21" x2="16" y2="21"></line>
   <line x1="12" y1="17" x2="12" y2="21"></line>
+</svg>
+{:else if icon === "Edit"}
+<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
 </svg>
 {/if}

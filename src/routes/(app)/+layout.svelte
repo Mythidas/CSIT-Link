@@ -9,7 +9,7 @@
   import Icon from "$lib/components/icon.svelte";
   import NavLink from "$lib/components/nav_link.svelte";
 
-  export let data: { user: any, sites: Site[] };
+  export let data: { user: any, is_admin: boolean, sites: Site[] };
 
   let is_background_active = false;
 
@@ -36,6 +36,11 @@
         <NavLink label="Reports" link="/reports">
           <Icon size={32} icon="Monitor"/>
         </NavLink>
+        {#if data.is_admin}
+        <NavLink label="Setup" link="/setup">
+          <Icon size={32} icon="Spinner"/>
+        </NavLink>
+        {/if}
       </div>
       <div class="flex flex-col w-full h-fit p-3 justify-center">
         <label

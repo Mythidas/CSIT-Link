@@ -6,7 +6,7 @@
 
   let is_hovered = false;
   
-  $: is_active = $page.url.pathname.includes(link);
+  $: is_active = $page.url.pathname.split("/")[1].includes(link.slice(1));
 </script>
 
 <a 

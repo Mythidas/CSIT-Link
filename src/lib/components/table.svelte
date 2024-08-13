@@ -1,7 +1,7 @@
 <script lang="ts">
   import Time from "$lib/tools/time";
   import { createEventDispatcher } from "svelte";
-    import Checkbox from "./checkbox.svelte";
+  import Checkbox from "./checkbox.svelte";
 
   export let rows: any;
   export let columns: { key: string, label: string, type: "String" | "Number" | "Date" }[];
@@ -13,7 +13,6 @@
 
   function evaluate_key_relation(_data: any, _key: string) {
     const _key_log = _key.split('.');
-    console.log(_key_log);
 
     if (_key_log.length > 1) {
       const _key_log_reduced = _key_log.slice(1, _key_log.length);

@@ -2,6 +2,7 @@
   import { createEventDispatcher } from "svelte";
 
   export let options: { label: string, value: string }[];
+  export let placeholder: string = "Search Sites";
 
   const dispatch = createEventDispatcher();
   let is_focused = false;
@@ -15,7 +16,7 @@
 <div class="relative flex flex-col w-full">
   <input 
     class="p-[0.4rem] text-theme-dark-font-100 rounded-md shadow-md transition-all outline-none outline-1 caret-theme-dark-font-100 bg-theme-dark-200/75 placeholder:text-theme-dark-font-300 focus:outline-theme-dark-accent hover:outline-theme-dark-500" 
-    placeholder="Search Sites"
+    placeholder={placeholder}
     bind:value={search_value}
     on:click|stopPropagation={() => {}}
     on:focus={() => { is_focused = true; }}
