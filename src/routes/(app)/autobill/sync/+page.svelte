@@ -9,7 +9,6 @@
   let adjustments: ABHistory[] = [];
 
   async function on_sync_click() {
-    const _start = Date.now();
     loading = true;
 
     const updates_res = await axios.get("/api/v2/autobill/sync");
@@ -21,10 +20,7 @@
     }
 
     adjustments = updates_data.adjustments;
-    console.log(updates_data.adjustments);
-    // console.log(updates_data.failures);
     loading = false;
-    console.log(`${(Date.now() - _start) / 1000} seconds elapsed`);
   }
 </script>
 

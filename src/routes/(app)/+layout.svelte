@@ -36,6 +36,9 @@
         <NavLink label="Reports" link="/reports">
           <Icon size={32} icon="Monitor"/>
         </NavLink>
+        <NavLink label="AutoBill" link="/autobill">
+          <Icon size={32} icon="Monitor"/>
+        </NavLink>
         {#if data.is_admin}
         <NavLink label="Setup" link="/setup">
           <Icon size={32} icon="Spinner"/>
