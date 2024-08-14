@@ -1,5 +1,6 @@
 <script lang="ts">
-  import Table from "$lib/components/table.svelte";
+  import Input from "$lib/components/input.svelte";
+import Table from "$lib/components/table.svelte";
   import type { Site } from "$lib/interfaces/i_db";
   import type { _SophosDevice, _VSAxDevice } from "$lib/interfaces/i_ext_info";
   import Time from "$lib/tools/time";
@@ -7,53 +8,57 @@
   export let data: { site: Site, av_devices: _SophosDevice[], rmm_devices: _VSAxDevice[], accum_devices: _VSAxDevice[], server_count: Number, workstation_count: Number, offline_count: Number };
 
   let current_filter: "All" | "Workstations" | "Servers" | "Offline" = "All";
+  let device_filter = "";
 
-  $: filtered_av = filter_av(current_filter);
-  $: filtered_rmm = filter_rmm(current_filter);
+  $: filtered_av = filter_av(current_filter, device_filter);
+  $: filtered_rmm = filter_rmm(current_filter, device_filter);
 
-  function filter_av(_filter: string) {
+  function filter_av(_filter: string, _search: string) {
     if (_filter === "Workstations") {
       return data.av_devices.filter((_dev) => {
-        return !_dev.os.isServer;
+        return !_dev.os.isServer && _dev.hostname.toLowerCase().includes(_search.toLowerCase());
       })
     } else if (_filter === "Servers") {
       return data.av_devices.filter((_dev) => {
-        return _dev.os.isServer;
+        return _dev.os.isServer && _dev.hostname.toLowerCase().includes(_search.toLowerCase());
       })
     } else if (_filter === "Offline") {
       return data.av_devices.filter((_dev) => {
-        return new Time(_dev.lastSeenAt).is_older_than_30_days();
+        return new Time(_dev.lastSeenAt).is_older_than_30_days() && _dev.hostname.toLowerCase().includes(_search.toLowerCase());
       })
     }
 
-    return data.av_devices;
+    return data.av_devices.filter((_dev) => { return _dev.hostname.toLowerCase().includes(_search.toLowerCase()) });
   }
 
-  function filter_rmm(_filter: string) {
+  function filter_rmm(_filter: string, _search: string) {
     if (_filter === "Workstations") {
       return data.rmm_devices.filter((_dev) => {
-        return !_dev.Description.includes("Server");
+        return !_dev.Description.includes("Server") && _dev.Name.toLowerCase().includes(_search.toLowerCase());
       })
     } else if (_filter === "Servers") {
       return data.rmm_devices.filter((_dev) => {
-        return _dev.Description.includes("Server");
+        return _dev.Description.includes("Server") && _dev.Name.toLowerCase().includes(_search.toLowerCase());
       })
     } else if (_filter === "Offline") {
       return data.rmm_devices.filter((_dev) => {
-        return new Time(_dev.LastSeenOnline).is_older_than_30_days();
+        return new Time(_dev.LastSeenOnline).is_older_than_30_days() && _dev.Name.toLowerCase().includes(_search.toLowerCase());
       })
     }
 
-    return data.rmm_devices;
+    return data.rmm_devices.filter((_dev) => { return _dev.Name.toLowerCase().includes(_search.toLowerCase()) });
   }
 </script>
 
-<div class="bg-theme-dark-200/75 rounded-md">
-  <h3 class="flex space-x-2 text-2xl p-2">
+<div class="flex justify-between bg-theme-dark-200/75 rounded-md">
+  <div class="flex space-x-2 text-2xl p-2 my-auto">
     <a href="/sites" class="hover:underline">Sites</a>
     <p>{">"}</p>
     <p>{data.site && data.site.title || "Failed to load"}</p>
-  </h3>
+  </div>
+  <div class="w-1/3 my-auto p-3">
+    <Input placeholder="Search Devices" bind:value={device_filter}/>
+  </div>
 </div>
 <div class="flex w-full space-x-3">
   <div class="flex flex-col w-52 p-3 space-y-2 bg-theme-dark-200/75 rounded-md shadow-md">

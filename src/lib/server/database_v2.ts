@@ -149,7 +149,7 @@ export async function is_site_updated(client: PoolClient, site_id: number): Prom
 export async function update_site_devices(client: PoolClient, site_id: number, cookies: Cookies) {
   try {
     const site = await get_site(client, site_id);
-    if (!site || !site.last_update) {
+    if (!site) {
       debug.log("update_site_devices", "Invalid site id");
       return false;
     };
