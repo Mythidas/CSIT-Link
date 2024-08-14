@@ -61,7 +61,7 @@
                 class="block h-8 rounded-full box bg-theme-dark-200 w-14 peer-checked:bg-theme-dark-400"
                 ></div>
             <div
-                class="absolute flex items-center justify-center w-6 h-6 transition bg-theme-dark-500 rounded-full dot left-1 top-1 peer-checked:translate-x-full"
+                class={`absolute flex items-center justify-center w-6 h-6 transition ${is_background_active ? "bg-theme-dark-600" : "bg-theme-dark-500"} rounded-full dot left-1 top-1 peer-checked:translate-x-full`}
                 ></div>
           </div>
         </label>

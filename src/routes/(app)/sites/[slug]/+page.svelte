@@ -1,5 +1,6 @@
 <script lang="ts">
   import Input from "$lib/components/input.svelte";
+    import SelectPanel from "$lib/components/select_panel.svelte";
 import Table from "$lib/components/table.svelte";
   import type { Site } from "$lib/interfaces/i_db";
   import type { _SophosDevice, _VSAxDevice } from "$lib/interfaces/i_ext_info";
@@ -61,58 +62,18 @@ import Table from "$lib/components/table.svelte";
   </div>
 </div>
 <div class="flex w-full space-x-3">
-  <div class="flex flex-col w-52 p-3 space-y-2 bg-theme-dark-200/75 rounded-md shadow-md">
-    <p class="w-full text-center text-xl font-bold">All Devices</p>
-    <p class="w-full text-center text-xl rounded-md bg-theme-dark-300">{Math.max(data.rmm_devices.length, data.av_devices.length)}</p>
-    {#if current_filter === "All"}
-    <div class="text-center rounded-md bg-theme-preset-active">
-      Selected
-    </div>
-    {:else}
-    <button class="rounded-md bg-theme-dark-300 text-theme-dark-font-200 hover:bg-theme-dark-400 hover:text-theme-dark-font-100" on:click={() => { current_filter = "All"}}>
-      Select
-    </button>
-    {/if}
-  </div>
-  <div class="flex flex-col w-52 p-3 space-y-2 bg-theme-dark-200/75 rounded-md shadow-md">
-    <p class="w-full text-center text-xl font-bold">Servers</p>
-    <p class="w-full text-center text-xl rounded-md bg-theme-dark-300">{data.server_count}</p>
-    {#if current_filter === "Servers"}
-    <div class="text-center rounded-md bg-theme-preset-active">
-      Selected
-    </div>
-    {:else}
-    <button class="rounded-md bg-theme-dark-300 text-theme-dark-font-200 hover:bg-theme-dark-400 hover:text-theme-dark-font-100" on:click={() => { current_filter = "Servers"}}>
-      Select
-    </button>
-    {/if}
-  </div>
-  <div class="flex flex-col w-52 p-3 space-y-2 bg-theme-dark-200/75 rounded-md shadow-md">
-    <p class="w-full text-center text-xl font-bold">Workstations</p>
-    <p class="w-full text-center text-xl rounded-md bg-theme-dark-300">{data.workstation_count}</p>
-    {#if current_filter === "Workstations"}
-    <div class="text-center rounded-md bg-theme-preset-active">
-      Selected
-    </div>
-    {:else}
-    <button class="rounded-md bg-theme-dark-300 text-theme-dark-font-200 hover:bg-theme-dark-400 hover:text-theme-dark-font-100" on:click={() => { current_filter = "Workstations"}}>
-      Select
-    </button>
-    {/if}
-  </div>
-  <div class="flex flex-col w-52 p-3 space-y-2 bg-theme-dark-200/75 rounded-md shadow-md">
-    <p class="w-full text-center text-xl font-bold">Dead Devices</p>
-    <p class="w-full text-center text-xl rounded-md bg-theme-dark-300">{data.offline_count}</p>
-    {#if current_filter === "Offline"}
-    <div class="text-center rounded-md bg-theme-preset-active">
-      Selected
-    </div>
-    {:else}
-    <button class="rounded-md bg-theme-dark-300 text-theme-dark-font-200 hover:bg-theme-dark-400 hover:text-theme-dark-font-100" on:click={() => { current_filter = "Offline"}}>
-      Select
-    </button>
-    {/if}
-  </div>
+  <SelectPanel label="All Devices" bind:filter={current_filter} tag="All">
+    {Math.max(data.rmm_devices.length, data.av_devices.length)}
+  </SelectPanel>
+  <SelectPanel label="Servers" bind:filter={current_filter} tag="Servers">
+    {data.server_count}
+  </SelectPanel>
+  <SelectPanel label="Workstations" bind:filter={current_filter} tag="Workstations">
+    {data.workstation_count}
+  </SelectPanel>
+  <SelectPanel label="Dead Devices" bind:filter={current_filter} tag="Offline">
+    {data.offline_count}
+  </SelectPanel>
 </div>
 <div class="flex w-full h-full p-2 space-x-2 bg-theme-dark-200/75 rounded-md overflow-auto">
   <Table
