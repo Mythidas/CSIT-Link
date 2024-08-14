@@ -54,6 +54,10 @@ import Table from "$lib/components/table.svelte";
   function on_select_av(_data: _SophosDevice) {
     goto(`/sites/${data.site.site_id}/av/${_data.id}`);
   }
+
+  function on_select_rmm(_data: _VSAxDevice) {
+    window.open(`https://centriserve-it.vsax.net/app/main/systems/${_data.Identifier}/details`, "_blank");
+  }
 </script>
 
 <div class="flex justify-between bg-theme-dark-200/75 rounded-md shadow-md">
@@ -88,6 +92,7 @@ import Table from "$lib/components/table.svelte";
       { key: "LastSeenOnline", label: "Last Online", type: "Date" },
     ]}
     rows={filtered_rmm}
+    on:select={(_row) => on_select_rmm(_row.detail)}
   />
   <Table
     columns={[
