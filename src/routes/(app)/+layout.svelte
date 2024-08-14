@@ -34,14 +34,14 @@
           <Icon size={32} icon="Home"/>
         </NavLink>
         <NavLink label="Reports" link="/reports">
-          <Icon size={32} icon="Monitor"/>
+          <Icon size={32} icon="Chart"/>
         </NavLink>
         <NavLink label="AutoBill" link="/autobill">
-          <Icon size={32} icon="Monitor"/>
+          <Icon size={32} icon="Card"/>
         </NavLink>
         {#if data.is_admin}
         <NavLink label="Setup" link="/setup">
-          <Icon size={32} icon="Spinner"/>
+          <Icon size={32} icon="Wrench"/>
         </NavLink>
         {/if}
       </div>
