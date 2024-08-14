@@ -23,16 +23,57 @@ export interface _VSAxDevice {
 
 export interface _SophosDevice {
   id: string;
+  type: string;
+  tenant: {
+    id: string;
+  };
   hostname: string;
-  os: { isServer: boolean, name: string };
-  lastSeenAt: string;
+  health: {
+    overall: string;
+    threats: {
+      status: string;
+    };
+    services: {
+      status: string;
+      serviceDetails:   
+ any[]; // Replace any with appropriate type if known
+    };
+  };
+  os: {
+    isServer: boolean;
+    platform: string;
+    name: string;
+    majorVersion: number;
+    minorVersion: number;
+    build: number;
+  };
+  ipv4Addresses: string[];
+  macAddresses: string[];
+  associatedPerson: {
+    name: string;
+    viaLogin: string;
+    id: string;
+  };
   tamperProtectionEnabled: boolean;
-  health: { overall: string };
+  assignedProducts:   
+ {
+    code: string;
+    version: string;
+    status:   
+ string;
+  }[];
+  lastSeenAt: string; // Assuming a date/time string, consider using Date
+  isolation: {
+    status: string;
+    adminIsolated: boolean;
+    selfIsolated: boolean;
+  };
 }
 
 export interface _SophosDeviceEXT extends _SophosDevice {
   title: string;
   site_id: number;
+  tamper_info?: { enabled: boolean, password: string }
 }
 
 export interface _PSAContractInfo {

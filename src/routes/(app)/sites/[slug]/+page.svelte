@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
   import Input from "$lib/components/input.svelte";
     import SelectPanel from "$lib/components/select_panel.svelte";
 import Table from "$lib/components/table.svelte";
@@ -49,9 +50,13 @@ import Table from "$lib/components/table.svelte";
 
     return data.rmm_devices.filter((_dev) => { return _dev.Name.toLowerCase().includes(_search.toLowerCase()) });
   }
+
+  function on_select_av(_data: _SophosDevice) {
+    goto(`/sites/${data.site.site_id}/av/${_data.id}`);
+  }
 </script>
 
-<div class="flex justify-between bg-theme-dark-200/75 rounded-md">
+<div class="flex justify-between bg-theme-dark-200/75 rounded-md shadow-md">
   <div class="flex space-x-2 text-2xl p-2 my-auto">
     <a href="/sites" class="hover:underline">Sites</a>
     <p>{">"}</p>
@@ -75,7 +80,7 @@ import Table from "$lib/components/table.svelte";
     {data.offline_count}
   </SelectPanel>
 </div>
-<div class="flex w-full h-full p-2 space-x-2 bg-theme-dark-200/75 rounded-md overflow-auto">
+<div class="flex w-full h-full p-2 space-x-2 bg-theme-dark-200/75 rounded-md shadow-md overflow-auto">
   <Table
     columns={[
       { key: "Name", label: `VSA Devices (${filtered_rmm.length})`, type: "String" },
@@ -91,5 +96,6 @@ import Table from "$lib/components/table.svelte";
       { key: "lastSeenAt", label: "Last Online", type: "Date" },
     ]}
     rows={filtered_av}
+    on:select={(_row) => on_select_av(_row.detail)}
   />
 </div>
