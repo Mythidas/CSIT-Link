@@ -67,29 +67,53 @@ export async function get_sites(client: PoolClient, columns: string[], values: s
 }
 
 export async function add_site(client: PoolClient, new_site: Site): Promise<Site | null> {
-  let values = [
-    new_site.title,
-    new_site.psa_id,
-    new_site.rmm_id,
-    new_site.av_id,
-    new_site.av_url
-  ];
-
-  let col_state = "title,psa_id,rmm_id,av_id,av_url";
-  let col_values = "$1,$2,$3,$4,$5";
-
-  if (new_site.company_id >= 0) {
-    col_state += ",company_id";
-    col_values += ",$6";
-    values.push(new_site.company_id.toString());
-  }
-
   try {
-    const res = await client.query(`INSERT INTO Site (${col_state}) VALUES (${col_values})`, values);
+    let values = [
+      new_site.title,
+      new_site.psa_id,
+      new_site.rmm_id,
+      new_site.av_id,
+      new_site.av_url
+    ];
+
+    let col_state = "title,psa_id,rmm_id,av_id,av_url";
+    let col_values = "$1,$2,$3,$4,$5";
+
+    if (new_site.company_id >= 0) {
+      col_state += ",company_id";
+      col_values += ",$6";
+      values.push(new_site.company_id.toString());
+    }
+
+    const res = await client.query(`INSERT INTO Site (${col_state}) VALUES (${col_values}) RETURNING site_id,title,psa_id,rmm_id,av_id,av_url,company_id`, values);
     return res.rows[0];
   } catch (err) {
-    console.log(err);
+    debug.log("add_site", err as string);
     return null;
+  }
+}
+
+export async function update_site(client: PoolClient, site_ref: Site): Promise<boolean | null> {
+  try {
+    const site = await get_site(client, site_ref.site_id);
+    if (!site) {
+      debug.log("update_site", "Invalid site id");
+      return false;
+    };
+
+    await client.query("UPDATE Site SET company_id = $1, psa_id = $2, rmm_id = $3, av_id = $4, av_url = $5 WHERE site_id = $6;", [
+      site_ref.company_id < 0 ? "0" : site_ref.company_id.toString(),
+      site_ref.psa_id,
+      site_ref.rmm_id,
+      site_ref.av_id,
+      site_ref.av_url,
+      site_ref.site_id.toString()
+    ]);
+
+    return true;
+  } catch (err) {
+    debug.log("update_site", err as string);
+    return false;
   }
 }
 

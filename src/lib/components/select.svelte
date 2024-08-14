@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
 
-  export let value: any;
+  export let value: string;
   export let options: { key: string; label: string; }[] = [];
   export let placeholder = "Select...";
   export let searchable = true;
@@ -13,6 +13,10 @@
   let search = "";
 
   $: if (!open) search = "";
+  $: if (value?.length > 0) {
+    const _option = options.find((_opt) => { return _opt.key.toString() === value });
+    label = _option?.label || "";
+  }
 
   const dispatch = createEventDispatcher();
 
@@ -26,6 +30,7 @@
     value = option.key;
     label = option.label;
     search = "";
+    open = false;
     dispatch('select', option);
   }
 </script>

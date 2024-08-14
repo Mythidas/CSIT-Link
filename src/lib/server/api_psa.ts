@@ -55,7 +55,7 @@ export async function get_contract_unit_info(site: Site): Promise<_PSAContractIn
     }
 
     const contract_ref = contracts_data.items.find((_con: any) => {
-      return _con.contractName.includes("Technology") || _con.contractName.includes("Unlimited");
+      return _con.userDefinedFields.find((_udf: any) => { return _udf.value === "network_management"; }) !== undefined;
     });
 
     if (!contract_ref) {
